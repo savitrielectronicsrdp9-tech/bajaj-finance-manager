@@ -18,7 +18,6 @@
             --ios-border: #C6C6C8;
         }
 
-        /* Apple System Fonts & Basic Reset */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--ios-bg);
@@ -28,7 +27,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* iOS Glassmorphism Navbar */
+        /* Navbar */
         .navbar {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
@@ -58,7 +57,6 @@
             padding: 20px 16px;
         }
 
-        /* iOS Section Titles */
         .section-title {
             font-size: 13px;
             text-transform: uppercase;
@@ -68,7 +66,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* iOS Inset Grouped Cards */
         .card {
             background: var(--ios-card);
             border-radius: 10px;
@@ -76,7 +73,6 @@
             margin-bottom: 24px;
         }
 
-        /* iOS Inputs */
         .input-row {
             display: flex;
             align-items: center;
@@ -104,7 +100,6 @@
             color: #C7C7CC;
         }
 
-        /* iOS Primary Button */
         .btn-primary {
             display: block;
             width: 100%;
@@ -124,7 +119,6 @@
             opacity: 0.9;
         }
 
-        /* Search Bar */
         .search-container {
             background: var(--ios-input-bg);
             border-radius: 10px;
@@ -141,7 +135,6 @@
             outline: none;
         }
 
-        /* Record List Items */
         .record-item {
             padding: 16px;
             border-bottom: 0.5px solid var(--ios-border);
@@ -168,7 +161,6 @@
             font-weight: 500;
         }
         
-        /* iOS Destructive Button */
         .btn-destructive {
             background: #ffebe9;
             color: var(--ios-red);
@@ -186,7 +178,6 @@
             background: #ffdcd9;
         }
 
-        /* Total Badge */
         .badge {
             float: right;
             background: var(--ios-blue);
@@ -207,7 +198,6 @@
 </head>
 <body>
 
-    <!-- Transparent iPhone Style Navbar -->
     <div class="navbar">
         <h2>Savitri Electronics</h2>
         <p>Bajaj Finance Manager</p>
@@ -241,7 +231,6 @@
             <span class="badge" id="totalCount">0</span>
         </div>
         
-        <!-- iOS Style Search -->
         <div class="search-container">
             <span style="margin-right: 8px; color: var(--ios-text-muted);">🔍</span>
             <input type="search" id="searchInput" placeholder="Search by Model or SR..." onkeyup="filterRecords()">
@@ -253,35 +242,33 @@
 
     </div>
 
-    <!-- Firebase System Code -->
+    <!-- Naya Firebase System Code (Savitri Job Bridge Database) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Your exact Firebase config
+        // Aapka naya aur fast database config
         const firebaseConfig = {
-            apiKey: "AIzaSyDMxOAPhpgdwIsBB3RQSnitsOqp6njW4cc",
-            authDomain: "bajaj-finance-aap.firebaseapp.com",
-            projectId: "bajaj-finance-aap",
-            storageBucket: "bajaj-finance-aap.firebasestorage.app",
-            messagingSenderId: "147678015396",
-            appId: "1:147678015396:web:f04e504de17b3bab22db31",
-            measurementId: "G-Z6VVGN318K"
+            apiKey: "AIzaSyD3hc6Rz1gHZq8c71AHp5NSw8eSZT2-Mik",
+            authDomain: "savitri-job-bridge.firebaseapp.com",
+            projectId: "savitri-job-bridge",
+            storageBucket: "savitri-job-bridge.firebasestorage.app",
+            messagingSenderId: "721066136910",
+            appId: "1:721066136910:web:61b5d58b31d8ab481f7a1f",
+            measurementId: "G-KB27ZHE5QF"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // INSTANT SAVE FUNCTION (Ultra Fast)
+        // INSTANT SAVE FUNCTION
         document.getElementById('saveBtn').addEventListener('click', () => {
             const product = document.getElementById('productName').value.trim();
             const sr = document.getElementById('srNumber').value.trim();
             const serial = document.getElementById('serialNumber').value.trim();
 
             if (product && sr && serial) {
-                // 1. Prepare Data with local timestamp for instant processing
                 const newData = {
                     product: product.toUpperCase(),
                     sr: sr.toUpperCase(),
@@ -289,17 +276,15 @@
                     timestamp: Date.now() 
                 };
 
-                // 2. Fire and forget to database (Background process)
+                // Background save process
                 addDoc(collection(db, "finance_records"), newData).catch((e) => {
                     alert("Network issue: Data will sync when online.");
                 });
 
-                // 3. Clear UI instantly for next entry
+                // Clear input instantly
                 document.getElementById('productName').value = '';
                 document.getElementById('srNumber').value = '';
                 document.getElementById('serialNumber').value = '';
-                
-                // Set focus back to product name for fast data entry
                 document.getElementById('productName').focus();
             } else {
                 alert("Please fill all details before saving.");
@@ -308,13 +293,12 @@
 
         // DELETE FUNCTION
         window.deleteRecord = function(id) {
-            // iOS Style simple confirm
             if (confirm("Mark this product as Used/Sold?")) {
                 deleteDoc(doc(db, "finance_records", id));
             }
         };
 
-        // REAL-TIME SYNC (No loading delays)
+        // REAL-TIME SYNC
         const q = query(collection(db, "finance_records"), orderBy("timestamp", "desc"));
         onSnapshot(q, (querySnapshot) => {
             const list = document.getElementById('recordsList');
