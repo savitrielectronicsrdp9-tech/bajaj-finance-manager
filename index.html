@@ -7,55 +7,30 @@
     
     <!-- AI Text Recognition Library -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <!-- Cropper.js Library (For Crop & Rotate) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <style>
         :root {
-            --ios-bg: #F2F2F7;
-            --ios-card: #FFFFFF;
-            --ios-blue: #007AFF;
-            --ios-red: #FF3B30;
-            --ios-orange: #FF9500;
-            --ios-green: #34C759;
-            --ios-text-main: #000000;
-            --ios-text-muted: #8E8E93;
-            --ios-input-bg: #7676801F;
-            --ios-border: #C6C6C8;
+            --ios-bg: #F2F2F7; --ios-card: #FFFFFF; --ios-blue: #007AFF; --ios-red: #FF3B30;
+            --ios-orange: #FF9500; --ios-green: #34C759; --ios-text-main: #000000;
+            --ios-text-muted: #8E8E93; --ios-input-bg: #7676801F; --ios-border: #C6C6C8;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--ios-bg);
-            color: var(--ios-text-main);
-            margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
         /* Lock Screen */
-        #lockScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--ios-bg); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .lock-box {
-            background: white; padding: 30px; border-radius: 20px; text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 80%; max-width: 300px;
-        }
+        #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .lock-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 80%; max-width: 300px; }
         .lock-box h2 { margin-top: 0; color: var(--ios-blue); }
-        .lock-box input {
-            width: 100%; padding: 12px; margin: 15px 0; border: 1px solid var(--ios-border);
-            border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box;
-        }
+        .lock-box input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid var(--ios-border); border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
 
         #mainApp { display: none; }
 
         /* Navbar */
-        .navbar {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            position: sticky; top: 0; padding: 16px 20px; text-align: center;
-            border-bottom: 0.5px solid var(--ios-border); z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .navbar { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .navbar-title h2 { margin: 0; font-size: 17px; font-weight: 600; }
         .navbar-title p { margin: 2px 0 0; font-size: 12px; color: var(--ios-text-muted); }
         .btn-icon { background: none; border: none; color: var(--ios-blue); font-size: 20px; cursor: pointer; }
@@ -68,16 +43,12 @@
         .input-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--ios-border); }
         .input-row:last-child { border-bottom: none; }
         .input-row label { width: 90px; font-size: 15px; font-weight: 500; }
-        
         .input-wrapper { display: flex; flex: 1; align-items: center; }
         .input-wrapper input, .input-wrapper select { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); width: 100%; }
         
         .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
-        
-        /* Naya Camera Button */
         .btn-scan { background: #e5e5ea; color: var(--ios-blue); border: none; border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; margin-left: 8px; transition: 0.1s;}
         .btn-scan:active { background: #d1d1d6; }
-
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 14px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -90,7 +61,6 @@
         .product-title { font-size: 17px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
         .data-row { display: flex; justify-content: space-between; font-size: 14px; margin-top: 4px; }
         .timestamp { font-size: 11px; color: var(--ios-text-muted); margin-top: 6px; }
-        
         .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
         .btn-edit { flex: 1; background: #fff0e0; color: var(--ios-orange); border: none; padding: 8px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
         .btn-destructive { flex: 1; background: #ffebe9; color: var(--ios-red); border: none; padding: 8px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -99,24 +69,49 @@
         .loading-text { text-align: center; padding: 20px; color: var(--ios-text-muted); font-size: 15px; }
 
         /* AI Loading Screen */
-        #ocrLoading {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white;
-        }
+        #ocrLoading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Cropper UI */
+        #cropperModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; flex-direction: column; }
+        .cropper-area { flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .cropper-area img { max-width: 100%; max-height: 100%; }
+        .cropper-controls { padding: 15px 20px 30px; background: #1c1c1e; display: flex; flex-direction: column; gap: 15px; }
+        .cropper-tools { display: flex; justify-content: center; gap: 20px; }
+        .btn-tool { background: #2c2c2e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .cropper-actions { display: flex; gap: 10px; }
+        .btn-cancel { flex: 1; background: #3a3a3c; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; }
+        .btn-done { flex: 2; background: var(--ios-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <!-- Camera File Input (Hidden) -->
+    <!-- Camera File Input -->
     <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
+
+    <!-- Cropper UI Modal -->
+    <div id="cropperModal">
+        <div class="cropper-area">
+            <img id="imageToCrop" src="">
+        </div>
+        <div class="cropper-controls">
+            <div class="cropper-tools">
+                <button class="btn-tool" onclick="rotateImage(-90)">↺ Left</button>
+                <button class="btn-tool" onclick="rotateImage(90)">↻ Right</button>
+            </div>
+            <div class="cropper-actions">
+                <button class="btn-cancel" onclick="cancelCrop()">Cancel</button>
+                <button class="btn-done" onclick="readCroppedImage()">Crop & Read</button>
+            </div>
+        </div>
+    </div>
 
     <!-- AI Loading Screen -->
     <div id="ocrLoading">
         <div class="spinner"></div>
-        <h3>AI is reading text...</h3>
-        <p style="font-size: 13px; color: #ccc;">Please wait a few seconds</p>
+        <h3>Reading Number...</h3>
+        <p style="font-size: 13px; color: #ccc;">Extracting text from image</p>
     </div>
 
     <!-- Security Lock Screen -->
@@ -165,14 +160,14 @@
                     <label>SR No.</label>
                     <div class="input-wrapper">
                         <input type="text" id="srNumber" placeholder="Enter SR number">
-                        <button class="btn-scan" onclick="startTextScanner('srNumber')" title="Take Photo to Read Text">📷</button>
+                        <button class="btn-scan" onclick="startTextScanner('srNumber')" title="Take Photo">📷</button>
                     </div>
                 </div>
                 <div class="input-row">
                     <label>Serial No.</label>
                     <div class="input-wrapper">
                         <input type="text" id="serialNumber" placeholder="Enter product serial">
-                        <button class="btn-scan" onclick="startTextScanner('serialNumber')" title="Take Photo to Read Text">📷</button>
+                        <button class="btn-scan" onclick="startTextScanner('serialNumber')" title="Take Photo">📷</button>
                     </div>
                 </div>
             </div>
@@ -196,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Firebase System & App Logic -->
+    <!-- App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc } 
@@ -218,40 +213,88 @@
         let systemPin = "1234"; 
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
 
-        // ================= AI TEXT SCANNER (OCR) =================
+        // ================= CROPPER & AI TEXT SCANNER =================
         let activeInputId = "";
         const cameraInput = document.getElementById('cameraInput');
+        let cropperInstance = null;
 
         window.startTextScanner = function(inputId) {
             activeInputId = inputId;
-            cameraInput.click(); // Mobile ka camera open hoga
+            cameraInput.click();
         };
 
         cameraInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
-            document.getElementById('ocrLoading').style.display = 'flex'; // Loading show karein
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const image = document.getElementById('imageToCrop');
+                image.src = event.target.result;
+                
+                document.getElementById('cropperModal').style.display = 'flex';
+                
+                if (cropperInstance) cropperInstance.destroy();
+                
+                cropperInstance = new Cropper(image, {
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.6,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+            reader.readAsDataURL(file);
+        });
 
-            Tesseract.recognize(file, 'eng')
+        window.rotateImage = function(degree) {
+            if (cropperInstance) cropperInstance.rotate(degree);
+        };
+
+        window.cancelCrop = function() {
+            document.getElementById('cropperModal').style.display = 'none';
+            if (cropperInstance) cropperInstance.destroy();
+            cameraInput.value = "";
+        };
+
+        window.readCroppedImage = function() {
+            if (!cropperInstance) return;
+            
+            // Get cropped image as base64 data
+            const canvas = cropperInstance.getCroppedCanvas();
+            const dataUrl = canvas.toDataURL('image/jpeg');
+
+            // Close cropper, show loading
+            document.getElementById('cropperModal').style.display = 'none';
+            document.getElementById('ocrLoading').style.display = 'flex';
+
+            // Send to AI
+            Tesseract.recognize(dataUrl, 'eng')
             .then(({ data: { text } }) => {
                 document.getElementById('ocrLoading').style.display = 'none';
                 
-                // AI se aayi text me se faltu space aur characters hatana
+                // Clean the extracted text
                 let cleanText = text.replace(/\s+/g, '').replace(/[^a-zA-Z0-9-]/g, '').trim();
                 
                 if(cleanText) {
                     document.getElementById(activeInputId).value = cleanText;
                 } else {
-                    alert("⚠️ Text saaf nahi padha gaya. Kripya number ke ekdum paas se clear photo lein.");
+                    alert("⚠️ Number saaf nahi padha gaya. Kripya dhyan se crop karein.");
                 }
-                cameraInput.value = ""; // Reset
+                cameraInput.value = ""; 
+                cropperInstance.destroy();
             }).catch(err => {
                 document.getElementById('ocrLoading').style.display = 'none';
-                alert("❌ Error reading photo. Kripya dobara try karein.");
+                alert("❌ Error reading text. Kripya dobara try karein.");
                 cameraInput.value = "";
+                cropperInstance.destroy();
             });
-        });
+        };
 
         // ================= SECURITY PIN =================
         const pinRef = doc(db, "app_settings", "security");
