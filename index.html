@@ -2,91 +2,264 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Savitri Electronics | Finance Manager</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Savitri Electronics | Finance</title>
     
     <style>
+        /* iOS Theme Variables */
         :root {
-            --primary: #1e3a8a; 
-            --secondary: #3b82f6; 
-            --background: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --danger: #ef4444;
+            --ios-bg: #F2F2F7;
+            --ios-card: #FFFFFF;
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-text-main: #000000;
+            --ios-text-muted: #8E8E93;
+            --ios-input-bg: #7676801F;
+            --ios-border: #C6C6C8;
         }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--background); margin: 0; padding: 0; }
-        .navbar { background-color: var(--primary); color: white; padding: 15px 20px; text-align: center; }
-        .navbar h2 { margin: 0; font-size: 22px; }
-        .navbar p { margin: 5px 0 0; font-size: 12px; color: #bfdbfe; }
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; }
-        .card-header h3 { margin: 0; font-size: 18px; color: var(--primary); }
-        .badge { background-color: var(--secondary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; color: var(--text-muted); }
-        input { width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 15px; box-sizing: border-box; }
-        button.save-btn { width: 100%; background-color: var(--primary); color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .record-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .product-title { font-size: 16px; font-weight: 600; }
-        .sr-badge { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 14px; display: inline-block; }
-        .serial-text { font-size: 13px; color: var(--text-muted); }
-        .btn-use { background-color: white; color: var(--danger); border: 1px solid var(--danger); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 5px; }
-        .loading { text-align: center; padding: 20px; color: var(--text-muted); font-size: 14px; }
-        .error-msg { text-align: center; padding: 20px; color: white; background: var(--danger); border-radius: 8px; font-size: 14px; font-weight: bold; }
+
+        /* Apple System Fonts & Basic Reset */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--ios-bg);
+            color: var(--ios-text-main);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* iOS Glassmorphism Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            padding: 16px 20px;
+            text-align: center;
+            border-bottom: 0.5px solid var(--ios-border);
+            z-index: 100;
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+        }
+        .navbar p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: var(--ios-text-muted);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* iOS Section Titles */
+        .section-title {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--ios-text-muted);
+            margin: 0 0 8px 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* iOS Inset Grouped Cards */
+        .card {
+            background: var(--ios-card);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        /* iOS Inputs */
+        .input-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 0.5px solid var(--ios-border);
+        }
+        .input-row:last-child {
+            border-bottom: none;
+        }
+        .input-row label {
+            width: 100px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .input-row input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            color: var(--ios-text-main);
+            outline: none;
+            padding: 4px 0;
+        }
+        .input-row input::placeholder {
+            color: #C7C7CC;
+        }
+
+        /* iOS Primary Button */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--ios-blue);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.1s ease;
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background: var(--ios-input-bg);
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .search-container input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* Record List Items */
+        .record-item {
+            padding: 16px;
+            border-bottom: 0.5px solid var(--ios-border);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        .product-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            color: var(--ios-text-muted);
+            margin-top: 4px;
+        }
+        .sr-highlight {
+            color: var(--ios-blue);
+            font-weight: 500;
+        }
+        
+        /* iOS Destructive Button */
+        .btn-destructive {
+            background: #ffebe9;
+            color: var(--ios-red);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-destructive:active {
+            transform: scale(0.97);
+            background: #ffdcd9;
+        }
+
+        /* Total Badge */
+        .badge {
+            float: right;
+            background: var(--ios-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .loading-text {
+            text-align: center;
+            padding: 20px;
+            color: var(--ios-text-muted);
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Transparent iPhone Style Navbar -->
     <div class="navbar">
-        <h2>SAVITRI ELECTRONICS</h2>
-        <p>Finance Inventory Manager</p>
+        <h2>Savitri Electronics</h2>
+        <p>Bajaj Finance Manager</p>
     </div>
 
     <div class="container">
+        
+        <!-- Add Product Section -->
+        <div class="section-title">New Entry</div>
         <div class="card">
-            <div class="card-header">
-                <h3>Add Fresh Product</h3>
+            <div class="input-row">
+                <label>Product</label>
+                <input type="text" id="productName" placeholder="e.g. LED TV 43 inch" required>
             </div>
-            <div class="input-group">
-                <label>Product Details (e.g. LED TV 43")</label>
-                <input type="text" id="productName" placeholder="Enter product name..." required>
+            <div class="input-row">
+                <label>SR No.</label>
+                <input type="text" id="srNumber" placeholder="Enter SR number" required>
             </div>
-            <div class="input-group">
-                <label>Bajaj SR Number</label>
-                <input type="text" id="srNumber" placeholder="Enter SR number..." required>
-            </div>
-            <div class="input-group">
-                <label>Serial Number (S/N)</label>
-                <input type="text" id="serialNumber" placeholder="Enter product serial number..." required>
-            </div>
-            <button class="save-btn" id="saveBtn">Save to Database</button>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3>Available Stock</h3>
-                <span class="badge" id="totalCount">0 Items</span>
-            </div>
-            
-            <div class="input-group">
-                <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search by Model or SR Number..." onkeyup="filterRecords()">
-            </div>
-
-            <div id="recordsList">
-                <div class="loading">Loading database...</div>
+            <div class="input-row">
+                <label>Serial No.</label>
+                <input type="text" id="serialNumber" placeholder="Enter product serial" required>
             </div>
         </div>
+        <button class="btn-primary" id="saveBtn">Save Record</button>
+
+        <br><br>
+
+        <!-- Inventory Section -->
+        <div class="section-title">
+            Available Stock 
+            <span class="badge" id="totalCount">0</span>
+        </div>
+        
+        <!-- iOS Style Search -->
+        <div class="search-container">
+            <span style="margin-right: 8px; color: var(--ios-text-muted);">🔍</span>
+            <input type="search" id="searchInput" placeholder="Search by Model or SR..." onkeyup="filterRecords()">
+        </div>
+
+        <div class="card" id="recordsList">
+            <div class="loading-text">Connecting to database...</div>
+        </div>
+
     </div>
 
+    <!-- Firebase System Code -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, serverTimestamp, query, orderBy } 
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // Your exact Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyDMxOAPhpgdwIsBB3RQSnitsOqp6njW4cc",
             authDomain: "bajaj-finance-aap.firebaseapp.com",
@@ -97,52 +270,59 @@
             measurementId: "G-Z6VVGN318K"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Data Save Karne Ka Code (With Error Alert)
-        document.getElementById('saveBtn').addEventListener('click', async () => {
-            const product = document.getElementById('productName').value;
-            const sr = document.getElementById('srNumber').value;
-            const serial = document.getElementById('serialNumber').value;
-            const btn = document.getElementById('saveBtn');
+        // INSTANT SAVE FUNCTION (Ultra Fast)
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const product = document.getElementById('productName').value.trim();
+            const sr = document.getElementById('srNumber').value.trim();
+            const serial = document.getElementById('serialNumber').value.trim();
 
             if (product && sr && serial) {
-                btn.innerText = "Saving...";
-                try {
-                    await addDoc(collection(db, "finance_records"), {
-                        product: product.toUpperCase(),
-                        sr: sr.toUpperCase(),
-                        serial: serial.toUpperCase(),
-                        timestamp: serverTimestamp()
-                    });
-                    document.getElementById('productName').value = '';
-                    document.getElementById('srNumber').value = '';
-                    document.getElementById('serialNumber').value = '';
-                } catch (e) {
-                    alert("⚠️ Save Error: " + e.message);
-                }
-                btn.innerText = "Save to Database";
+                // 1. Prepare Data with local timestamp for instant processing
+                const newData = {
+                    product: product.toUpperCase(),
+                    sr: sr.toUpperCase(),
+                    serial: serial.toUpperCase(),
+                    timestamp: Date.now() 
+                };
+
+                // 2. Fire and forget to database (Background process)
+                addDoc(collection(db, "finance_records"), newData).catch((e) => {
+                    alert("Network issue: Data will sync when online.");
+                });
+
+                // 3. Clear UI instantly for next entry
+                document.getElementById('productName').value = '';
+                document.getElementById('srNumber').value = '';
+                document.getElementById('serialNumber').value = '';
+                
+                // Set focus back to product name for fast data entry
+                document.getElementById('productName').focus();
             } else {
-                alert("Please fill all details!");
+                alert("Please fill all details before saving.");
             }
         });
 
-        window.deleteRecord = async function(id) {
-            if (confirm("Are you sure this item is used/sold?")) {
-                await deleteDoc(doc(db, "finance_records", id));
+        // DELETE FUNCTION
+        window.deleteRecord = function(id) {
+            // iOS Style simple confirm
+            if (confirm("Mark this product as Used/Sold?")) {
+                deleteDoc(doc(db, "finance_records", id));
             }
         };
 
-        // Real-time Data Sync (With Error Display on Screen)
+        // REAL-TIME SYNC (No loading delays)
         const q = query(collection(db, "finance_records"), orderBy("timestamp", "desc"));
         onSnapshot(q, (querySnapshot) => {
             const list = document.getElementById('recordsList');
-            document.getElementById('totalCount').innerText = querySnapshot.size + " Items";
+            document.getElementById('totalCount').innerText = querySnapshot.size;
             list.innerHTML = '';
             
             if (querySnapshot.empty) {
-                list.innerHTML = '<div class="loading">No records found. Add a new product above.</div>';
+                list.innerHTML = '<div class="loading-text">No fresh records found.</div>';
                 return;
             }
 
@@ -151,17 +331,19 @@
                 list.innerHTML += `
                     <div class="record-item record-card">
                         <div class="product-title">${data.product}</div>
-                        <div><span class="sr-badge">SR: ${data.sr}</span></div>
-                        <div class="serial-text">S/N: ${data.serial}</div>
-                        <button class="btn-use" onclick="deleteRecord('${doc.id}')">Use & Delete Item</button>
+                        <div class="data-row">
+                            <span>SR: <span class="sr-highlight">${data.sr}</span></span>
+                            <span>S/N: ${data.serial}</span>
+                        </div>
+                        <button class="btn-destructive" onclick="deleteRecord('${doc.id}')">Use & Delete</button>
                     </div>
                 `;
             });
         }, (error) => {
-            // AGAR KOI ERROR AAYA TOH SCREEN PAR LAL RANG MEIN DIKHEGA
-            document.getElementById('recordsList').innerHTML = `<div class="error-msg">⚠️ Connection Error: ${error.message}</div>`;
+            document.getElementById('recordsList').innerHTML = `<div class="loading-text" style="color: var(--ios-red);">Error connecting to database. Refresh page.</div>`;
         });
 
+        // SEARCH FUNCTION
         window.filterRecords = function() {
             let input = document.getElementById('searchInput').value.toUpperCase();
             let cards = document.getElementsByClassName('record-card');
