@@ -8,7 +8,7 @@
     <!-- AI Text Recognition Library -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
-    <!-- Cropper.js Library (For Crop & Rotate) -->
+    <!-- Cropper.js Library -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
@@ -110,8 +110,8 @@
     <!-- AI Loading Screen -->
     <div id="ocrLoading">
         <div class="spinner"></div>
-        <h3>Reading Number...</h3>
-        <p style="font-size: 13px; color: #ccc;">Extracting text from image</p>
+        <h3>Scanning Number...</h3>
+        <p style="font-size: 13px; color: #ccc;">Pro AI processing the image</p>
     </div>
 
     <!-- Security Lock Screen -->
@@ -213,7 +213,7 @@
         let systemPin = "1234"; 
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
 
-        // ================= CROPPER & AI TEXT SCANNER =================
+        // ================= CROPPER & ADVANCED AI TEXT SCANNER =================
         let activeInputId = "";
         const cameraInput = document.getElementById('cameraInput');
         let cropperInstance = null;
@@ -239,7 +239,7 @@
                 cropperInstance = new Cropper(image, {
                     viewMode: 1,
                     dragMode: 'move',
-                    autoCropArea: 0.6,
+                    autoCropArea: 0.8,
                     restore: false,
                     guides: true,
                     center: true,
@@ -265,26 +265,31 @@
         window.readCroppedImage = function() {
             if (!cropperInstance) return;
             
-            // Get cropped image as base64 data
-            const canvas = cropperInstance.getCroppedCanvas();
-            const dataUrl = canvas.toDataURL('image/jpeg');
+            // 1. Image ki quality badha kar canvas banayein (Best for AI)
+            const canvas = cropperInstance.getCroppedCanvas({
+                width: 800, 
+                fillColor: '#fff' // Background white rakhein
+            });
+            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
 
-            // Close cropper, show loading
             document.getElementById('cropperModal').style.display = 'none';
             document.getElementById('ocrLoading').style.display = 'flex';
 
-            // Send to AI
-            Tesseract.recognize(dataUrl, 'eng')
+            // 2. Strict AI Configuration
+            Tesseract.recognize(dataUrl, 'eng', {
+                tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-/', // Sirf yeh characters allow hain
+                tessedit_pageseg_mode: '7', // Mode 7: Assume image is a single text line (Super accurate)
+            })
             .then(({ data: { text } }) => {
                 document.getElementById('ocrLoading').style.display = 'none';
                 
-                // Clean the extracted text
-                let cleanText = text.replace(/\s+/g, '').replace(/[^a-zA-Z0-9-]/g, '').trim();
+                // 3. Faltu spaces aur nishaan hatayein
+                let cleanText = text.replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '').trim();
                 
-                if(cleanText) {
+                if(cleanText.length > 2) { // Ensure at least 3 characters are read
                     document.getElementById(activeInputId).value = cleanText;
                 } else {
-                    alert("⚠️ Number saaf nahi padha gaya. Kripya dhyan se crop karein.");
+                    alert("⚠️ Number clear padhne me nahi aaya. Kripya crop box ko text ke ekdum paas (tight) rakhein aur dobara try karein.");
                 }
                 cameraInput.value = ""; 
                 cropperInstance.destroy();
