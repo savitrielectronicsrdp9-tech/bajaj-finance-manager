@@ -45,7 +45,7 @@
             border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box;
         }
 
-        /* Main App Wrapper (Hidden by default) */
+        /* Main App Wrapper */
         #mainApp { display: none; }
 
         /* Navbar */
@@ -68,9 +68,13 @@
 
         .input-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--ios-border); }
         .input-row:last-child { border-bottom: none; }
-        .input-row label { width: 100px; font-size: 15px; font-weight: 500; }
-        .input-row input { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; }
+        .input-row label { width: 95px; font-size: 15px; font-weight: 500; }
+        .input-row input, .input-row select { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); }
         
+        /* Select & Add Button Wrapper */
+        .select-wrapper { display: flex; flex: 1; align-items: center; }
+        .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
+
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 14px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
 
@@ -81,9 +85,9 @@
 
         .record-item { padding: 16px; border-bottom: 0.5px solid var(--ios-border); }
         .record-item:last-child { border-bottom: none; }
-        .product-title { font-size: 17px; font-weight: 600; }
-        .data-row { display: flex; justify-content: space-between; font-size: 15px; margin-top: 4px; }
-        .sr-highlight { color: var(--ios-blue); font-weight: 600; }
+        .product-title { font-size: 17px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
+        .data-row { display: flex; justify-content: space-between; font-size: 14px; margin-top: 4px; }
+        .data-row strong { color: var(--ios-text-main); }
         .timestamp { font-size: 11px; color: var(--ios-text-muted); margin-top: 6px; }
         
         .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
@@ -121,10 +125,25 @@
             <div class="section-title">Product Entry</div>
             <div class="card" style="margin-top: 8px;">
                 <input type="hidden" id="editId" value="">
+                
+                <!-- Naya Category System -->
                 <div class="input-row">
-                    <label>Product</label>
-                    <input type="text" id="productName" placeholder="e.g. LED TV 43 inch">
+                    <label>Brand</label>
+                    <div class="select-wrapper">
+                        <select id="categorySelect">
+                            <option value="" disabled selected>Select Company...</option>
+                            <!-- List JS se aayegi -->
+                        </select>
+                        <button class="btn-add-cat" onclick="addNewCategory()" title="Add New Company">+</button>
+                    </div>
                 </div>
+
+                <!-- Naya Model No System -->
+                <div class="input-row">
+                    <label>Model No.</label>
+                    <input type="text" id="modelNumber" placeholder="e.g. 43 Inch Smart LED">
+                </div>
+
                 <div class="input-row">
                     <label>SR No.</label>
                     <input type="text" id="srNumber" placeholder="Enter SR number">
@@ -146,7 +165,7 @@
             
             <div class="search-container">
                 <span>🔍 </span>
-                <input type="search" id="searchInput" placeholder="Search by Model or SR..." onkeyup="filterRecords()">
+                <input type="search" id="searchInput" placeholder="Search by Brand, Model or SR..." onkeyup="filterRecords()">
             </div>
 
             <div class="card" id="recordsList">
@@ -172,90 +191,124 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // GLOBAL VARIABLES
         let globalRecords = [];
         let systemPin = "1234"; 
-
-        // SECURITY PIN LOGIC
-        const pinRef = doc(db, "app_settings", "security");
         
+        // DEFAULT BRANDS LIST
+        let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
+
+        // ================= SECURITY PIN =================
+        const pinRef = doc(db, "app_settings", "security");
         async function fetchPin() {
             const docSnap = await getDoc(pinRef);
-            if (docSnap.exists()) {
-                systemPin = docSnap.data().pin;
-            } else {
-                await setDoc(pinRef, { pin: "1234" });
-            }
+            if (docSnap.exists()) systemPin = docSnap.data().pin;
+            else await setDoc(pinRef, { pin: "1234" });
         }
         fetchPin();
 
         window.verifyPin = function() {
-            const entered = document.getElementById('pinInput').value;
-            if(entered === systemPin) {
+            if(document.getElementById('pinInput').value === systemPin) {
                 document.getElementById('lockScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
             } else {
-                alert("❌ Incorrect PIN. Please try again.");
-                document.getElementById('pinInput').value = '';
+                alert("❌ Incorrect PIN."); document.getElementById('pinInput').value = '';
             }
         };
 
         window.changePin = async function() {
-            const oldPin = prompt("Enter Current PIN:");
-            if(oldPin === systemPin) {
+            if(prompt("Enter Current PIN:") === systemPin) {
                 const newPin = prompt("Enter NEW 4-digit PIN:");
                 if(newPin && newPin.length >= 4) {
                     await setDoc(pinRef, { pin: newPin });
-                    systemPin = newPin;
-                    alert("✅ PIN changed successfully! It will update on all devices.");
+                    systemPin = newPin; alert("✅ PIN Changed!");
+                } else alert("PIN must be at least 4 digits.");
+            } else alert("❌ Wrong PIN.");
+        };
+
+        // ================= BRAND / CATEGORY SYSTEM =================
+        const catRef = doc(db, "app_settings", "brands");
+        onSnapshot(catRef, (docSnap) => {
+            if (docSnap.exists() && docSnap.data().list) {
+                brandCategories = docSnap.data().list;
+            } else {
+                setDoc(catRef, { list: brandCategories });
+            }
+            renderCategories();
+        });
+
+        function renderCategories() {
+            const select = document.getElementById("categorySelect");
+            const currentVal = select.value;
+            select.innerHTML = '<option value="" disabled selected>Select Company...</option>';
+            
+            // Sort brands alphabetically
+            brandCategories.sort().forEach(brand => {
+                const opt = document.createElement("option");
+                opt.value = brand; opt.innerText = brand;
+                select.appendChild(opt);
+            });
+            if(currentVal && brandCategories.includes(currentVal)) select.value = currentVal;
+        }
+
+        window.addNewCategory = async function() {
+            const newBrand = prompt("Enter new Company/Brand name:");
+            if (newBrand && newBrand.trim() !== "") {
+                const cleanBrand = newBrand.trim().toUpperCase();
+                if(!brandCategories.includes(cleanBrand)) {
+                    brandCategories.push(cleanBrand);
+                    await setDoc(catRef, { list: brandCategories }); // Sync with Firebase
+                    document.getElementById("categorySelect").value = cleanBrand;
+                    alert(`✅ ${cleanBrand} added successfully!`);
                 } else {
-                    alert("PIN must be at least 4 digits.");
+                    alert("This brand already exists.");
                 }
-            } else if (oldPin != null) {
-                alert("❌ Current PIN is wrong.");
             }
         };
 
-        // SAVE & EDIT FUNCTION
+        // ================= SAVE & EDIT =================
         document.getElementById('saveBtn').addEventListener('click', async () => {
-            const product = document.getElementById('productName').value.trim().toUpperCase();
+            const category = document.getElementById('categorySelect').value;
+            const model = document.getElementById('modelNumber').value.trim().toUpperCase();
             const sr = document.getElementById('srNumber').value.trim().toUpperCase();
             const serial = document.getElementById('serialNumber').value.trim().toUpperCase();
             const editId = document.getElementById('editId').value;
 
-            if (!product || !sr || !serial) {
-                alert("⚠️ Please fill all details!"); return;
+            if (!category || !model || !sr || !serial) {
+                alert("⚠️ Please fill all fields (Brand, Model, SR, Serial)!"); return;
             }
 
-            // DUPLICATE SR CHECK (Local array se instant check)
             const isDuplicate = globalRecords.find(item => item.sr === sr && item.id !== editId);
             if (isDuplicate) {
-                alert(`❌ ERROR: SR Number '${sr}' pehle se save hai! Kripya check karein.`);
-                return;
+                alert(`❌ ERROR: SR Number '${sr}' already exists!`); return;
             }
 
             if (editId) {
-                // UPDATE OLD RECORD
-                await updateDoc(doc(db, "finance_records", editId), { product, sr, serial });
+                await updateDoc(doc(db, "finance_records", editId), { category, model, sr, serial });
                 document.getElementById('saveBtn').innerText = "Save Record";
                 document.getElementById('saveBtn').style.backgroundColor = "var(--ios-blue)";
                 document.getElementById('editId').value = '';
                 alert("✅ Record Updated!");
             } else {
-                // ADD NEW RECORD
-                const newData = { product, sr, serial, timestamp: Date.now() };
-                addDoc(collection(db, "finance_records"), newData);
+                addDoc(collection(db, "finance_records"), { category, model, sr, serial, timestamp: Date.now() });
             }
 
-            // Clear UI
-            document.getElementById('productName').value = '';
+            // Clear Form
+            document.getElementById('categorySelect').value = '';
+            document.getElementById('modelNumber').value = '';
             document.getElementById('srNumber').value = '';
             document.getElementById('serialNumber').value = '';
         });
 
-        // EDIT BUTTON LOGIC
-        window.editRecord = function(id, product, sr, serial) {
-            document.getElementById('productName').value = product;
+        window.editRecord = function(id, category, model, sr, serial, oldProduct) {
+            // Support for older records that didn't have category/model split
+            if(!category) {
+                document.getElementById('modelNumber').value = oldProduct || '';
+                document.getElementById('categorySelect').value = '';
+            } else {
+                document.getElementById('categorySelect').value = category;
+                document.getElementById('modelNumber').value = model;
+            }
+            
             document.getElementById('srNumber').value = sr;
             document.getElementById('serialNumber').value = serial;
             document.getElementById('editId').value = id;
@@ -266,67 +319,43 @@
             window.scrollTo(0, 0);
         };
 
-        // DELETE FUNCTION
         window.deleteRecord = function(id) {
-            if (confirm("Mark as Used/Sold? This will remove the record.")) {
-                deleteDoc(doc(db, "finance_records", id));
-            }
+            if (confirm("Mark as Used/Sold? This will remove the record.")) deleteDoc(doc(db, "finance_records", id));
         };
 
-        // EXPORT TO EXCEL (CSV)
-        window.exportExcel = function() {
-            if(globalRecords.length === 0) { alert("No data to export!"); return; }
-            
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Date Added,Product Name,SR Number,Serial Number\n"; // Header
-            
-            globalRecords.forEach(row => {
-                let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
-                csvContent += `"${dateStr}","${row.product}","${row.sr}","${row.serial}"\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        };
-
-        // REAL-TIME SYNC
+        // ================= REAL-TIME SYNC =================
         const q = query(collection(db, "finance_records"), orderBy("timestamp", "desc"));
         onSnapshot(q, (querySnapshot) => {
             const list = document.getElementById('recordsList');
             document.getElementById('totalCount').innerText = querySnapshot.size;
             list.innerHTML = '';
-            globalRecords = []; // Reset local array
+            globalRecords = []; 
             
             if (querySnapshot.empty) {
-                list.innerHTML = '<div class="loading-text">No fresh records found.</div>';
-                return;
+                list.innerHTML = '<div class="loading-text">No fresh records found.</div>'; return;
             }
 
             querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                data.id = docSnap.id;
-                globalRecords.push(data); // Save to local array for duplicate check & export
+                const data = docSnap.data(); data.id = docSnap.id;
+                globalRecords.push(data); 
 
-                // Format Date
+                // Format Name (Support old records where data.product existed)
+                let displayName = data.category ? `${data.category} - ${data.model}` : data.product;
+                
                 let timeString = new Date(data.timestamp).toLocaleString('en-IN', {
                     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
 
                 list.innerHTML += `
                     <div class="record-item record-card">
-                        <div class="product-title">${data.product}</div>
+                        <div class="product-title">${displayName}</div>
                         <div class="data-row">
-                            <span>SR: <span class="sr-highlight">${data.sr}</span></span>
-                            <span>S/N: ${data.serial}</span>
+                            <span>SR: <strong>${data.sr}</strong></span>
+                            <span>S/N: <strong>${data.serial}</strong></span>
                         </div>
                         <div class="timestamp">⏳ Added: ${timeString}</div>
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="editRecord('${data.id}', '${data.product}', '${data.sr}', '${data.serial}')">✏️ Edit</button>
+                            <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.sr}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
                             <button class="btn-destructive" onclick="deleteRecord('${data.id}')">🗑️ Use</button>
                         </div>
                     </div>
@@ -334,7 +363,27 @@
             });
         });
 
-        // SEARCH
+        // ================= EXPORT TO EXCEL =================
+        window.exportExcel = function() {
+            if(globalRecords.length === 0) return;
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Date,Brand,Model Name,SR Number,Serial Number\n"; 
+            
+            globalRecords.forEach(row => {
+                let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
+                let brand = row.category || "N/A";
+                let model = row.model || row.product || "N/A";
+                csvContent += `"${dateStr}","${brand}","${model}","${row.sr}","${row.serial}"\n`;
+            });
+
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        };
+
+        // ================= SEARCH =================
         window.filterRecords = function() {
             let input = document.getElementById('searchInput').value.toUpperCase();
             let cards = document.getElementsByClassName('record-card');
