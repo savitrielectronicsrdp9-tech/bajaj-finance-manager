@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savitri Electronics | Finance Pro</title>
     
-    <!-- AI Text Recognition Library -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    
-    <!-- Cropper.js Library -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
     <style>
         :root {
             --ios-bg: #F2F2F7; --ios-card: #FFFFFF; --ios-blue: #007AFF; --ios-red: #FF3B30;
@@ -46,9 +39,10 @@
         .input-wrapper { display: flex; flex: 1; align-items: center; }
         .input-wrapper input, .input-wrapper select { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); width: 100%; }
         
+        /* Star Rating Select Style */
+        .star-select { background: #e5e5ea !important; padding: 6px 4px !important; border-radius: 6px; font-size: 13px !important; font-weight: 600; color: var(--ios-blue) !important;}
+        
         .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
-        .btn-scan { background: #e5e5ea; color: var(--ios-blue); border: none; border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; margin-left: 8px; transition: 0.1s;}
-        .btn-scan:active { background: #d1d1d6; }
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 14px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
@@ -59,6 +53,7 @@
         .record-item { padding: 16px; border-bottom: 0.5px solid var(--ios-border); }
         .record-item:last-child { border-bottom: none; }
         .product-title { font-size: 17px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
+        .star-badge { color: var(--ios-orange); font-size: 14px; margin-left: 5px; }
         .data-row { display: flex; justify-content: space-between; font-size: 14px; margin-top: 4px; }
         .timestamp { font-size: 11px; color: var(--ios-text-muted); margin-top: 6px; }
         .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
@@ -67,52 +62,9 @@
 
         .badge { background: var(--ios-blue); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
         .loading-text { text-align: center; padding: 20px; color: var(--ios-text-muted); font-size: 15px; }
-
-        /* AI Loading Screen */
-        #ocrLoading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Cropper UI */
-        #cropperModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10001; flex-direction: column; }
-        .cropper-area { flex: 1; width: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .cropper-area img { max-width: 100%; max-height: 100%; }
-        .cropper-controls { padding: 15px 20px 30px; background: #1c1c1e; display: flex; flex-direction: column; gap: 15px; }
-        .cropper-tools { display: flex; justify-content: center; gap: 20px; }
-        .btn-tool { background: #2c2c2e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .cropper-actions { display: flex; gap: 10px; }
-        .btn-cancel { flex: 1; background: #3a3a3c; color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; }
-        .btn-done { flex: 2; background: var(--ios-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; }
     </style>
 </head>
 <body>
-
-    <!-- Camera File Input -->
-    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
-
-    <!-- Cropper UI Modal -->
-    <div id="cropperModal">
-        <div class="cropper-area">
-            <img id="imageToCrop" src="">
-        </div>
-        <div class="cropper-controls">
-            <div class="cropper-tools">
-                <button class="btn-tool" onclick="rotateImage(-90)">↺ Left</button>
-                <button class="btn-tool" onclick="rotateImage(90)">↻ Right</button>
-            </div>
-            <div class="cropper-actions">
-                <button class="btn-cancel" onclick="cancelCrop()">Cancel</button>
-                <button class="btn-done" onclick="readCroppedImage()">Crop & Read</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Loading Screen -->
-    <div id="ocrLoading">
-        <div class="spinner"></div>
-        <h3>Scanning Number...</h3>
-        <p style="font-size: 13px; color: #ccc;">Pro AI processing the image</p>
-    </div>
 
     <!-- Security Lock Screen -->
     <div id="lockScreen">
@@ -150,24 +102,25 @@
                 </div>
 
                 <div class="input-row">
-                    <label>Model</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="modelNumber" placeholder="e.g. 43 Inch Smart LED">
+                    <label>Model No.</label>
+                    <div class="input-wrapper" style="gap: 8px;">
+                        <input type="text" id="modelNumber" placeholder="Enter Model No." style="flex: 2;">
+                        <select id="starRating" class="star-select" style="flex: 1.1;">
+                            <option value="" disabled selected>Rating</option>
+                            <option value="1 Star">1 ⭐</option>
+                            <option value="2 Star">2 ⭐</option>
+                            <option value="3 Star">3 ⭐</option>
+                            <option value="4 Star">4 ⭐</option>
+                            <option value="5 Star">5 ⭐</option>
+                            <option value="">No Star</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="input-row">
-                    <label>SR No.</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="srNumber" placeholder="Enter SR number">
-                        <button class="btn-scan" onclick="startTextScanner('srNumber')" title="Take Photo">📷</button>
-                    </div>
-                </div>
-                <div class="input-row">
                     <label>Serial No.</label>
                     <div class="input-wrapper">
-                        <input type="text" id="serialNumber" placeholder="Enter product serial">
-                        <button class="btn-scan" onclick="startTextScanner('serialNumber')" title="Take Photo">📷</button>
+                        <input type="text" id="serialNumber" placeholder="Enter Unique Serial No.">
                     </div>
                 </div>
             </div>
@@ -182,7 +135,7 @@
             
             <div class="search-container">
                 <span>🔍 </span>
-                <input type="search" id="searchInput" placeholder="Search by Brand, Model or SR..." onkeyup="filterRecords()">
+                <input type="search" id="searchInput" placeholder="Search by Brand, Model or Serial..." onkeyup="filterRecords()">
             </div>
 
             <div class="card" id="recordsList">
@@ -212,94 +165,6 @@
         let globalRecords = [];
         let systemPin = "1234"; 
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
-
-        // ================= CROPPER & ADVANCED AI TEXT SCANNER =================
-        let activeInputId = "";
-        const cameraInput = document.getElementById('cameraInput');
-        let cropperInstance = null;
-
-        window.startTextScanner = function(inputId) {
-            activeInputId = inputId;
-            cameraInput.click();
-        };
-
-        cameraInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const image = document.getElementById('imageToCrop');
-                image.src = event.target.result;
-                
-                document.getElementById('cropperModal').style.display = 'flex';
-                
-                if (cropperInstance) cropperInstance.destroy();
-                
-                cropperInstance = new Cropper(image, {
-                    viewMode: 1,
-                    dragMode: 'move',
-                    autoCropArea: 0.8,
-                    restore: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
-                });
-            };
-            reader.readAsDataURL(file);
-        });
-
-        window.rotateImage = function(degree) {
-            if (cropperInstance) cropperInstance.rotate(degree);
-        };
-
-        window.cancelCrop = function() {
-            document.getElementById('cropperModal').style.display = 'none';
-            if (cropperInstance) cropperInstance.destroy();
-            cameraInput.value = "";
-        };
-
-        window.readCroppedImage = function() {
-            if (!cropperInstance) return;
-            
-            // 1. Image ki quality badha kar canvas banayein (Best for AI)
-            const canvas = cropperInstance.getCroppedCanvas({
-                width: 800, 
-                fillColor: '#fff' // Background white rakhein
-            });
-            const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
-
-            document.getElementById('cropperModal').style.display = 'none';
-            document.getElementById('ocrLoading').style.display = 'flex';
-
-            // 2. Strict AI Configuration
-            Tesseract.recognize(dataUrl, 'eng', {
-                tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-/', // Sirf yeh characters allow hain
-                tessedit_pageseg_mode: '7', // Mode 7: Assume image is a single text line (Super accurate)
-            })
-            .then(({ data: { text } }) => {
-                document.getElementById('ocrLoading').style.display = 'none';
-                
-                // 3. Faltu spaces aur nishaan hatayein
-                let cleanText = text.replace(/\s+/g, '').replace(/[^A-Z0-9-]/g, '').trim();
-                
-                if(cleanText.length > 2) { // Ensure at least 3 characters are read
-                    document.getElementById(activeInputId).value = cleanText;
-                } else {
-                    alert("⚠️ Number clear padhne me nahi aaya. Kripya crop box ko text ke ekdum paas (tight) rakhein aur dobara try karein.");
-                }
-                cameraInput.value = ""; 
-                cropperInstance.destroy();
-            }).catch(err => {
-                document.getElementById('ocrLoading').style.display = 'none';
-                alert("❌ Error reading text. Kripya dobara try karein.");
-                cameraInput.value = "";
-                cropperInstance.destroy();
-            });
-        };
 
         // ================= SECURITY PIN =================
         const pinRef = doc(db, "app_settings", "security");
@@ -361,32 +226,45 @@
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const category = document.getElementById('categorySelect').value;
             const model = document.getElementById('modelNumber').value.trim().toUpperCase();
-            const sr = document.getElementById('srNumber').value.trim().toUpperCase();
+            const star = document.getElementById('starRating').value;
             const serial = document.getElementById('serialNumber').value.trim().toUpperCase();
             const editId = document.getElementById('editId').value;
 
-            if (!category || !model || !sr || !serial) { alert("⚠️ Please fill all fields!"); return; }
+            if (!category || !model || !serial) { alert("⚠️ Please fill Brand, Model and Serial No!"); return; }
 
-            const isDuplicate = globalRecords.find(item => item.sr === sr && item.id !== editId);
-            if (isDuplicate) { alert(`❌ ERROR: SR Number '${sr}' already exists!`); return; }
+            // DUPLICATE CHECK: Ab sirf Serial Number check hoga
+            const isDuplicate = globalRecords.find(item => item.serial === serial && item.id !== editId);
+            if (isDuplicate) { 
+                alert(`❌ ERROR: Serial Number '${serial}' pehle se save hai! Ek Serial No. do baar save nahi ho sakta.`); 
+                return; 
+            }
 
             if (editId) {
-                await updateDoc(doc(db, "finance_records", editId), { category, model, sr, serial });
+                await updateDoc(doc(db, "finance_records", editId), { category, model, star, serial });
                 document.getElementById('saveBtn').innerText = "Save Record";
                 document.getElementById('saveBtn').style.backgroundColor = "var(--ios-blue)";
                 document.getElementById('editId').value = '';
-            } else { addDoc(collection(db, "finance_records"), { category, model, sr, serial, timestamp: Date.now() }); }
+            } else { 
+                addDoc(collection(db, "finance_records"), { category, model, star, serial, timestamp: Date.now() }); 
+            }
 
-            document.getElementById('categorySelect').value = ''; document.getElementById('modelNumber').value = '';
-            document.getElementById('srNumber').value = ''; document.getElementById('serialNumber').value = '';
+            document.getElementById('categorySelect').value = ''; 
+            document.getElementById('modelNumber').value = '';
+            document.getElementById('starRating').value = ''; 
+            document.getElementById('serialNumber').value = '';
         });
 
-        window.editRecord = function(id, category, model, sr, serial, oldProduct) {
-            if(!category) { document.getElementById('modelNumber').value = oldProduct || ''; document.getElementById('categorySelect').value = ''; } 
-            else { document.getElementById('categorySelect').value = category; document.getElementById('modelNumber').value = model; }
-            document.getElementById('srNumber').value = sr; document.getElementById('serialNumber').value = serial;
+        window.editRecord = function(id, category, model, star, serial, oldProduct) {
+            document.getElementById('categorySelect').value = category || ''; 
+            document.getElementById('modelNumber').value = model || oldProduct || ''; 
+            document.getElementById('starRating').value = star || '';
+            document.getElementById('serialNumber').value = serial || '';
             document.getElementById('editId').value = id;
-            const btn = document.getElementById('saveBtn'); btn.innerText = "Update Record"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
+
+            const btn = document.getElementById('saveBtn'); 
+            btn.innerText = "Update Record"; 
+            btn.style.backgroundColor = "var(--ios-orange)"; 
+            window.scrollTo(0, 0);
         };
 
         window.deleteRecord = function(id) { if (confirm("Mark as Used/Sold?")) deleteDoc(doc(db, "finance_records", id)); };
@@ -397,20 +275,29 @@
             const list = document.getElementById('recordsList');
             document.getElementById('totalCount').innerText = querySnapshot.size;
             list.innerHTML = ''; globalRecords = []; 
-            if (querySnapshot.empty) { list.innerHTML = '<div class="loading-text">No fresh records found.</div>'; return; }
+            if (querySnapshot.empty) { list.innerHTML = '<div class="loading-text">No records found.</div>'; return; }
 
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data); 
-                let displayName = data.category ? `${data.category} - ${data.model}` : data.product;
+                
+                // Display Formatting
+                let displayName = data.category ? `${data.category} - ${data.model}` : (data.model || data.product);
+                let starDisplay = data.star ? `<span class="star-badge">(${data.star})</span>` : '';
+                
+                // Purane records jinme SR save tha usko support karne ke liye
+                let extraData = data.sr ? `<span style="font-size:12px; color:gray;">(Old SR: ${data.sr})</span>` : '';
+                
                 let timeString = new Date(data.timestamp).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 list.innerHTML += `
                     <div class="record-item record-card">
-                        <div class="product-title">${displayName}</div>
-                        <div class="data-row"><span>SR: <strong>${data.sr}</strong></span><span>S/N: <strong>${data.serial}</strong></span></div>
+                        <div class="product-title">${displayName} ${starDisplay}</div>
+                        <div class="data-row">
+                            <span>S/N: <strong>${data.serial}</strong> ${extraData}</span>
+                        </div>
                         <div class="timestamp">⏳ Added: ${timeString}</div>
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.sr}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
+                            <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.star || ''}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
                             <button class="btn-destructive" onclick="deleteRecord('${data.id}')">🗑️ Use</button>
                         </div>
                     </div>`;
@@ -419,10 +306,10 @@
 
         window.exportExcel = function() {
             if(globalRecords.length === 0) return;
-            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,SR Number,Serial Number\n"; 
+            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,Star Rating,Serial Number\n"; 
             globalRecords.forEach(row => {
                 let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
-                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || row.product || "N/A"}","${row.sr}","${row.serial}"\n`;
+                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || row.product || "N/A"}","${row.star || "N/A"}","${row.serial || row.sr || "N/A"}"\n`;
             });
             const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
             link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
