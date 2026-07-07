@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | Pro Admin</title>
+    <title>Savitri Electronics | Finance Pro</title>
     
     <style>
         :root {
@@ -14,20 +14,19 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
-        /* Secure Login Screen */
-        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 85%; max-width: 320px; }
-        .login-box h2 { margin-top: 0; color: var(--ios-blue); font-size: 22px; }
-        .login-box p { font-size: 13px; color: var(--ios-text-muted); margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--ios-border); border-radius: 10px; font-size: 16px; box-sizing: border-box; background: var(--ios-input-bg); outline: none; }
-        
+        /* PIN Lock Screen */
+        #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .lock-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 80%; max-width: 300px; }
+        .lock-box h2 { margin-top: 0; color: var(--ios-blue); }
+        .lock-box input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid var(--ios-border); border-radius: 10px; font-size: 18px; text-align: center; box-sizing: border-box; }
+
         #mainApp { display: none; }
 
         /* Navbar */
         .navbar { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .navbar-title h2 { margin: 0; font-size: 17px; font-weight: 600; }
         .navbar-title p { margin: 2px 0 0; font-size: 12px; color: var(--ios-text-muted); }
-        .btn-icon { background: none; border: none; color: var(--ios-red); font-size: 20px; cursor: pointer; }
+        .btn-icon { background: none; border: none; color: var(--ios-blue); font-size: 20px; cursor: pointer; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; margin-left: 16px; margin-right: 5px; }
@@ -66,14 +65,13 @@
 </head>
 <body>
 
-    <!-- Secure Login Screen -->
-    <div id="loginScreen">
-        <div class="login-box">
-            <h2>Savitri Electronics</h2>
-            <p>Admin Secure Portal</p>
-            <input type="email" id="emailInput" placeholder="Admin Email" autocomplete="email">
-            <input type="password" id="passInput" placeholder="Password" autocomplete="current-password">
-            <button class="btn-primary" onclick="loginUser()" id="loginBtn">Secure Login</button>
+    <!-- PIN Lock Screen -->
+    <div id="lockScreen">
+        <div class="lock-box">
+            <h2>🔒 Security Lock</h2>
+            <p style="font-size: 14px; color: gray;">Enter PIN to access database</p>
+            <input type="password" id="pinInput" placeholder="Enter PIN (Default: 1234)">
+            <button class="btn-primary" onclick="verifyPin()">Unlock</button>
         </div>
     </div>
 
@@ -84,8 +82,8 @@
                 <h2>Savitri Electronics</h2>
                 <p>Pro Finance Manager</p>
             </div>
-            <!-- Logout Button -->
-            <button class="btn-icon" onclick="logoutUser()" title="Secure Logout">🚪</button>
+            <!-- Gear Icon for PIN Change -->
+            <button class="btn-icon" onclick="changePin()" title="Change PIN">⚙️</button>
         </div>
 
         <div class="container">
@@ -141,7 +139,7 @@
             </div>
 
             <div class="card" id="recordsList">
-                <div class="loading-text">Loading secure data...</div>
+                <div class="loading-text">Connecting to secure database...</div>
             </div>
         </div>
     </div>
@@ -149,11 +147,8 @@
     <!-- App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc } 
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        // Authentication Import
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-        from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD3hc6Rz1gHZq8c71AHp5NSw8eSZT2-Mik",
@@ -166,98 +161,45 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); 
 
         let globalRecords = [];
+        let systemPin = "1234"; 
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
-        let unsubscribeSync = null; 
-        let unsubscribeBrands = null;
 
-        // ================= SECURE AUTHENTICATION SYSTEM =================
-        
-        // Listen for Login/Logout state changes
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                startDatabaseSync(); 
-            } else {
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                if (unsubscribeSync) unsubscribeSync(); 
-                if (unsubscribeBrands) unsubscribeBrands();
-            }
-        });
-
-        // Updated Error Checking Login Function
-        window.loginUser = function() {
-            const email = document.getElementById('emailInput').value.trim();
-            const pass = document.getElementById('passInput').value;
-            const btn = document.getElementById('loginBtn');
-            
-            if (!email || !pass) { alert("Email aur Password dono daalein."); return; }
-            
-            btn.innerText = "Verifying...";
-            signInWithEmailAndPassword(auth, email, pass)
-            .then(() => { btn.innerText = "Secure Login"; })
-            .catch((error) => {
-                alert("❌ Login Failed! Reason: " + error.message);
-                btn.innerText = "Secure Login";
-            });
-        };
-
-        window.logoutUser = function() {
-            if(confirm("Secure Logout karna chahte hain?")) {
-                signOut(auth).then(() => {
-                    document.getElementById('emailInput').value = '';
-                    document.getElementById('passInput').value = '';
-                });
-            }
-        };
-
-        // ================= DATABASE SYNC =================
-        function startDatabaseSync() {
-            const catRef = doc(db, "app_settings", "brands");
-            unsubscribeBrands = onSnapshot(catRef, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().list) brandCategories = docSnap.data().list;
-                else setDoc(catRef, { list: brandCategories });
-                renderCategories();
-            });
-
-            const q = query(collection(db, "finance_records"), orderBy("timestamp", "desc"));
-            unsubscribeSync = onSnapshot(q, (querySnapshot) => {
-                const list = document.getElementById('recordsList');
-                document.getElementById('totalCount').innerText = querySnapshot.size;
-                list.innerHTML = ''; globalRecords = []; 
-                if (querySnapshot.empty) { list.innerHTML = '<div class="loading-text">No records found.</div>'; return; }
-
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data); 
-                    
-                    let displayName = data.category ? `${data.category} - ${data.model}` : (data.model || data.product);
-                    let starDisplay = data.star ? `<span class="star-badge">(${data.star})</span>` : '';
-                    let extraData = data.sr ? `<span style="font-size:12px; color:gray;">(Old SR: ${data.sr})</span>` : '';
-                    let timeString = new Date(data.timestamp).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-                    list.innerHTML += `
-                        <div class="record-item record-card">
-                            <div class="product-title">${displayName} ${starDisplay}</div>
-                            <div class="data-row">
-                                <span>S/N: <strong>${data.serial}</strong> ${extraData}</span>
-                            </div>
-                            <div class="timestamp">⏳ Added: ${timeString}</div>
-                            <div class="action-buttons">
-                                <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.star || ''}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
-                                <button class="btn-destructive" onclick="deleteRecord('${data.id}')">🗑️ Use</button>
-                            </div>
-                        </div>`;
-                });
-            }, (error) => {
-                alert("Permission Error: Kripya Firebase rules check karein.");
-            });
+        // ================= SECURITY PIN =================
+        const pinRef = doc(db, "app_settings", "security");
+        async function fetchPin() {
+            const docSnap = await getDoc(pinRef);
+            if (docSnap.exists()) systemPin = docSnap.data().pin;
+            else await setDoc(pinRef, { pin: "1234" });
         }
+        fetchPin();
+
+        window.verifyPin = function() {
+            if(document.getElementById('pinInput').value === systemPin) {
+                document.getElementById('lockScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+            } else { alert("❌ Incorrect PIN. Please try again."); document.getElementById('pinInput').value = ''; }
+        };
+
+        window.changePin = async function() {
+            if(prompt("Enter Current PIN:") === systemPin) {
+                const newPin = prompt("Enter NEW 4-digit PIN:");
+                if(newPin && newPin.length >= 4) {
+                    await setDoc(pinRef, { pin: newPin });
+                    systemPin = newPin; alert("✅ PIN Changed! It will update on all devices.");
+                } else alert("PIN must be at least 4 digits.");
+            } else alert("❌ Wrong Current PIN.");
+        };
 
         // ================= BRAND SYSTEM =================
+        const catRef = doc(db, "app_settings", "brands");
+        onSnapshot(catRef, (docSnap) => {
+            if (docSnap.exists() && docSnap.data().list) brandCategories = docSnap.data().list;
+            else setDoc(catRef, { list: brandCategories });
+            renderCategories();
+        });
+
         function renderCategories() {
             const select = document.getElementById("categorySelect");
             const currentVal = select.value;
@@ -274,7 +216,7 @@
                 const cleanBrand = newBrand.trim().toUpperCase();
                 if(!brandCategories.includes(cleanBrand)) {
                     brandCategories.push(cleanBrand);
-                    await setDoc(doc(db, "app_settings", "brands"), { list: brandCategories });
+                    await setDoc(catRef, { list: brandCategories });
                     document.getElementById("categorySelect").value = cleanBrand;
                 } else alert("This brand already exists.");
             }
@@ -290,6 +232,7 @@
 
             if (!category || !model || !serial) { alert("⚠️ Please fill Brand, Model and Serial No!"); return; }
 
+            // DUPLICATE CHECK on Serial No
             const isDuplicate = globalRecords.find(item => item.serial === serial && item.id !== editId);
             if (isDuplicate) { 
                 alert(`❌ ERROR: Serial Number '${serial}' pehle se save hai! Ek Serial No. do baar save nahi ho sakta.`); 
@@ -317,13 +260,46 @@
             document.getElementById('starRating').value = star || '';
             document.getElementById('serialNumber').value = serial || '';
             document.getElementById('editId').value = id;
+            
             const btn = document.getElementById('saveBtn'); 
             btn.innerText = "Update Record"; 
             btn.style.backgroundColor = "var(--ios-orange)"; 
             window.scrollTo(0, 0);
         };
 
-        window.deleteRecord = function(id) { if (confirm("Mark as Used/Sold?")) deleteDoc(doc(db, "finance_records", id)); };
+        window.deleteRecord = function(id) { if (confirm("Mark as Used/Sold? This will remove the record.")) deleteDoc(doc(db, "finance_records", id)); };
+
+        // ================= REAL-TIME SYNC =================
+        const q = query(collection(db, "finance_records"), orderBy("timestamp", "desc"));
+        onSnapshot(q, (querySnapshot) => {
+            const list = document.getElementById('recordsList');
+            document.getElementById('totalCount').innerText = querySnapshot.size;
+            list.innerHTML = ''; globalRecords = []; 
+            if (querySnapshot.empty) { list.innerHTML = '<div class="loading-text">No records found.</div>'; return; }
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data); 
+                
+                let displayName = data.category ? `${data.category} - ${data.model}` : (data.model || data.product);
+                let starDisplay = data.star ? `<span class="star-badge">(${data.star})</span>` : '';
+                let extraData = data.sr ? `<span style="font-size:12px; color:gray;">(Old SR: ${data.sr})</span>` : '';
+                
+                let timeString = new Date(data.timestamp).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                list.innerHTML += `
+                    <div class="record-item record-card">
+                        <div class="product-title">${displayName} ${starDisplay}</div>
+                        <div class="data-row">
+                            <span>S/N: <strong>${data.serial}</strong> ${extraData}</span>
+                        </div>
+                        <div class="timestamp">⏳ Added: ${timeString}</div>
+                        <div class="action-buttons">
+                            <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.star || ''}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
+                            <button class="btn-destructive" onclick="deleteRecord('${data.id}')">🗑️ Use</button>
+                        </div>
+                    </div>`;
+            });
+        });
 
         // ================= EXPORT TO EXCEL =================
         window.exportExcel = function() {
