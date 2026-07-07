@@ -27,7 +27,7 @@
         .navbar { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .navbar-title h2 { margin: 0; font-size: 17px; font-weight: 600; }
         .navbar-title p { margin: 2px 0 0; font-size: 12px; color: var(--ios-text-muted); }
-        .btn-icon { background: none; border: none; color: var(--ios-red); font-size: 20px; cursor: pointer; } /* Logout icon */
+        .btn-icon { background: none; border: none; color: var(--ios-red); font-size: 20px; cursor: pointer; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
         .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; margin-left: 16px; margin-right: 5px; }
@@ -166,11 +166,11 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // Auth initialize kiya
+        const auth = getAuth(app); 
 
         let globalRecords = [];
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
-        let unsubscribeSync = null; // Sync rokne ke liye
+        let unsubscribeSync = null; 
         let unsubscribeBrands = null;
 
         // ================= SECURE AUTHENTICATION SYSTEM =================
@@ -178,20 +178,18 @@
         // Listen for Login/Logout state changes
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User logged in
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
-                startDatabaseSync(); // Data aana shuru
+                startDatabaseSync(); 
             } else {
-                // User logged out
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
-                if (unsubscribeSync) unsubscribeSync(); // Data aana band
+                if (unsubscribeSync) unsubscribeSync(); 
                 if (unsubscribeBrands) unsubscribeBrands();
             }
         });
 
-        // Login Function
+        // Updated Error Checking Login Function
         window.loginUser = function() {
             const email = document.getElementById('emailInput').value.trim();
             const pass = document.getElementById('passInput').value;
@@ -203,12 +201,11 @@
             signInWithEmailAndPassword(auth, email, pass)
             .then(() => { btn.innerText = "Secure Login"; })
             .catch((error) => {
-                alert("❌ Login Failed! Kripya sahi email aur password daalein.");
+                alert("❌ Login Failed! Reason: " + error.message);
                 btn.innerText = "Secure Login";
             });
         };
 
-        // Logout Function
         window.logoutUser = function() {
             if(confirm("Secure Logout karna chahte hain?")) {
                 signOut(auth).then(() => {
@@ -218,7 +215,7 @@
             }
         };
 
-        // ================= DATABASE SYNC (Runs only when logged in) =================
+        // ================= DATABASE SYNC =================
         function startDatabaseSync() {
             const catRef = doc(db, "app_settings", "brands");
             unsubscribeBrands = onSnapshot(catRef, (docSnap) => {
