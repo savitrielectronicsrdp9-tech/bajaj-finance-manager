@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Savitri Electronics | Finance Pro</title>
     
+    <!-- Barcode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
     <style>
         /* iOS Theme Variables */
         :root {
@@ -68,16 +71,16 @@
 
         .input-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--ios-border); }
         .input-row:last-child { border-bottom: none; }
-        .input-row label { width: 95px; font-size: 15px; font-weight: 500; }
-        .input-row input, .input-row select { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); }
+        .input-row label { width: 90px; font-size: 15px; font-weight: 500; }
         
-        /* Select & Add Button Wrapper */
-        .select-wrapper { display: flex; flex: 1; align-items: center; }
+        .input-wrapper { display: flex; flex: 1; align-items: center; }
+        .input-wrapper input, .input-wrapper select { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); width: 100%; }
+        
         .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
+        .btn-scan { background: #e5e5ea; color: var(--ios-blue); border: none; border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; margin-left: 8px; }
 
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 14px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
-
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
         .search-container { background: var(--ios-input-bg); border-radius: 10px; padding: 8px 12px; margin-bottom: 15px; display: flex; align-items: center; }
@@ -96,9 +99,24 @@
 
         .badge { background: var(--ios-blue); color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
         .loading-text { text-align: center; padding: 20px; color: var(--ios-text-muted); font-size: 15px; }
+
+        /* Scanner Modal UI */
+        #scannerModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 10000; flex-direction: column; align-items: center; justify-content: center;
+        }
+        #reader { width: 100%; max-width: 400px; background: white; border-radius: 10px; overflow: hidden; }
+        .btn-close-scanner { background: var(--ios-red); color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 10px; margin-top: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <!-- Scanner Modal -->
+    <div id="scannerModal">
+        <div style="color: white; margin-bottom: 10px; font-weight: bold;">Scan Barcode / QR Code</div>
+        <div id="reader"></div>
+        <button class="btn-close-scanner" onclick="closeScanner()">Close Camera</button>
+    </div>
 
     <!-- Security Lock Screen -->
     <div id="lockScreen">
@@ -126,31 +144,36 @@
             <div class="card" style="margin-top: 8px;">
                 <input type="hidden" id="editId" value="">
                 
-                <!-- Naya Category System -->
                 <div class="input-row">
                     <label>Brand</label>
-                    <div class="select-wrapper">
+                    <div class="input-wrapper">
                         <select id="categorySelect">
                             <option value="" disabled selected>Select Company...</option>
-                            <!-- List JS se aayegi -->
                         </select>
                         <button class="btn-add-cat" onclick="addNewCategory()" title="Add New Company">+</button>
                     </div>
                 </div>
 
-                <!-- Naya Model No System -->
                 <div class="input-row">
-                    <label>Model No.</label>
-                    <input type="text" id="modelNumber" placeholder="e.g. 43 Inch Smart LED">
+                    <label>Model</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="modelNumber" placeholder="e.g. 43 Inch Smart LED">
+                    </div>
                 </div>
 
                 <div class="input-row">
                     <label>SR No.</label>
-                    <input type="text" id="srNumber" placeholder="Enter SR number">
+                    <div class="input-wrapper">
+                        <input type="text" id="srNumber" placeholder="Enter SR number">
+                        <button class="btn-scan" onclick="startScanner('srNumber')" title="Scan SR Number">📷</button>
+                    </div>
                 </div>
                 <div class="input-row">
                     <label>Serial No.</label>
-                    <input type="text" id="serialNumber" placeholder="Enter product serial">
+                    <div class="input-wrapper">
+                        <input type="text" id="serialNumber" placeholder="Enter product serial">
+                        <button class="btn-scan" onclick="startScanner('serialNumber')" title="Scan Serial Number">📷</button>
+                    </div>
                 </div>
             </div>
             <button class="btn-primary" id="saveBtn">Save Record</button>
@@ -174,6 +197,7 @@
         </div>
     </div>
 
+    <!-- Firebase Code -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc } 
@@ -193,9 +217,44 @@
 
         let globalRecords = [];
         let systemPin = "1234"; 
-        
-        // DEFAULT BRANDS LIST
         let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "GODREJ", "BAJAJ", "SAMSUNG", "SONY", "HAVELLS"];
+
+        // ================= SCANNER LOGIC =================
+        let html5QrcodeScanner = null;
+        let activeInputId = "";
+
+        window.startScanner = function(inputId) {
+            activeInputId = inputId;
+            document.getElementById('scannerModal').style.display = 'flex';
+            
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 100 } }; // Rectangle box suitable for 1D Barcodes
+
+            html5QrcodeScanner.start({ facingMode: "environment" }, config, 
+                (decodedText, decodedResult) => {
+                    // Success callback
+                    document.getElementById(activeInputId).value = decodedText;
+                    closeScanner(); // Auto close on scan
+                },
+                (errorMessage) => {
+                    // Ignore background scan errors
+                }
+            ).catch((err) => {
+                alert("Error: Please grant Camera permission to use the scanner.");
+                closeScanner();
+            });
+        };
+
+        window.closeScanner = function() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    document.getElementById('scannerModal').style.display = 'none';
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('scannerModal').style.display = 'none';
+            }
+        };
 
         // ================= SECURITY PIN =================
         const pinRef = doc(db, "app_settings", "security");
@@ -225,14 +284,11 @@
             } else alert("❌ Wrong PIN.");
         };
 
-        // ================= BRAND / CATEGORY SYSTEM =================
+        // ================= BRAND SYSTEM =================
         const catRef = doc(db, "app_settings", "brands");
         onSnapshot(catRef, (docSnap) => {
-            if (docSnap.exists() && docSnap.data().list) {
-                brandCategories = docSnap.data().list;
-            } else {
-                setDoc(catRef, { list: brandCategories });
-            }
+            if (docSnap.exists() && docSnap.data().list) brandCategories = docSnap.data().list;
+            else setDoc(catRef, { list: brandCategories });
             renderCategories();
         });
 
@@ -240,8 +296,6 @@
             const select = document.getElementById("categorySelect");
             const currentVal = select.value;
             select.innerHTML = '<option value="" disabled selected>Select Company...</option>';
-            
-            // Sort brands alphabetically
             brandCategories.sort().forEach(brand => {
                 const opt = document.createElement("option");
                 opt.value = brand; opt.innerText = brand;
@@ -256,12 +310,9 @@
                 const cleanBrand = newBrand.trim().toUpperCase();
                 if(!brandCategories.includes(cleanBrand)) {
                     brandCategories.push(cleanBrand);
-                    await setDoc(catRef, { list: brandCategories }); // Sync with Firebase
+                    await setDoc(catRef, { list: brandCategories });
                     document.getElementById("categorySelect").value = cleanBrand;
-                    alert(`✅ ${cleanBrand} added successfully!`);
-                } else {
-                    alert("This brand already exists.");
-                }
+                } else alert("This brand already exists.");
             }
         };
 
@@ -278,16 +329,13 @@
             }
 
             const isDuplicate = globalRecords.find(item => item.sr === sr && item.id !== editId);
-            if (isDuplicate) {
-                alert(`❌ ERROR: SR Number '${sr}' already exists!`); return;
-            }
+            if (isDuplicate) { alert(`❌ ERROR: SR Number '${sr}' already exists!`); return; }
 
             if (editId) {
                 await updateDoc(doc(db, "finance_records", editId), { category, model, sr, serial });
                 document.getElementById('saveBtn').innerText = "Save Record";
                 document.getElementById('saveBtn').style.backgroundColor = "var(--ios-blue)";
                 document.getElementById('editId').value = '';
-                alert("✅ Record Updated!");
             } else {
                 addDoc(collection(db, "finance_records"), { category, model, sr, serial, timestamp: Date.now() });
             }
@@ -300,23 +348,12 @@
         });
 
         window.editRecord = function(id, category, model, sr, serial, oldProduct) {
-            // Support for older records that didn't have category/model split
-            if(!category) {
-                document.getElementById('modelNumber').value = oldProduct || '';
-                document.getElementById('categorySelect').value = '';
-            } else {
-                document.getElementById('categorySelect').value = category;
-                document.getElementById('modelNumber').value = model;
-            }
-            
+            if(!category) { document.getElementById('modelNumber').value = oldProduct || ''; document.getElementById('categorySelect').value = ''; } 
+            else { document.getElementById('categorySelect').value = category; document.getElementById('modelNumber').value = model; }
             document.getElementById('srNumber').value = sr;
             document.getElementById('serialNumber').value = serial;
             document.getElementById('editId').value = id;
-            
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "Update Record";
-            btn.style.backgroundColor = "var(--ios-orange)";
-            window.scrollTo(0, 0);
+            const btn = document.getElementById('saveBtn'); btn.innerText = "Update Record"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
         };
 
         window.deleteRecord = function(id) {
@@ -328,57 +365,36 @@
         onSnapshot(q, (querySnapshot) => {
             const list = document.getElementById('recordsList');
             document.getElementById('totalCount').innerText = querySnapshot.size;
-            list.innerHTML = '';
-            globalRecords = []; 
-            
-            if (querySnapshot.empty) {
-                list.innerHTML = '<div class="loading-text">No fresh records found.</div>'; return;
-            }
+            list.innerHTML = ''; globalRecords = []; 
+            if (querySnapshot.empty) { list.innerHTML = '<div class="loading-text">No fresh records found.</div>'; return; }
 
             querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data(); data.id = docSnap.id;
-                globalRecords.push(data); 
-
-                // Format Name (Support old records where data.product existed)
+                const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data); 
                 let displayName = data.category ? `${data.category} - ${data.model}` : data.product;
-                
-                let timeString = new Date(data.timestamp).toLocaleString('en-IN', {
-                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
+                let timeString = new Date(data.timestamp).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 list.innerHTML += `
                     <div class="record-item record-card">
                         <div class="product-title">${displayName}</div>
-                        <div class="data-row">
-                            <span>SR: <strong>${data.sr}</strong></span>
-                            <span>S/N: <strong>${data.serial}</strong></span>
-                        </div>
+                        <div class="data-row"><span>SR: <strong>${data.sr}</strong></span><span>S/N: <strong>${data.serial}</strong></span></div>
                         <div class="timestamp">⏳ Added: ${timeString}</div>
                         <div class="action-buttons">
                             <button class="btn-edit" onclick="editRecord('${data.id}', '${data.category || ''}', '${data.model || ''}', '${data.sr}', '${data.serial}', '${data.product || ''}')">✏️ Edit</button>
                             <button class="btn-destructive" onclick="deleteRecord('${data.id}')">🗑️ Use</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         });
 
         // ================= EXPORT TO EXCEL =================
         window.exportExcel = function() {
             if(globalRecords.length === 0) return;
-            
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Date,Brand,Model Name,SR Number,Serial Number\n"; 
-            
+            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,SR Number,Serial Number\n"; 
             globalRecords.forEach(row => {
                 let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
-                let brand = row.category || "N/A";
-                let model = row.model || row.product || "N/A";
-                csvContent += `"${dateStr}","${brand}","${model}","${row.sr}","${row.serial}"\n`;
+                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || row.product || "N/A"}","${row.sr}","${row.serial}"\n`;
             });
-
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
             link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         };
@@ -387,9 +403,7 @@
         window.filterRecords = function() {
             let input = document.getElementById('searchInput').value.toUpperCase();
             let cards = document.getElementsByClassName('record-card');
-            for (let i = 0; i < cards.length; i++) {
-                cards[i].style.display = cards[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
-            }
+            for (let i = 0; i < cards.length; i++) cards[i].style.display = cards[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
         }
     </script>
 </body>
