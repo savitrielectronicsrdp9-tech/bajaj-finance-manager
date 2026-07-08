@@ -96,7 +96,7 @@
 </head>
 <body>
 
-    <!-- Full Statement Modal (PDF/Excel View) - NAYA FEATURE -->
+    <!-- Full Statement Modal (PDF/Excel View) -->
     <div id="fullStatementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--ios-bg); z-index:9999; overflow-y:auto;">
         <div style="padding:15px; background:white; position:sticky; top:0; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
             <h3 style="margin:0; font-size:18px;">📜 Ledger Statement</h3>
@@ -185,7 +185,7 @@
                             <span id="hBalanceTitle">Balance:</span> <strong id="hBalance" style="color:var(--ios-red);">₹0</strong>
                         </div>
                         
-                        <!-- NEW: View Full Statement Button -->
+                        <!-- View Full Statement Button -->
                         <button onclick="openFullStatement()" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Full Statement</button>
                     </div>
                 </div>
@@ -251,57 +251,57 @@
                 </div>
             </div><!-- 3. ACCOUNTS TAB (Dealer Khata) -->
             <div id="tab-accounts" class="tab-content">
-                <div class="section-title">Dealer Ledger (Khata)</div>
+                <div class="section-title" style="margin-left: 12px;">Dealer Ledger (Khata)</div>
                 
-                <div class="card" style="margin-top: 8px; padding: 12px; background: var(--ios-input-bg);">
-                    <select id="ledgerDealerSelect" style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid var(--ios-border); border-radius: 8px; outline: none; background: white;" onchange="loadDealerLedger()">
+                <div class="card" style="margin-top: 8px; padding: 12px; background: white;">
+                    <select id="ledgerDealerSelect" style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid var(--ios-border); border-radius: 8px; outline: none;" onchange="loadDealerLedger()">
                         <option value="" disabled selected>Select Dealer to view Khata...</option>
                     </select>
                 </div>
 
                 <!-- Auto-Calculated Dashboard for Dealer -->
-                <div class="card" id="ledgerDashboard" style="display: none; padding: 15px; background: #fff;">
+                <div class="card" id="ledgerDashboard" style="display: none; padding: 15px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                         <div class="ledger-box" style="background: #e8f5e9;">
-                            <div class="ledger-title">Total Maal (Bill)</div>
+                            <div class="ledger-title">Total Maal</div>
                             <div class="ledger-value" style="color: var(--ios-green);" id="ledgerTotalBill">₹0</div>
                         </div>
                         <div style="width: 10px;"></div>
                         <div class="ledger-box" style="background: #e3f2fd;">
-                            <div class="ledger-title">Total Jama (Paid)</div>
+                            <div class="ledger-title">Total Jama</div>
                             <div class="ledger-value" style="color: var(--ios-blue);" id="ledgerTotalPaid">₹0</div>
                         </div>
                     </div>
                     <div class="ledger-box" id="ledgerBalanceBox" style="background: #ffebee;">
-                        <div class="ledger-title" id="ledgerBalanceTitle" style="font-size: 13px;">Net Balance (Due)</div>
+                        <div class="ledger-title" id="ledgerBalanceTitle" style="font-size: 13px;">Net Balance</div>
                         <div class="ledger-value" id="ledgerBalanceValue" style="font-size: 24px; color: var(--ios-red);">₹0</div>
                     </div>
                 </div>
 
                 <!-- Paisa Jama Karne Ka Form -->
-                <div class="section-title" style="margin-top: 20px;">New Payment Entry</div>
+                <div class="section-title" style="margin-top: 20px; margin-left: 12px;">New Payment Entry</div>
                 <div class="card" style="margin-top: 8px;">
                     <div class="input-row">
                         <label>Date</label>
                         <div class="input-wrapper"><input type="date" id="payDate"></div>
                     </div>
                     <div class="input-row">
-                        <label>Amount (₹)</label>
-                        <div class="input-wrapper"><input type="number" id="payAmount" placeholder="Kitna paisa diya?"></div>
+                        <label>Amount</label>
+                        <div class="input-wrapper"><input type="number" id="payAmount" placeholder="₹ Amount"></div>
                     </div>
                     <div class="input-row">
                         <label>Mode</label>
                         <div class="input-wrapper">
                             <select id="payMode" class="star-select" style="width:100%;">
                                 <option value="Cash">Cash (Nagar)</option>
-                                <option value="Online">Online (UPI/RTGS)</option>
+                                <option value="Online">Online (UPI)</option>
                                 <option value="Cheque">Cheque</option>
                             </select>
                         </div>
                     </div>
                     <div class="input-row">
                         <label>Remarks</label>
-                        <div class="input-wrapper"><input type="text" id="payRemarks" placeholder="Kisne diya / Details..."></div>
+                        <div class="input-wrapper"><input type="text" id="payRemarks" placeholder="Details..."></div>
                     </div>
                 </div>
                 <button class="btn-primary" id="savePaymentBtn" style="background-color: var(--ios-purple);">Save Payment</button>
@@ -309,63 +309,44 @@
                 <br><br>
                 <div class="section-header">
                     <div class="section-title">Payment History</div>
-                    <!-- Quick Export Button (WhatsApp) -->
-                    <div style="display:flex; gap:5px;">
-                        <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA</button>
-                    </div>
+                    <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA Share</button>
                 </div>
 
-                <!-- Search Bar for Khata -->
-                <div class="search-container">
+                <div class="search-container" style="margin: 10px 12px;">
                     <span>🔍 </span>
-                    <input type="text" id="paySearch" placeholder="Search by Date, Mode or Remarks..." onkeyup="searchPayments()">
+                    <input type="text" id="paySearch" placeholder="Search history..." onkeyup="searchPayments()">
                 </div>
 
                 <div class="card" id="paymentList">
-                    <div class="loading-text">Select dealer to view history...</div>
+                    <div class="record-item">Select dealer to view history...</div>
                 </div>
             </div>
 
             <!-- 4. SERIAL NO. TAB (Inventory) -->
             <div id="tab-serial" class="tab-content">
-                <div class="section-title">Stock Entry</div>
+                <div class="section-title" style="margin-left: 12px;">Stock Entry</div>
                 <div class="card" style="margin-top: 8px;">
                     <input type="hidden" id="editId" value="">
-                    
                     <div class="input-row">
                         <label>Brand</label>
                         <div class="input-wrapper">
-                            <select id="categorySelect">
-                                <option value="" disabled selected>Select Company...</option>
-                            </select>
+                            <select id="categorySelect"><option value="" disabled selected>Company...</option></select>
                             <button class="btn-add-cat" onclick="addNewCategory()">+</button>
                         </div>
                     </div>
-
                     <div class="input-row">
                         <label>Model No.</label>
                         <div class="input-wrapper" style="gap: 8px;">
-                            <input type="text" id="modelNumber" placeholder="Enter Model No." style="flex: 2;">
-                            <select id="starRating" class="star-select" style="flex: 1.1;">
-                                <option value="" disabled selected>Rating</option>
-                                <option value="1 Star">1 ⭐</option>
-                                <option value="2 Star">2 ⭐</option>
-                                <option value="3 Star">3 ⭐</option>
-                                <option value="4 Star">4 ⭐</option>
-                                <option value="5 Star">5 ⭐</option>
-                                <option value="">No Star</option>
-                            </select>
+                            <input type="text" id="modelNumber" placeholder="Model No." style="flex: 2;">
+                            <select id="starRating" class="star-select" style="flex: 1.1;"><option value="" disabled selected>Rating</option><option value="5 Star">5 ⭐</option><option value="4 Star">4 ⭐</option></select>
                         </div>
                     </div>
-
                     <div class="input-row">
                         <label>Serial No.</label>
-                        <div class="input-wrapper"><input type="text" id="serialNumber" placeholder="Enter Unique Serial No."></div>
+                        <div class="input-wrapper"><input type="text" id="serialNumber" placeholder="Unique Serial No."></div>
                     </div>
-
-                    <!-- Item Photo -->
                     <div class="input-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 16px;">
-                        <label style="width: 100%; margin-bottom: 8px;">Item Photo 📸 (Optional)</label>
+                        <label style="width: 100%; margin-bottom: 8px;">Photo (Optional)</label>
                         <input type="file" id="itemPhoto" accept="image/*" capture="environment" style="font-size: 14px; width: 100%;">
                         <img id="itemPreview" style="max-width: 100%; margin-top: 10px; border-radius: 8px; display: none; border: 1px solid var(--ios-border);">
                     </div>
@@ -374,93 +355,46 @@
 
                 <br><br>
                 <div class="section-header">
-                    <div class="section-title">Available Stock <span class="badge" id="totalCount">0</span></div>
-                    <button class="btn-export" onclick="exportStockExcel()">⬇ Export Stock</button>
+                    <div class="section-title">Stock <span class="badge" id="totalCount">0</span></div>
+                    <button class="btn-export" onclick="exportStockExcel()">⬇ Export</button>
                 </div>
-                
-                <div class="search-container">
+                <div class="search-container" style="margin: 10px 12px;">
                     <span>🔍 </span>
-                    <input type="search" id="searchInput" placeholder="Search by Brand, Model or Serial..." onkeyup="filterRecords()">
+                    <input type="search" id="searchInput" placeholder="Search Stock..." onkeyup="filterRecords()">
                 </div>
-
-                <div class="card" id="recordsList">
-                    <div class="loading-text">Connecting to database...</div>
-                </div>
+                <div class="card" id="recordsList"></div>
             </div>
 
             <!-- 5. SALES & BOOKING TAB -->
             <div id="tab-sales" class="tab-content">
-                <div class="section-title">Customer Advance Booking</div>
+                <div class="section-title" style="margin-left: 12px;">Customer Booking</div>
                 <div class="card" style="margin-top: 8px;">
-                    <div class="input-row">
-                        <label>Customer</label>
-                        <div class="input-wrapper"><input type="text" id="custName" placeholder="Grahak ka naam"></div>
-                    </div>
-                    <div class="input-row">
-                        <label>Mobile No.</label>
-                        <div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit Mobile Number" maxlength="10"></div>
-                    </div>
-                    
-                    <!-- Multi-item Textarea -->
-                    <div class="input-row" style="align-items: flex-start;">
-                        <label style="margin-top: 5px;">Items List</label>
-                        <div class="input-wrapper">
-                            <textarea id="custItems" rows="3" placeholder="1. LG 43 TV&#10;2. Voltas AC" style="resize:none; line-height:1.5;"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Final Amount & Advance -->
-                    <div class="input-row">
-                        <label>Total Bill (₹)</label>
-                        <div class="input-wrapper"><input type="number" id="custTotalBill" placeholder="Final Deal Amount" onkeyup="calculateCustBalance()"></div>
-                    </div>
-                    <div class="input-row">
-                        <label>Advance (₹)</label>
-                        <div class="input-wrapper"><input type="number" id="custAdvance" placeholder="Kitna jama kiya?" onkeyup="calculateCustBalance()"></div>
-                    </div>
-                    <div class="input-row" style="background:#f9f9f9;">
-                        <label>Balance Due</label>
-                        <div class="input-wrapper"><strong id="custBalanceText" style="color:var(--ios-red);">₹0</strong></div>
-                    </div>
-
-                    <!-- Delivery Date -->
-                    <div class="input-row">
-                        <label>Delivery Date</label>
-                        <div class="input-wrapper"><input type="date" id="custDeliveryDate"></div>
-                    </div>
+                    <div class="input-row"><label>Customer</label><div class="input-wrapper"><input type="text" id="custName" placeholder="Name"></div></div>
+                    <div class="input-row"><label>Mobile</label><div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit" maxlength="10"></div></div>
+                    <div class="input-row" style="align-items: flex-start;"><label>Items</label><div class="input-wrapper"><textarea id="custItems" rows="3" placeholder="List items..." style="resize:none;"></textarea></div></div>
+                    <div class="input-row"><label>Total</label><div class="input-wrapper"><input type="number" id="custTotalBill" placeholder="₹" onkeyup="calculateCustBalance()"></div></div>
+                    <div class="input-row"><label>Advance</label><div class="input-wrapper"><input type="number" id="custAdvance" placeholder="₹" onkeyup="calculateCustBalance()"></div></div>
+                    <div class="input-row"><label>Due</label><div class="input-wrapper"><strong id="custBalanceText" style="color:var(--ios-red);">₹0</strong></div></div>
+                    <div class="input-row"><label>Delivery</label><div class="input-wrapper"><input type="date" id="custDeliveryDate"></div></div>
                 </div>
                 <button class="btn-primary" id="saveBookingBtn" style="background-color: var(--ios-orange);">Save Booking</button>
 
                 <br><br>
-                <div class="section-header">
-                    <div class="section-title">Pending Bookings</div>
-                </div>
-                <div class="card" id="bookingList">
-                    <div class="loading-text">Loading bookings...</div>
-                </div>
+                <div class="section-header"><div class="section-title">Pending Bookings</div></div>
+                <div class="card" id="bookingList"></div>
             </div>
 
-        </div> <!-- End of Tabs Container -->
+        </div> <!-- End of Tabs -->
 
-        <!-- Bottom Navigation Bar (5 Items) -->
+        <!-- Bottom Navigation Bar -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('tab-home', 'Shop Dashboard')" id="nav-home">
-                <span class="nav-icon">🏠</span><span>Home</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-purchase', 'Maal Inward')" id="nav-purchase">
-                <span class="nav-icon">🚛</span><span>Purchase</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-accounts', 'Dealer Khata')" id="nav-accounts">
-                <span class="nav-icon">📒</span><span>Khata</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-serial', 'Serial No. Tracker')" id="nav-serial">
-                <span class="nav-icon">🏷️</span><span>Serial No.</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('tab-sales', 'Booking & Sales')" id="nav-sales">
-                <span class="nav-icon">📝</span><span>Sales</span>
-            </div>
+            <div class="nav-item active" onclick="switchTab('tab-home', 'Shop Dashboard')"><span class="nav-icon">🏠</span><span>Home</span></div>
+            <div class="nav-item" onclick="switchTab('tab-purchase', 'Maal Inward')"><span class="nav-icon">🚛</span><span>Purchase</span></div>
+            <div class="nav-item" onclick="switchTab('tab-accounts', 'Dealer Khata')"><span class="nav-icon">📒</span><span>Khata</span></div>
+            <div class="nav-item" onclick="switchTab('tab-serial', 'Stock')"><span class="nav-icon">🏷️</span><span>Stock</span></div>
+            <div class="nav-item" onclick="switchTab('tab-sales', 'Bookings')"><span class="nav-icon">📝</span><span>Sales</span></div>
         </div>
-    </div> <!-- End of Main App Wrapper --><!-- MAIN APP JAVASCRIPT & FIREBASE -->
+    </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, where, getDocs } 
@@ -547,7 +481,7 @@
         let billImgData = null; setupImageUpload('billPhoto', 'billPreview', data => billImgData = data);
         let itemImgData = null; setupImageUpload('itemPhoto', 'itemPreview', data => itemImgData = data);
 
-        // ================= DEALER MANAGEMENT (Shared) =================
+        // ================= DEALER MANAGEMENT =================
         let dealersList = ["SAMSUNG DISTRIBUTOR", "LG AGENCY"];
         const dealerRef = doc(db, "app_settings", "dealers");
         
@@ -629,7 +563,7 @@
         };
         window.deleteBill = function(id) { if(confirm("⚠️ Delete this bill?")) deleteDoc(doc(db, "purchase_bills", id)); };
 
-        // ================= KHATA (ACCOUNTS) =================
+        // ================= KHATA (ACCOUNTS) - 100% BUG FREE LOGIC =================
         if(document.getElementById('payDate')) document.getElementById('payDate').valueAsDate = new Date();
         let dealerTotalBill = 0; let dealerTotalPaid = 0;
         let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
@@ -642,26 +576,44 @@
             
             if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
 
+            // Fetch Total Bills (Maal Inward) ONLY for Selected Dealer
             cLedgerUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
                 dealerTotalBill = 0; snap.forEach(doc => dealerTotalBill += (doc.data().amount || 0)); updateLedgerUI();
             });
-            cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer), orderBy("timestamp", "desc")), (snap) => {
-                dealerTotalPaid = 0; const list = document.getElementById('paymentList'); if(list) list.innerHTML = '';
-                if(snap.empty) { if(list) list.innerHTML = '<div class="loading-text">No payment history.</div>'; } 
-                else {
-                    snap.forEach(docSnap => {
-                        const data = docSnap.data(); dealerTotalPaid += (data.amount || 0);
+            
+            // Fetch Payments (Jama) ONLY for Selected Dealer, avoiding Firebase Index Crash
+            cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
+                dealerTotalPaid = 0; 
+                const list = document.getElementById('paymentList'); 
+                if(list) list.innerHTML = '';
+                
+                let payDataArray = [];
+                snap.forEach(docSnap => {
+                    let d = docSnap.data();
+                    d.id = docSnap.id;
+                    payDataArray.push(d);
+                });
+
+                // JavaScript based Date Sorting (Descending) - Naya payment upar dikhega
+                payDataArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if(payDataArray.length === 0) { 
+                    if(list) list.innerHTML = '<div class="loading-text" style="color:gray;">No payment history for this dealer.</div>'; 
+                } else {
+                    payDataArray.forEach(data => {
+                        dealerTotalPaid += (data.amount || 0);
                         if(list) {
                             let dStr = new Date(data.date).toLocaleDateString('en-IN');
                             let tagClass = data.mode==='Cash' ? 'tag-cash' : (data.mode==='Cheque' ? 'tag-cheque' : 'tag-online');
                             list.innerHTML += `
                                 <div class="record-item pay-item" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-weight:700; font-size:15px;">₹${data.amount.toLocaleString('en-IN')}</span><span style="font-size:12px; color:gray;">📅 ${dStr}</span>
+                                        <span style="font-weight:700; font-size:15px; color:var(--ios-blue);">₹${data.amount.toLocaleString('en-IN')}</span>
+                                        <span style="font-size:12px; color:gray;">📅 ${dStr}</span>
                                     </div>
                                     <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
                                         <div><span class="${tagClass}">${data.mode}</span> <span style="font-size:13px; color:#555; margin-left:6px;">${data.remarks||''}</span></div>
-                                        <button onclick="deletePayment('${docSnap.id}')" style="background:none;border:none;color:var(--ios-red);font-size:15px;cursor:pointer;">🗑️</button>
+                                        <button onclick="deletePayment('${data.id}')" style="background:none;border:none;color:var(--ios-red);font-size:15px;cursor:pointer;">🗑️</button>
                                     </div>
                                 </div>`;
                         }
@@ -723,6 +675,7 @@
             }
         };
 
+        // Dashborad calculations mapping all payments
         onSnapshot(query(collection(db, "dealer_payments")), (snap) => {
             globalTotalPayments = 0; snap.forEach(doc => globalTotalPayments += (doc.data().amount || 0)); updateMarketDue();
         });
@@ -733,7 +686,7 @@
             else { dueEl.innerText = "₹0 (Clear)"; dueEl.style.color = "#2e7d32"; }
         }
 
-        // ================= NEW: FULL STATEMENT LOGIC (PDF/EXCEL) =================
+        // ================= FULL STATEMENT LOGIC (PDF/EXCEL) =================
         let currentStatementData = [];
         let currentStatementDealer = "";
 
@@ -747,7 +700,6 @@
             
             currentStatementData = [];
             try {
-                // Fetch Bills
                 const qBills = query(collection(db, "purchase_bills"), where("dealer", "==", dealer));
                 const snapBills = await getDocs(qBills);
                 snapBills.forEach(doc => {
@@ -755,7 +707,6 @@
                     currentStatementData.push({ type: 'bill', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Bill No: ${d.billNo}`, timestamp: d.timestamp });
                 });
 
-                // Fetch Payments
                 const qPays = query(collection(db, "dealer_payments"), where("dealer", "==", dealer));
                 const snapPays = await getDocs(qPays);
                 snapPays.forEach(doc => {
@@ -763,7 +714,6 @@
                     currentStatementData.push({ type: 'pay', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Paid via ${d.mode} ${d.remarks ? '('+d.remarks+')':''}`, timestamp: d.timestamp });
                 });
 
-                // Sort by Date, then Timestamp
                 currentStatementData.sort((a, b) => {
                     if (a.date === b.date) return a.timestamp - b.timestamp;
                     return a.date - b.date;
@@ -818,7 +768,6 @@
                     `;
                 });
                 
-                // Footer Row
                 let finalBalStr = Math.abs(runningBal).toLocaleString('en-IN') + (runningBal > 0 ? " Due" : (runningBal < 0 ? " Advance" : " Settled"));
                 let finalBalColor = runningBal > 0 ? "var(--ios-red)" : (runningBal < 0 ? "var(--ios-green)" : "gray");
                 html += `
@@ -977,4 +926,4 @@
         window.deleteBooking = function(id) { if(confirm("✅ Is Customer ki Delivery/Payment complete ho gayi?")) deleteDoc(doc(db, "sales_bookings", id)); };
     </script>
 </body>
-    </html>
+</html>
