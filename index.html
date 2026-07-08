@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | ERP 2.0</title>
+    <title>Savitri Electronics | ERP 2.1 Pro</title>
     
     <style>
         :root {
@@ -84,6 +84,15 @@
         .ledger-box { padding: 12px; border-radius: 8px; text-align: center; flex: 1; }
         .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
         .ledger-value { font-size: 18px; font-weight: 700; }
+
+        /* Dynamic Sales Items Layout */
+        .sales-item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+        .sales-item-row input { padding: 8px; border: 1px solid var(--ios-border); border-radius: 6px; font-size: 13px; outline: none; background: var(--ios-card); width: 100%; box-sizing: border-box; }
+        .sales-item-name { flex: 2.2; }
+        .sales-item-qty { flex: 0.8; }
+        .sales-item-price { flex: 1.2; }
+        .btn-remove-item { background: #ffebe9; color: var(--ios-red); border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-add-item { background: #e8f5e9; color: var(--ios-green); border: none; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; border: 1px dashed var(--ios-green); }
 
         /* Full Statement Print/PDF Media Query */
         @media print {
@@ -293,9 +302,9 @@
                         <label>Mode</label>
                         <div class="input-wrapper">
                             <select id="payMode" class="star-select" style="width:100%;">
-                                <option value="Cash">Cash (Nagar)</option>
-                                <option value="Online">Online (UPI)</option>
-                                <option value="Cheque">Cheque</option>
+                                <option value="Cash">Cash</option>
+                                <option value="NEFT">NEFT</option>
+                                <option value="UPI">UPI</option>
                             </select>
                         </div>
                     </div>
@@ -338,7 +347,14 @@
                         <label>Model No.</label>
                         <div class="input-wrapper" style="gap: 8px;">
                             <input type="text" id="modelNumber" placeholder="Model No." style="flex: 2;">
-                            <select id="starRating" class="star-select" style="flex: 1.1;"><option value="" disabled selected>Rating</option><option value="5 Star">5 ⭐</option><option value="4 Star">4 ⭐</option></select>
+                            <select id="starRating" class="star-select" style="flex: 1.1;">
+                                <option value="" disabled selected>Rating</option>
+                                <option value="1 Star">1 ⭐</option>
+                                <option value="2 Star">2 ⭐</option>
+                                <option value="3 Star">3 ⭐</option>
+                                <option value="4 Star">4 ⭐</option>
+                                <option value="5 Star">5 ⭐</option>
+                            </select>
                         </div>
                     </div>
                     <div class="input-row">
@@ -365,16 +381,30 @@
                 <div class="card" id="recordsList"></div>
             </div>
 
-            <!-- 5. SALES & BOOKING TAB -->
+            <!-- 5. SALES & BOOKING TAB (ADVANCED) -->
             <div id="tab-sales" class="tab-content">
                 <div class="section-title" style="margin-left: 12px;">Customer Booking</div>
                 <div class="card" style="margin-top: 8px;">
                     <div class="input-row"><label>Customer</label><div class="input-wrapper"><input type="text" id="custName" placeholder="Name"></div></div>
-                    <div class="input-row"><label>Mobile</label><div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit" maxlength="10"></div></div>
-                    <div class="input-row" style="align-items: flex-start;"><label>Items</label><div class="input-wrapper"><textarea id="custItems" rows="3" placeholder="List items..." style="resize:none;"></textarea></div></div>
-                    <div class="input-row"><label>Total</label><div class="input-wrapper"><input type="number" id="custTotalBill" placeholder="₹" onkeyup="calculateCustBalance()"></div></div>
-                    <div class="input-row"><label>Advance</label><div class="input-wrapper"><input type="number" id="custAdvance" placeholder="₹" onkeyup="calculateCustBalance()"></div></div>
-                    <div class="input-row"><label>Due</label><div class="input-wrapper"><strong id="custBalanceText" style="color:var(--ios-red);">₹0</strong></div></div>
+                    <div class="input-row" style="border-bottom: none;"><label>Mobile</label><div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit" maxlength="10"></div></div>
+                    
+                    <!-- Dynamic Items Section -->
+                    <div style="background: #fcfcfc; padding: 12px 14px; border-top: 1px solid var(--ios-border); border-bottom: 1px solid var(--ios-border);">
+                        <label style="font-size: 14px; font-weight: 500; margin-bottom:10px; display:block; color:var(--ios-blue);">Item Details</label>
+                        <div id="itemsWrapper">
+                            <div class="sales-item-row">
+                                <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
+                                <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
+                                <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
+                                <!-- No delete button for first row -->
+                            </div>
+                        </div>
+                        <button class="btn-add-item" onclick="addSalesItemRow()">+ Add More Item</button>
+                    </div>
+
+                    <div class="input-row"><label>Total Bill</label><div class="input-wrapper"><input type="number" id="custTotalBill" placeholder="₹ Auto Calculated" readonly style="font-weight:bold; color:var(--ios-text-main);"></div></div>
+                    <div class="input-row"><label>Advance</label><div class="input-wrapper"><input type="number" id="custAdvance" placeholder="₹" oninput="calculateCustBalance()"></div></div>
+                    <div class="input-row"><label>Due</label><div class="input-wrapper"><strong id="custBalanceText" style="color:var(--ios-red); font-size:16px;">₹0</strong></div></div>
                     <div class="input-row"><label>Delivery</label><div class="input-wrapper"><input type="date" id="custDeliveryDate"></div></div>
                 </div>
                 <button class="btn-primary" id="saveBookingBtn" style="background-color: var(--ios-orange);">Save Booking</button>
@@ -563,7 +593,7 @@
         };
         window.deleteBill = function(id) { if(confirm("⚠️ Delete this bill?")) deleteDoc(doc(db, "purchase_bills", id)); };
 
-        // ================= KHATA (ACCOUNTS) - 100% BUG FREE LOGIC =================
+        // ================= KHATA (ACCOUNTS) - Dealer Separation Fixed =================
         if(document.getElementById('payDate')) document.getElementById('payDate').valueAsDate = new Date();
         let dealerTotalBill = 0; let dealerTotalPaid = 0;
         let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
@@ -576,12 +606,12 @@
             
             if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
 
-            // Fetch Total Bills (Maal Inward) ONLY for Selected Dealer
+            // Fetch Total Bills ONLY for Selected Dealer
             cLedgerUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
                 dealerTotalBill = 0; snap.forEach(doc => dealerTotalBill += (doc.data().amount || 0)); updateLedgerUI();
             });
             
-            // Fetch Payments (Jama) ONLY for Selected Dealer, avoiding Firebase Index Crash
+            // Fetch Payments ONLY for Selected Dealer (Sort in JS to prevent Firebase Index Crash)
             cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
                 dealerTotalPaid = 0; 
                 const list = document.getElementById('paymentList'); 
@@ -594,7 +624,7 @@
                     payDataArray.push(d);
                 });
 
-                // JavaScript based Date Sorting (Descending) - Naya payment upar dikhega
+                // JS Sorting
                 payDataArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 if(payDataArray.length === 0) { 
@@ -675,7 +705,6 @@
             }
         };
 
-        // Dashborad calculations mapping all payments
         onSnapshot(query(collection(db, "dealer_payments")), (snap) => {
             globalTotalPayments = 0; snap.forEach(doc => globalTotalPayments += (doc.data().amount || 0)); updateMarketDue();
         });
@@ -872,27 +901,108 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // ================= SALES / BOOKING (ADVANCED) =================
-        window.calculateCustBalance = function() {
-            let t = Number(document.getElementById('custTotalBill').value) || 0; let a = Number(document.getElementById('custAdvance').value) || 0;
-            document.getElementById('custBalanceText').innerText = "₹" + (t - a).toLocaleString('en-IN');
-        };
-
+        // ================= SALES / BOOKING (ADVANCED DYNAMIC AUTO-CALC) =================
         if(document.getElementById('custDeliveryDate')) document.getElementById('custDeliveryDate').valueAsDate = new Date();
 
-        document.getElementById('saveBookingBtn')?.addEventListener('click', async () => {
-            const n = document.getElementById('custName').value.trim(); const mb = document.getElementById('custMobile').value.trim();
-            const itms = document.getElementById('custItems').value.trim(); const tb = document.getElementById('custTotalBill').value;
-            const adv = document.getElementById('custAdvance').value; const dDate = document.getElementById('custDeliveryDate').value;
+        // 1. Add More Item Row
+        window.addSalesItemRow = function() {
+            const wrapper = document.getElementById('itemsWrapper');
+            const row = document.createElement('div');
+            row.className = 'sales-item-row';
+            row.innerHTML = `
+                <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
+                <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
+                <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
+                <button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>
+            `;
+            wrapper.appendChild(row);
+        };
 
-            if (!n || !itms || !tb || !adv) { alert("Name, Items, Total Bill aur Advance bharein!"); return; }
+        // 2. Remove Item Row
+        window.removeSalesItemRow = function(btn) {
+            btn.parentElement.remove();
+            calculateCustBalance();
+        };
+
+        // 3. Auto Calculate Total & Due
+        window.calculateCustBalance = function() {
+            let totalBill = 0;
+            const qtys = document.querySelectorAll('.req-item-qty');
+            const prices = document.querySelectorAll('.req-item-price');
+            
+            // Loop through all items and multiply Qty x Price
+            for(let i = 0; i < qtys.length; i++) {
+                let q = Number(qtys[i].value) || 0;
+                let p = Number(prices[i].value) || 0;
+                totalBill += (q * p);
+            }
+            
+            // Update Total Bill Field
+            document.getElementById('custTotalBill').value = totalBill;
+            
+            // Calculate Due (Total - Advance)
+            let advance = Number(document.getElementById('custAdvance').value) || 0;
+            let dueBalance = totalBill - advance;
+            
+            // Show Due on Screen
+            document.getElementById('custBalanceText').innerText = "₹" + dueBalance.toLocaleString('en-IN');
+        };
+
+        // 4. Save Booking (Gathering all dynamic items)
+        document.getElementById('saveBookingBtn')?.addEventListener('click', async () => {
+            const n = document.getElementById('custName').value.trim(); 
+            const mb = document.getElementById('custMobile').value.trim();
+            const tb = document.getElementById('custTotalBill').value;
+            const adv = document.getElementById('custAdvance').value; 
+            const dDate = document.getElementById('custDeliveryDate').value;
+
+            // Generate Item String from dynamic fields
+            let itemsString = "";
+            const names = document.querySelectorAll('.req-item-name');
+            const qtys = document.querySelectorAll('.req-item-qty');
+            const prices = document.querySelectorAll('.req-item-price');
+            
+            for(let i = 0; i < names.length; i++) {
+                let itemName = names[i].value.trim();
+                let itemQty = qtys[i].value;
+                let itemPrice = prices[i].value;
+                if(itemName !== '') {
+                    itemsString += `• ${itemQty}x ${itemName} (₹${itemPrice})\n`;
+                }
+            }
+
+            if (!n || itemsString === "" || !tb) { alert("⚠️ Customer Name aur kam se kam ek Item Details zaroori hain!"); return; }
+            
             const btn = document.getElementById('saveBookingBtn'); btn.innerText = "Saving...";
             
-            await addDoc(collection(db, "sales_bookings"), { customerName:n, mobile:mb, items:itms, totalBill:Number(tb), advanceAmount:Number(adv), deliveryDate:dDate, timestamp:Date.now() });
+            await addDoc(collection(db, "sales_bookings"), { 
+                customerName: n, 
+                mobile: mb, 
+                items: itemsString.trim(), 
+                totalBill: Number(tb), 
+                advanceAmount: Number(adv || 0), 
+                deliveryDate: dDate, 
+                timestamp: Date.now() 
+            });
             
-            alert("✅ Booking saved!");
-            document.getElementById('custName').value=''; document.getElementById('custMobile').value=''; document.getElementById('custItems').value='';
-            document.getElementById('custTotalBill').value=''; document.getElementById('custAdvance').value=''; document.getElementById('custBalanceText').innerText="₹0";
+            alert("✅ Booking saved successfully!");
+            
+            // Reset Form completely
+            document.getElementById('custName').value = ''; 
+            document.getElementById('custMobile').value = ''; 
+            document.getElementById('custTotalBill').value = ''; 
+            document.getElementById('custAdvance').value = ''; 
+            document.getElementById('custBalanceText').innerText = "₹0";
+            
+            // Reset Dynamic Items back to 1 row
+            document.getElementById('itemsWrapper').innerHTML = `
+                <div class="sales-item-row">
+                    <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
+                    <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
+                    <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
+                </div>
+            `;
+            
             btn.innerText = "Save Booking";
         });
 
@@ -900,15 +1010,15 @@
             const list = document.getElementById('bookingList'); const todayList = document.getElementById('todayDeliveryList');
             if(list) list.innerHTML = ''; if(todayList) todayList.innerHTML = '';
             let tAdv = 0; let todayCount = 0;
-            let todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            let todayStr = new Date().toISOString().split('T')[0];
 
             snap.forEach((docSnap) => {
                 const d = docSnap.data(); tAdv += (d.advanceAmount || 0); let bal = (d.totalBill||0) - (d.advanceAmount||0);
                 
                 let html = `<div class="record-item">
                     <div style="display:flex; justify-content:space-between;"><div class="product-title">👤 ${d.customerName}</div><div style="font-weight:700; color:var(--ios-orange);">Adv: ₹${d.advanceAmount.toLocaleString('en-IN')}</div></div>
-                    <div style="font-size:13px; color:#444; margin:6px 0; white-space:pre-wrap;">${d.items}</div>
-                    <div class="data-row"><span>Total: ₹${(d.totalBill||0).toLocaleString('en-IN')}</span><span style="color:var(--ios-red); font-weight:bold;">Due: ₹${bal.toLocaleString('en-IN')}</span></div>
+                    <div style="font-size:13px; color:#444; margin:6px 0; white-space:pre-wrap; line-height:1.4;">${d.items}</div>
+                    <div class="data-row"><span>Total Bill: ₹${(d.totalBill||0).toLocaleString('en-IN')}</span><span style="color:var(--ios-red); font-weight:bold;">Due: ₹${bal.toLocaleString('en-IN')}</span></div>
                     <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size:12px; color:var(--ios-purple); font-weight:600;">🚚 Del: ${new Date(d.deliveryDate).toLocaleDateString('en-IN')}</span>
                         <button onclick="deleteBooking('${docSnap.id}')" style="background:var(--ios-green);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">✅ Complete</button>
