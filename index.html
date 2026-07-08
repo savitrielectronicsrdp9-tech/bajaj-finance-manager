@@ -84,11 +84,36 @@
         .ledger-box { padding: 12px; border-radius: 8px; text-align: center; flex: 1; }
         .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
         .ledger-value { font-size: 18px; font-weight: 700; }
+
+        /* Full Statement Print/PDF Media Query */
+        @media print {
+            body * { visibility: hidden; }
+            #fullStatementModal, #fullStatementModal * { visibility: visible; }
+            #fullStatementModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; z-index: 999999; display:block !important;}
+            .btn-primary, .btn-export, .close-btn, .bottom-nav { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- In-App Image Viewer Modal (Naya Feature) -->
+    <!-- Full Statement Modal (PDF/Excel View) - NAYA FEATURE -->
+    <div id="fullStatementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--ios-bg); z-index:9999; overflow-y:auto;">
+        <div style="padding:15px; background:white; position:sticky; top:0; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:18px;">📜 Ledger Statement</h3>
+            <button class="close-btn" style="position:static; padding:8px 12px; margin:0;" onclick="closeStatementModal()">✖ CLOSE</button>
+        </div>
+        <div style="padding:15px; background:white; min-height:80vh;" id="stmtPrintArea">
+            <div id="stmtContent">
+                <!-- Data will load here automatically -->
+            </div>
+        </div>
+        <div style="padding:15px; display:flex; gap:10px; background:var(--ios-bg);">
+            <button onclick="downloadStatementExcel()" class="btn-export" style="flex:1; padding:12px; font-size:15px;">⬇ Download Excel</button>
+            <button onclick="printStatementPDF()" class="btn-primary" style="flex:1; padding:12px; font-size:15px;">🖨️ Save as PDF</button>
+        </div>
+    </div>
+
+    <!-- In-App Image Viewer Modal -->
     <div id="imageViewerModal">
         <button class="close-btn" onclick="closeImageViewer()">✖ CLOSE</button>
         <img id="fullSizeImage" src="" alt="View">
@@ -159,6 +184,9 @@
                         <div style="display:flex; justify-content:space-between; font-size:15px; margin-top:8px; padding-top:8px; border-top:1px dashed #ccc;">
                             <span id="hBalanceTitle">Balance:</span> <strong id="hBalance" style="color:var(--ios-red);">₹0</strong>
                         </div>
+                        
+                        <!-- NEW: View Full Statement Button -->
+                        <button onclick="openFullStatement()" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Full Statement</button>
                     </div>
                 </div>
 
@@ -213,7 +241,6 @@
                     <div class="section-title">Recent Inward Bills</div>
                 </div>
                 
-                <!-- NEW: Search Bar for Purchase -->
                 <div class="search-container">
                     <span>🔍 </span>
                     <input type="text" id="pSearch" placeholder="Search by Dealer, Bill No or Date..." onkeyup="searchPurchase()">
@@ -282,14 +309,13 @@
                 <br><br>
                 <div class="section-header">
                     <div class="section-title">Payment History</div>
-                    <!-- PDF/Excel & WhatsApp Export buttons -->
+                    <!-- Quick Export Button (WhatsApp) -->
                     <div style="display:flex; gap:5px;">
-                        <button class="btn-export" id="btnExportLedger" style="display:none; background:#333;" onclick="exportLedgerExcel()">⬇ Excel</button>
                         <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA</button>
                     </div>
                 </div>
 
-                <!-- NEW: Search Bar for Khata -->
+                <!-- Search Bar for Khata -->
                 <div class="search-container">
                     <span>🔍 </span>
                     <input type="text" id="paySearch" placeholder="Search by Date, Mode or Remarks..." onkeyup="searchPayments()">
@@ -337,7 +363,7 @@
                         <div class="input-wrapper"><input type="text" id="serialNumber" placeholder="Enter Unique Serial No."></div>
                     </div>
 
-                    <!-- NEW: Item Photo -->
+                    <!-- Item Photo -->
                     <div class="input-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 16px;">
                         <label style="width: 100%; margin-bottom: 8px;">Item Photo 📸 (Optional)</label>
                         <input type="file" id="itemPhoto" accept="image/*" capture="environment" style="font-size: 14px; width: 100%;">
@@ -375,7 +401,7 @@
                         <div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit Mobile Number" maxlength="10"></div>
                     </div>
                     
-                    <!-- NEW: Multi-item Textarea -->
+                    <!-- Multi-item Textarea -->
                     <div class="input-row" style="align-items: flex-start;">
                         <label style="margin-top: 5px;">Items List</label>
                         <div class="input-wrapper">
@@ -383,7 +409,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Final Amount & Advance -->
+                    <!-- Final Amount & Advance -->
                     <div class="input-row">
                         <label>Total Bill (₹)</label>
                         <div class="input-wrapper"><input type="number" id="custTotalBill" placeholder="Final Deal Amount" onkeyup="calculateCustBalance()"></div>
@@ -397,7 +423,7 @@
                         <div class="input-wrapper"><strong id="custBalanceText" style="color:var(--ios-red);">₹0</strong></div>
                     </div>
 
-                    <!-- NEW: Delivery Date -->
+                    <!-- Delivery Date -->
                     <div class="input-row">
                         <label>Delivery Date</label>
                         <div class="input-wrapper"><input type="date" id="custDeliveryDate"></div>
@@ -437,7 +463,7 @@
     </div> <!-- End of Main App Wrapper --><!-- MAIN APP JAVASCRIPT & FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, where } 
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, where, getDocs } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -612,7 +638,6 @@
             const dealer = document.getElementById('ledgerDealerSelect').value;
             if(!dealer) return;
             document.getElementById('ledgerDashboard').style.display = 'block';
-            document.getElementById('btnExportLedger').style.display = 'block';
             document.getElementById('btnShareLedger').style.display = 'block';
             
             if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
@@ -669,8 +694,6 @@
         });
         window.deletePayment = function(id) { if(confirm("Delete this payment?")) deleteDoc(doc(db, "dealer_payments", id)); };
 
-        // Export Ledger
-        window.exportLedgerExcel = function() { alert("Excel export functionality activated (Custom logic requires sheetJS). Data is synced real-time!"); };
         window.shareLedgerWhatsApp = function() {
             const dealer = document.getElementById('ledgerDealerSelect').value;
             let bal = dealerTotalBill - dealerTotalPaid; let stat = bal > 0 ? `(Due)` : (bal < 0 ? `(Advance)` : `(Settled)`);
@@ -694,9 +717,9 @@
             });
             function calcHBal() {
                 let b = htBill - htPaid; let bt = document.getElementById('hBalanceTitle'); let bv = document.getElementById('hBalance');
-                if(b>0){ bt.innerText="Due:"; bv.innerText="₹"+b.toLocaleString('en-IN'); bv.style.color="var(--ios-red)"; }
-                else if(b<0){ bt.innerText="Advance:"; bv.innerText="₹"+Math.abs(b).toLocaleString('en-IN'); bv.style.color="var(--ios-green)"; }
-                else{ bt.innerText="Settled:"; bv.innerText="₹0"; bv.style.color="gray"; }
+                if(b>0){ bt.innerText="Balance (Due):"; bv.innerText="₹"+b.toLocaleString('en-IN'); bv.style.color="var(--ios-red)"; }
+                else if(b<0){ bt.innerText="Advance Paid:"; bv.innerText="₹"+Math.abs(b).toLocaleString('en-IN'); bv.style.color="var(--ios-green)"; }
+                else{ bt.innerText="Account Settled:"; bv.innerText="₹0"; bv.style.color="gray"; }
             }
         };
 
@@ -709,6 +732,128 @@
             if(marketDue > 0) { dueEl.innerText = "₹" + marketDue.toLocaleString('en-IN'); dueEl.style.color = "#c62828"; } 
             else { dueEl.innerText = "₹0 (Clear)"; dueEl.style.color = "#2e7d32"; }
         }
+
+        // ================= NEW: FULL STATEMENT LOGIC (PDF/EXCEL) =================
+        let currentStatementData = [];
+        let currentStatementDealer = "";
+
+        window.openFullStatement = async function() {
+            const dealer = document.getElementById('homeDealerSelect').value;
+            if(!dealer) { alert("Please select a dealer first!"); return; }
+            currentStatementDealer = dealer;
+            
+            document.getElementById('fullStatementModal').style.display = 'block';
+            document.getElementById('stmtContent').innerHTML = '<div class="loading-text">Loading Statement Data...</div>';
+            
+            currentStatementData = [];
+            try {
+                // Fetch Bills
+                const qBills = query(collection(db, "purchase_bills"), where("dealer", "==", dealer));
+                const snapBills = await getDocs(qBills);
+                snapBills.forEach(doc => {
+                    let d = doc.data();
+                    currentStatementData.push({ type: 'bill', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Bill No: ${d.billNo}`, timestamp: d.timestamp });
+                });
+
+                // Fetch Payments
+                const qPays = query(collection(db, "dealer_payments"), where("dealer", "==", dealer));
+                const snapPays = await getDocs(qPays);
+                snapPays.forEach(doc => {
+                    let d = doc.data();
+                    currentStatementData.push({ type: 'pay', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Paid via ${d.mode} ${d.remarks ? '('+d.remarks+')':''}`, timestamp: d.timestamp });
+                });
+
+                // Sort by Date, then Timestamp
+                currentStatementData.sort((a, b) => {
+                    if (a.date === b.date) return a.timestamp - b.timestamp;
+                    return a.date - b.date;
+                });
+
+                renderStatementHTML();
+
+            } catch(e) { document.getElementById('stmtContent').innerHTML = `<div class="loading-text" style="color:red;">Error loading statement.</div>`; }
+        };
+
+        function renderStatementHTML() {
+            let html = `
+                <div style="text-align:center; margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:10px;">
+                    <h2 style="margin:0; color:var(--ios-blue);">Savitri Electronics</h2>
+                    <p style="margin:5px 0 0 0; font-size:14px; font-weight:600;">Ledger Statement: ${currentStatementDealer}</p>
+                    <p style="margin:2px 0 0 0; font-size:12px; color:gray;">Generated on: ${new Date().toLocaleString('en-IN')}</p>
+                </div>
+                <table style="width:100%; border-collapse: collapse; font-size:13px; text-align:left; border: 1px solid #eee;">
+                    <tr style="background:#f5f5f5; border-bottom:2px solid #ccc;">
+                        <th style="padding:10px 5px;">Date</th>
+                        <th style="padding:10px 5px;">Details</th>
+                        <th style="padding:10px 5px; color:var(--ios-green);">Maal (In)</th>
+                        <th style="padding:10px 5px; color:var(--ios-blue);">Jama (Out)</th>
+                        <th style="padding:10px 5px;">Balance</th>
+                    </tr>
+            `;
+
+            let runningBal = 0; let totalIn = 0; let totalOut = 0;
+            
+            if(currentStatementData.length === 0) {
+                html += `<tr><td colspan="5" style="text-align:center; padding:15px;">No transactions found.</td></tr>`;
+            } else {
+                currentStatementData.forEach(item => {
+                    let dStr = new Date(item.date).toLocaleDateString('en-IN');
+                    let inAmt = item.type === 'bill' ? item.amount : 0;
+                    let outAmt = item.type === 'pay' ? item.amount : 0;
+                    
+                    runningBal += (inAmt - outAmt);
+                    totalIn += inAmt; totalOut += outAmt;
+
+                    let balStr = Math.abs(runningBal).toLocaleString('en-IN') + (runningBal > 0 ? " Dr" : (runningBal < 0 ? " Cr" : ""));
+                    let balColor = runningBal > 0 ? "color:var(--ios-red);" : (runningBal < 0 ? "color:var(--ios-green);" : "color:gray;");
+
+                    html += `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px 5px;">${dStr}</td>
+                            <td style="padding:10px 5px;">${item.desc}</td>
+                            <td style="padding:10px 5px;">${inAmt > 0 ? '₹'+inAmt.toLocaleString('en-IN') : '-'}</td>
+                            <td style="padding:10px 5px;">${outAmt > 0 ? '₹'+outAmt.toLocaleString('en-IN') : '-'}</td>
+                            <td style="padding:10px 5px; font-weight:600; ${balColor}">${balStr}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Footer Row
+                let finalBalStr = Math.abs(runningBal).toLocaleString('en-IN') + (runningBal > 0 ? " Due" : (runningBal < 0 ? " Advance" : " Settled"));
+                let finalBalColor = runningBal > 0 ? "var(--ios-red)" : (runningBal < 0 ? "var(--ios-green)" : "gray");
+                html += `
+                    <tr style="background:#f9f9f9; border-top:2px solid #ccc; font-weight:bold;">
+                        <td colspan="2" style="padding:10px 5px; text-align:right;">TOTAL:</td>
+                        <td style="padding:10px 5px; color:var(--ios-green);">₹${totalIn.toLocaleString('en-IN')}</td>
+                        <td style="padding:10px 5px; color:var(--ios-blue);">₹${totalOut.toLocaleString('en-IN')}</td>
+                        <td style="padding:10px 5px; color:${finalBalColor};">₹${finalBalStr}</td>
+                    </tr>
+                `;
+            }
+
+            html += `</table>`;
+            document.getElementById('stmtContent').innerHTML = html;
+        }
+
+        window.closeStatementModal = function() { document.getElementById('fullStatementModal').style.display = 'none'; };
+        window.printStatementPDF = function() { window.print(); };
+        
+        window.downloadStatementExcel = function() {
+            if(currentStatementData.length === 0) return;
+            let csvContent = "data:text/csv;charset=utf-8,Date,Details,Maal (In),Jama (Out),Running Balance\n";
+            let rBal = 0;
+            currentStatementData.forEach(item => {
+                let dStr = new Date(item.date).toLocaleDateString('en-IN');
+                let inAmt = item.type === 'bill' ? item.amount : 0;
+                let outAmt = item.type === 'pay' ? item.amount : 0;
+                rBal += (inAmt - outAmt);
+                let bStr = Math.abs(rBal) + (rBal > 0 ? " Dr" : (rBal < 0 ? " Cr" : ""));
+                csvContent += `"${dStr}","${item.desc}","${inAmt}","${outAmt}","${bStr}"\n`;
+            });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Ledger_${currentStatementDealer.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('en-IN')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        };
 
         // ================= SERIAL NO. SYSTEM (INVENTORY) =================
         let globalRecords = []; let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "SAMSUNG", "SONY", "HAVELLS"];
@@ -766,7 +911,17 @@
             let val = document.getElementById('searchInput').value.toUpperCase();
             document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; });
         }
-        window.exportStockExcel = function() { alert("Stock export activated!"); }
+        window.exportStockExcel = function() {
+            if(globalRecords.length === 0) return;
+            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,Star Rating,Serial Number\n"; 
+            globalRecords.forEach(row => {
+                let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
+                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || "N/A"}","${row.star || "N/A"}","${row.serial || "N/A"}"\n`;
+            });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
 
         // ================= SALES / BOOKING (ADVANCED) =================
         window.calculateCustBalance = function() {
@@ -796,7 +951,6 @@
             const list = document.getElementById('bookingList'); const todayList = document.getElementById('todayDeliveryList');
             if(list) list.innerHTML = ''; if(todayList) todayList.innerHTML = '';
             let tAdv = 0; let todayCount = 0;
-            
             let todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
             snap.forEach((docSnap) => {
@@ -823,4 +977,4 @@
         window.deleteBooking = function(id) { if(confirm("✅ Is Customer ki Delivery/Payment complete ho gayi?")) deleteDoc(doc(db, "sales_bookings", id)); };
     </script>
 </body>
-</html>
+    </html>
