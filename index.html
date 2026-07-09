@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | ERP 2.1 Pro</title>
+    <title>Savitri Electronics | ERP 2.2 (Stock Upgrade)</title>
     
     <style>
+        /* CORE LOCKED DESIGN */
         :root {
             --ios-bg: #F2F2F7; --ios-card: #FFFFFF; --ios-blue: #007AFF; --ios-red: #FF3B30;
             --ios-orange: #FF9500; --ios-green: #34C759; --ios-text-main: #000000;
@@ -13,19 +14,16 @@
             --ios-purple: #AF52DE;
         }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; padding-bottom: 70px; -webkit-font-smoothing: antialiased; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; padding-bottom: 75px; -webkit-font-smoothing: antialiased; }
 
-        /* Full Screen Image Viewer Modal */
         #imageViewerModal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .close-btn { position: absolute; top: 30px; right: 20px; background: var(--ios-red); color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #fullSizeImage { max-width: 95%; max-height: 80%; border-radius: 8px; object-fit: contain; }
 
-        /* Payment Mode Color Tags */
         .tag-cash { color: #2e7d32; background: #e8f5e9; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .tag-online { color: #1565c0; background: #e3f2fd; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .tag-cheque { color: #6a1b9a; background: #f3e5f5; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
 
-        /* PIN Lock Screen */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 80%; max-width: 300px; }
         .lock-box h2 { margin-top: 0; color: var(--ios-blue); }
@@ -33,19 +31,17 @@
 
         #mainApp { display: none; }
 
-        /* Top Navbar */
         .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .navbar-title h2 { margin: 0; font-size: 17px; font-weight: 600; }
         .navbar-title p { margin: 2px 0 0; font-size: 12px; color: var(--ios-text-muted); }
         .btn-icon { background: none; border: none; color: var(--ios-blue); font-size: 20px; cursor: pointer; }
 
-        /* Bottom Navigation Bar */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 0.5px solid var(--ios-border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--ios-text-muted); text-decoration: none; font-size: 10px; font-weight: 600; cursor: pointer; width: 20%; }
+        /* Updated Bottom Nav to fit 6 icons cleanly */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 0.5px solid var(--ios-border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; overflow-x: auto;}
+        .nav-item { display: flex; flex: 1; flex-direction: column; align-items: center; color: var(--ios-text-muted); text-decoration: none; font-size: 9.5px; font-weight: 600; cursor: pointer; min-width: 55px;}
         .nav-item.active { color: var(--ios-blue); }
-        .nav-icon { font-size: 20px; margin-bottom: 3px; }
+        .nav-icon { font-size: 18px; margin-bottom: 3px; }
 
-        /* Tab Content Control */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -76,7 +72,6 @@
         .product-title { font-size: 16px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
         .star-badge { color: var(--ios-orange); font-size: 14px; margin-left: 5px; }
         .data-row { display: flex; justify-content: space-between; font-size: 13px; margin-top: 4px; color: #333; }
-        .timestamp { font-size: 11px; color: var(--ios-text-muted); margin-top: 6px; }
         .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
         .btn-edit { flex: 1; background: #fff0e0; color: var(--ios-orange); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-destructive { flex: 1; background: #ffebe9; color: var(--ios-red); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -85,7 +80,6 @@
         .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
         .ledger-value { font-size: 18px; font-weight: 700; }
 
-        /* Dynamic Sales Items Layout */
         .sales-item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
         .sales-item-row input { padding: 8px; border: 1px solid var(--ios-border); border-radius: 6px; font-size: 13px; outline: none; background: var(--ios-card); width: 100%; box-sizing: border-box; }
         .sales-item-name { flex: 2.2; }
@@ -94,7 +88,10 @@
         .btn-remove-item { background: #ffebe9; color: var(--ios-red); border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-add-item { background: #e8f5e9; color: var(--ios-green); border: none; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; border: 1px dashed var(--ios-green); }
 
-        /* Full Statement Print/PDF Media Query */
+        /* Badge for Stock */
+        .stock-badge-green { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
+        .stock-badge-red { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
+
         @media print {
             body * { visibility: hidden; }
             #fullStatementModal, #fullStatementModal * { visibility: visible; }
@@ -105,35 +102,33 @@
 </head>
 <body>
 
-    <!-- Full Statement Modal (PDF/Excel View) -->
+    <!-- Full Statement Modal -->
     <div id="fullStatementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--ios-bg); z-index:9999; overflow-y:auto;">
         <div style="padding:15px; background:white; position:sticky; top:0; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
             <h3 style="margin:0; font-size:18px;">📜 Ledger Statement</h3>
             <button class="close-btn" style="position:static; padding:8px 12px; margin:0;" onclick="closeStatementModal()">✖ CLOSE</button>
         </div>
         <div style="padding:15px; background:white; min-height:80vh;" id="stmtPrintArea">
-            <div id="stmtContent">
-                <!-- Data will load here automatically -->
-            </div>
+            <div id="stmtContent"></div>
         </div>
         <div style="padding:15px; display:flex; gap:10px; background:var(--ios-bg);">
-            <button onclick="downloadStatementExcel()" class="btn-export" style="flex:1; padding:12px; font-size:15px;">⬇ Download Excel</button>
-            <button onclick="printStatementPDF()" class="btn-primary" style="flex:1; padding:12px; font-size:15px;">🖨️ Save as PDF</button>
+            <button onclick="downloadStatementExcel()" class="btn-export" style="flex:1; padding:12px; font-size:15px;">⬇ Excel</button>
+            <button onclick="printStatementPDF()" class="btn-primary" style="flex:1; padding:12px; font-size:15px;">🖨️ PDF</button>
         </div>
     </div>
 
-    <!-- In-App Image Viewer Modal -->
+    <!-- Image Viewer -->
     <div id="imageViewerModal">
         <button class="close-btn" onclick="closeImageViewer()">✖ CLOSE</button>
         <img id="fullSizeImage" src="" alt="View">
     </div>
 
-    <!-- PIN Lock Screen -->
+    <!-- PIN Lock -->
     <div id="lockScreen">
         <div class="lock-box">
             <h2>🔒 Security Lock</h2>
             <p style="font-size: 14px; color: gray;">Enter PIN to access system</p>
-            <input type="password" id="pinInput" placeholder="Enter PIN (Default: 1234)">
+            <input type="password" id="pinInput" placeholder="Enter PIN">
             <button class="btn-primary" onclick="verifyPin()">Unlock</button>
         </div>
     </div><!-- Main App Wrapper -->
@@ -331,9 +326,9 @@
                 </div>
             </div>
 
-            <!-- 4. SERIAL NO. TAB (Inventory) -->
+            <!-- 4. FINANCE S/N TAB (Purana Stock - Locked Logic) -->
             <div id="tab-serial" class="tab-content">
-                <div class="section-title" style="margin-left: 12px;">Stock Entry</div>
+                <div class="section-title" style="margin-left: 12px;">Finance S/N Entry</div>
                 <div class="card" style="margin-top: 8px;">
                     <input type="hidden" id="editId" value="">
                     <div class="input-row">
@@ -371,17 +366,73 @@
 
                 <br><br>
                 <div class="section-header">
-                    <div class="section-title">Stock <span class="badge" id="totalCount">0</span></div>
+                    <div class="section-title">Finance S/N <span class="badge" id="totalCount">0</span></div>
                     <button class="btn-export" onclick="exportStockExcel()">⬇ Export</button>
                 </div>
                 <div class="search-container" style="margin: 10px 12px;">
                     <span>🔍 </span>
-                    <input type="search" id="searchInput" placeholder="Search Stock..." onkeyup="filterRecords()">
+                    <input type="search" id="searchInput" placeholder="Search Serial..." onkeyup="filterRecords()">
                 </div>
                 <div class="card" id="recordsList"></div>
             </div>
 
-            <!-- 5. SALES & BOOKING TAB (ADVANCED) -->
+            <!-- 5. NEW REAL STOCK TAB (Inventory Management) -->
+            <div id="tab-realstock" class="tab-content">
+                <div class="section-title" style="margin-left: 12px;">Real Inventory Entry</div>
+                <div class="card" style="margin-top: 8px;">
+                    
+                    <!-- Datalist for Google-like Auto-suggest -->
+                    <datalist id="modelSuggestList"></datalist>
+                    <input type="hidden" id="realStockEditId" value="">
+
+                    <div class="input-row">
+                        <label>Model Name</label>
+                        <div class="input-wrapper">
+                            <!-- Type karte hi dropdown list aayegi aur automatically details fill karegi -->
+                            <input type="text" id="rsModelName" list="modelSuggestList" placeholder="Search or Type new..." oninput="autoFillStockDetails()" autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    <div class="input-row">
+                        <label>Brand</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="rsBrand" placeholder="e.g. LG, Samsung">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label>Rate (₹)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="rsRate" placeholder="Selling/Cost Price">
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <label>Quantity</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="rsQty" placeholder="Pieces (Pcs)" value="1">
+                        </div>
+                    </div>
+                </div>
+                <!-- Smart Button: Naya item h to save, purana h to Add Qty karega -->
+                <button class="btn-primary" id="saveRealStockBtn" style="background-color: var(--ios-blue);">Save / Update Stock</button>
+
+                <br><br>
+                <div class="section-header">
+                    <div class="section-title">Current Shop Inventory</div>
+                </div>
+                
+                <div class="search-container" style="margin: 10px 12px;">
+                    <span>🔍 </span>
+                    <input type="search" id="rsSearchInput" placeholder="Search Model or Brand..." onkeyup="filterRealStock()">
+                </div>
+                
+                <div class="card" id="realStockList">
+                    <div class="loading-text">Loading Inventory...</div>
+                </div>
+            </div>
+
+            <!-- 6. SALES & BOOKING TAB (ADVANCED) -->
             <div id="tab-sales" class="tab-content">
                 <div class="section-title" style="margin-left: 12px;">Customer Booking</div>
                 <div class="card" style="margin-top: 8px;">
@@ -416,12 +467,13 @@
 
         </div> <!-- End of Tabs -->
 
-        <!-- Bottom Navigation Bar -->
+        <!-- Bottom Navigation Bar (Updated for 6 Icons) -->
         <div class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('tab-home', 'Shop Dashboard')"><span class="nav-icon">🏠</span><span>Home</span></div>
             <div class="nav-item" onclick="switchTab('tab-purchase', 'Maal Inward')"><span class="nav-icon">🚛</span><span>Purchase</span></div>
             <div class="nav-item" onclick="switchTab('tab-accounts', 'Dealer Khata')"><span class="nav-icon">📒</span><span>Khata</span></div>
-            <div class="nav-item" onclick="switchTab('tab-serial', 'Stock')"><span class="nav-icon">🏷️</span><span>Stock</span></div>
+            <div class="nav-item" onclick="switchTab('tab-serial', 'Finance S/N')"><span class="nav-icon">🏷️</span><span>Fin S/N</span></div>
+            <div class="nav-item" onclick="switchTab('tab-realstock', 'Real Stock')"><span class="nav-icon">📦</span><span>Stock</span></div>
             <div class="nav-item" onclick="switchTab('tab-sales', 'Bookings')"><span class="nav-icon">📝</span><span>Sales</span></div>
         </div>
     </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
@@ -486,7 +538,6 @@
             } else alert("❌ Wrong PIN.");
         };
 
-        // ================= IMAGE COMPRESSION HELPER =================
         function setupImageUpload(inputId, previewId, callback) {
             document.getElementById(inputId)?.addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -555,7 +606,6 @@
             const billNo = document.getElementById('billNumber').value.trim().toUpperCase(); const amount = document.getElementById('billAmount').value;
             if (!dealer || !date || !billNo || !amount) { alert("⚠️ Sabhi details bharein!"); return; }
             const btn = document.getElementById('savePurchaseBtn'); btn.innerText = "Saving...";
-            
             try {
                 await addDoc(collection(db, "purchase_bills"), { dealer, date, billNo, amount: Number(amount), photo: billImgData || "", timestamp: Date.now() });
                 alert("✅ Bill saved!");
@@ -573,11 +623,8 @@
                 if(list) {
                     let dStr = new Date(data.date).toLocaleDateString('en-IN');
                     let pBtn = data.photo ? `<button onclick="viewImage('${data.photo}')" class="btn-edit" style="width:auto;">📸 Bill</button>` : '';
-                    list.innerHTML += `
-                        <div class="record-item p-item" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
-                            <div style="display:flex; justify-content:space-between;">
-                                <div class="product-title">${data.dealer}</div><div style="font-weight:700; color:var(--ios-green);">₹${data.amount.toLocaleString('en-IN')}</div>
-                            </div>
+                    list.innerHTML += `<div class="record-item p-item" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
+                            <div style="display:flex; justify-content:space-between;"><div class="product-title">${data.dealer}</div><div style="font-weight:700; color:var(--ios-green);">₹${data.amount.toLocaleString('en-IN')}</div></div>
                             <div class="data-row"><span>Bill: <strong>${data.billNo}</strong></span><span>📅 ${dStr}</span></div>
                             <div style="margin-top:10px;">${pBtn}<button onclick="deleteBill('${docSnap.id}')" class="btn-destructive" style="width:auto; float:right;">🗑️</button></div>
                         </div>`;
@@ -599,48 +646,28 @@
         let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
 
         window.loadDealerLedger = function() {
-            const dealer = document.getElementById('ledgerDealerSelect').value;
-            if(!dealer) return;
-            document.getElementById('ledgerDashboard').style.display = 'block';
-            document.getElementById('btnShareLedger').style.display = 'block';
-            
+            const dealer = document.getElementById('ledgerDealerSelect').value; if(!dealer) return;
+            document.getElementById('ledgerDashboard').style.display = 'block'; document.getElementById('btnShareLedger').style.display = 'block';
             if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
 
-            // Fetch Total Bills ONLY for Selected Dealer
             cLedgerUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
                 dealerTotalBill = 0; snap.forEach(doc => dealerTotalBill += (doc.data().amount || 0)); updateLedgerUI();
             });
-            
-            // Fetch Payments ONLY for Selected Dealer (Sort in JS to prevent Firebase Index Crash)
             cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
-                dealerTotalPaid = 0; 
-                const list = document.getElementById('paymentList'); 
-                if(list) list.innerHTML = '';
-                
+                dealerTotalPaid = 0; const list = document.getElementById('paymentList'); if(list) list.innerHTML = '';
                 let payDataArray = [];
-                snap.forEach(docSnap => {
-                    let d = docSnap.data();
-                    d.id = docSnap.id;
-                    payDataArray.push(d);
-                });
-
-                // JS Sorting
+                snap.forEach(docSnap => { let d = docSnap.data(); d.id = docSnap.id; payDataArray.push(d); });
                 payDataArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-                if(payDataArray.length === 0) { 
-                    if(list) list.innerHTML = '<div class="loading-text" style="color:gray;">No payment history for this dealer.</div>'; 
+                if(payDataArray.length === 0) { if(list) list.innerHTML = '<div class="loading-text" style="color:gray;">No payment history for this dealer.</div>'; 
                 } else {
                     payDataArray.forEach(data => {
                         dealerTotalPaid += (data.amount || 0);
                         if(list) {
                             let dStr = new Date(data.date).toLocaleDateString('en-IN');
                             let tagClass = data.mode==='Cash' ? 'tag-cash' : (data.mode==='Cheque' ? 'tag-cheque' : 'tag-online');
-                            list.innerHTML += `
-                                <div class="record-item pay-item" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <span style="font-weight:700; font-size:15px; color:var(--ios-blue);">₹${data.amount.toLocaleString('en-IN')}</span>
-                                        <span style="font-size:12px; color:gray;">📅 ${dStr}</span>
-                                    </div>
+                            list.innerHTML += `<div class="record-item pay-item" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; font-size:15px; color:var(--ios-blue);">₹${data.amount.toLocaleString('en-IN')}</span><span style="font-size:12px; color:gray;">📅 ${dStr}</span></div>
                                     <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
                                         <div><span class="${tagClass}">${data.mode}</span> <span style="font-size:13px; color:#555; margin-left:6px;">${data.remarks||''}</span></div>
                                         <button onclick="deletePayment('${data.id}')" style="background:none;border:none;color:var(--ios-red);font-size:15px;cursor:pointer;">🗑️</button>
@@ -667,7 +694,6 @@
             let val = document.getElementById('paySearch').value.toLowerCase();
             document.querySelectorAll('.pay-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; });
         };
-
         document.getElementById('savePaymentBtn')?.addEventListener('click', async () => {
             const dealer = document.getElementById('ledgerDealerSelect').value; const amount = document.getElementById('payAmount').value;
             if(!dealer || !amount) { alert("Dealer aur Amount bharein!"); return; }
@@ -676,18 +702,10 @@
         });
         window.deletePayment = function(id) { if(confirm("Delete this payment?")) deleteDoc(doc(db, "dealer_payments", id)); };
 
-        window.shareLedgerWhatsApp = function() {
-            const dealer = document.getElementById('ledgerDealerSelect').value;
-            let bal = dealerTotalBill - dealerTotalPaid; let stat = bal > 0 ? `(Due)` : (bal < 0 ? `(Advance)` : `(Settled)`);
-            let msg = `*Savitri Electronics*\n_Ledger Statement_\n\n*Dealer:* ${dealer}\n*Total Bill:* ₹${dealerTotalBill.toLocaleString('en-IN')}\n*Total Paid:* ₹${dealerTotalPaid.toLocaleString('en-IN')}\n*Balance:* ₹${Math.abs(bal).toLocaleString('en-IN')} ${stat}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        };
-
-        // ================= QUICK KHATA (HOME DASHBOARD) =================
+        // Home Khata View
         let hUnsubBills = null; let hUnsubPays = null;
         window.loadHomeDealerLedger = function() {
-            const dealer = document.getElementById('homeDealerSelect').value;
-            if(!dealer) return;
+            const dealer = document.getElementById('homeDealerSelect').value; if(!dealer) return;
             document.getElementById('homeLedgerResult').style.display = 'block';
             if(hUnsubBills) hUnsubBills(); if(hUnsubPays) hUnsubPays();
             let htBill = 0; let htPaid = 0;
@@ -715,131 +733,13 @@
             else { dueEl.innerText = "₹0 (Clear)"; dueEl.style.color = "#2e7d32"; }
         }
 
-        // ================= FULL STATEMENT LOGIC (PDF/EXCEL) =================
-        let currentStatementData = [];
-        let currentStatementDealer = "";
-
-        window.openFullStatement = async function() {
-            const dealer = document.getElementById('homeDealerSelect').value;
-            if(!dealer) { alert("Please select a dealer first!"); return; }
-            currentStatementDealer = dealer;
-            
-            document.getElementById('fullStatementModal').style.display = 'block';
-            document.getElementById('stmtContent').innerHTML = '<div class="loading-text">Loading Statement Data...</div>';
-            
-            currentStatementData = [];
-            try {
-                const qBills = query(collection(db, "purchase_bills"), where("dealer", "==", dealer));
-                const snapBills = await getDocs(qBills);
-                snapBills.forEach(doc => {
-                    let d = doc.data();
-                    currentStatementData.push({ type: 'bill', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Bill No: ${d.billNo}`, timestamp: d.timestamp });
-                });
-
-                const qPays = query(collection(db, "dealer_payments"), where("dealer", "==", dealer));
-                const snapPays = await getDocs(qPays);
-                snapPays.forEach(doc => {
-                    let d = doc.data();
-                    currentStatementData.push({ type: 'pay', date: new Date(d.date).getTime(), dateStr: d.date, amount: d.amount, desc: `Paid via ${d.mode} ${d.remarks ? '('+d.remarks+')':''}`, timestamp: d.timestamp });
-                });
-
-                currentStatementData.sort((a, b) => {
-                    if (a.date === b.date) return a.timestamp - b.timestamp;
-                    return a.date - b.date;
-                });
-
-                renderStatementHTML();
-
-            } catch(e) { document.getElementById('stmtContent').innerHTML = `<div class="loading-text" style="color:red;">Error loading statement.</div>`; }
-        };
-
-        function renderStatementHTML() {
-            let html = `
-                <div style="text-align:center; margin-bottom:20px; border-bottom:1px solid #ccc; padding-bottom:10px;">
-                    <h2 style="margin:0; color:var(--ios-blue);">Savitri Electronics</h2>
-                    <p style="margin:5px 0 0 0; font-size:14px; font-weight:600;">Ledger Statement: ${currentStatementDealer}</p>
-                    <p style="margin:2px 0 0 0; font-size:12px; color:gray;">Generated on: ${new Date().toLocaleString('en-IN')}</p>
-                </div>
-                <table style="width:100%; border-collapse: collapse; font-size:13px; text-align:left; border: 1px solid #eee;">
-                    <tr style="background:#f5f5f5; border-bottom:2px solid #ccc;">
-                        <th style="padding:10px 5px;">Date</th>
-                        <th style="padding:10px 5px;">Details</th>
-                        <th style="padding:10px 5px; color:var(--ios-green);">Maal (In)</th>
-                        <th style="padding:10px 5px; color:var(--ios-blue);">Jama (Out)</th>
-                        <th style="padding:10px 5px;">Balance</th>
-                    </tr>
-            `;
-
-            let runningBal = 0; let totalIn = 0; let totalOut = 0;
-            
-            if(currentStatementData.length === 0) {
-                html += `<tr><td colspan="5" style="text-align:center; padding:15px;">No transactions found.</td></tr>`;
-            } else {
-                currentStatementData.forEach(item => {
-                    let dStr = new Date(item.date).toLocaleDateString('en-IN');
-                    let inAmt = item.type === 'bill' ? item.amount : 0;
-                    let outAmt = item.type === 'pay' ? item.amount : 0;
-                    
-                    runningBal += (inAmt - outAmt);
-                    totalIn += inAmt; totalOut += outAmt;
-
-                    let balStr = Math.abs(runningBal).toLocaleString('en-IN') + (runningBal > 0 ? " Dr" : (runningBal < 0 ? " Cr" : ""));
-                    let balColor = runningBal > 0 ? "color:var(--ios-red);" : (runningBal < 0 ? "color:var(--ios-green);" : "color:gray;");
-
-                    html += `
-                        <tr style="border-bottom:1px solid #eee;">
-                            <td style="padding:10px 5px;">${dStr}</td>
-                            <td style="padding:10px 5px;">${item.desc}</td>
-                            <td style="padding:10px 5px;">${inAmt > 0 ? '₹'+inAmt.toLocaleString('en-IN') : '-'}</td>
-                            <td style="padding:10px 5px;">${outAmt > 0 ? '₹'+outAmt.toLocaleString('en-IN') : '-'}</td>
-                            <td style="padding:10px 5px; font-weight:600; ${balColor}">${balStr}</td>
-                        </tr>
-                    `;
-                });
-                
-                let finalBalStr = Math.abs(runningBal).toLocaleString('en-IN') + (runningBal > 0 ? " Due" : (runningBal < 0 ? " Advance" : " Settled"));
-                let finalBalColor = runningBal > 0 ? "var(--ios-red)" : (runningBal < 0 ? "var(--ios-green)" : "gray");
-                html += `
-                    <tr style="background:#f9f9f9; border-top:2px solid #ccc; font-weight:bold;">
-                        <td colspan="2" style="padding:10px 5px; text-align:right;">TOTAL:</td>
-                        <td style="padding:10px 5px; color:var(--ios-green);">₹${totalIn.toLocaleString('en-IN')}</td>
-                        <td style="padding:10px 5px; color:var(--ios-blue);">₹${totalOut.toLocaleString('en-IN')}</td>
-                        <td style="padding:10px 5px; color:${finalBalColor};">₹${finalBalStr}</td>
-                    </tr>
-                `;
-            }
-
-            html += `</table>`;
-            document.getElementById('stmtContent').innerHTML = html;
-        }
-
-        window.closeStatementModal = function() { document.getElementById('fullStatementModal').style.display = 'none'; };
-        window.printStatementPDF = function() { window.print(); };
-        
-        window.downloadStatementExcel = function() {
-            if(currentStatementData.length === 0) return;
-            let csvContent = "data:text/csv;charset=utf-8,Date,Details,Maal (In),Jama (Out),Running Balance\n";
-            let rBal = 0;
-            currentStatementData.forEach(item => {
-                let dStr = new Date(item.date).toLocaleDateString('en-IN');
-                let inAmt = item.type === 'bill' ? item.amount : 0;
-                let outAmt = item.type === 'pay' ? item.amount : 0;
-                rBal += (inAmt - outAmt);
-                let bStr = Math.abs(rBal) + (rBal > 0 ? " Dr" : (rBal < 0 ? " Cr" : ""));
-                csvContent += `"${dStr}","${item.desc}","${inAmt}","${outAmt}","${bStr}"\n`;
-            });
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Ledger_${currentStatementDealer.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('en-IN')}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        };
-
-        // ================= SERIAL NO. SYSTEM (INVENTORY) =================
+        // ================= FINANCE S/N (Old Stock Logic - Locked) =================
         let globalRecords = []; let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "SAMSUNG", "SONY", "HAVELLS"];
         const catRef = doc(db, "app_settings", "brands");
         onSnapshot(catRef, (snap) => { if (snap.exists() && snap.data().list) brandCategories = snap.data().list; else setDoc(catRef, { list: brandCategories }); renderCategories(); });
         function renderCategories() {
             const sel = document.getElementById("categorySelect"); if(!sel) return;
-            const cVal = sel.value; sel.innerHTML = '<option value="" disabled selected>Select Company...</option>';
+            const cVal = sel.value; sel.innerHTML = '<option value="" disabled selected>Company...</option>';
             brandCategories.sort().forEach(b => { sel.innerHTML += `<option value="${b}">${b}</option>`; });
             if(cVal && brandCategories.includes(cVal)) sel.value = cVal;
         }
@@ -855,15 +755,12 @@
             const eId = document.getElementById('editId').value;
             if (!c || !m || !sr) { alert("Brand, Model & Serial are required!"); return; }
             if (globalRecords.find(i => i.serial === sr && i.id !== eId)) { alert(`ERROR: Serial '${sr}' already exists!`); return; }
-
             const dataObj = { category:c, model:m, star:st, serial:sr, photo: itemImgData || "" };
             if (eId) { await updateDoc(doc(db, "finance_records", eId), dataObj); document.getElementById('saveBtn').innerText="Save Record"; document.getElementById('saveBtn').style.backgroundColor="var(--ios-blue)"; document.getElementById('editId').value=''; } 
             else { dataObj.timestamp = Date.now(); addDoc(collection(db, "finance_records"), dataObj); }
-            
             document.getElementById('categorySelect').value=''; document.getElementById('modelNumber').value=''; document.getElementById('starRating').value=''; document.getElementById('serialNumber').value='';
             document.getElementById('itemPhoto').value=''; document.getElementById('itemPreview').style.display='none'; itemImgData = null;
         });
-
         window.editRecord = function(id, c, m, st, sr) {
             document.getElementById('categorySelect').value=c; document.getElementById('modelNumber').value=m; document.getElementById('starRating').value=st; document.getElementById('serialNumber').value=sr; document.getElementById('editId').value=id;
             const btn = document.getElementById('saveBtn'); btn.innerText = "Update Record"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
@@ -873,7 +770,6 @@
         onSnapshot(query(collection(db, "finance_records"), orderBy("timestamp", "desc")), (snap) => {
             const list = document.getElementById('recordsList'); 
             if(document.getElementById('totalCount')) document.getElementById('totalCount').innerText = snap.size;
-            if(document.getElementById('dashStock')) document.getElementById('dashStock').innerText = snap.size;
             if(!list) return; list.innerHTML = ''; globalRecords = [];
             snap.forEach((docSnap) => {
                 const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data);
@@ -889,132 +785,203 @@
             let val = document.getElementById('searchInput').value.toUpperCase();
             document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; });
         }
-        window.exportStockExcel = function() {
-            if(globalRecords.length === 0) return;
-            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,Star Rating,Serial Number\n"; 
-            globalRecords.forEach(row => {
-                let dateStr = new Date(row.timestamp).toLocaleDateString('en-IN');
-                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || "N/A"}","${row.star || "N/A"}","${row.serial || "N/A"}"\n`;
+
+
+        // ================= NEW MODULE: REAL INVENTORY (STOCK) =================
+        let globalRealStock = [];
+        
+        onSnapshot(query(collection(db, "real_inventory"), orderBy("modelName", "asc")), (snap) => {
+            const list = document.getElementById('realStockList');
+            const dataList = document.getElementById('modelSuggestList');
+            if(list) list.innerHTML = '';
+            if(dataList) dataList.innerHTML = '';
+            globalRealStock = [];
+            
+            let html = '';
+            let totalStockCount = 0; // For Home Dashboard
+            
+            snap.forEach((docSnap) => {
+                const data = docSnap.data();
+                data.id = docSnap.id;
+                globalRealStock.push(data);
+                totalStockCount += (data.qty || 0);
+                
+                // Populate Google-like DataList
+                if(dataList) {
+                    dataList.innerHTML += `<option value="${data.modelName}">`;
+                }
+
+                if(list) {
+                    let stockBadge = data.qty > 0 ? `<span class="stock-badge-green">${data.qty} Pcs</span>` : `<span class="stock-badge-red">Out of Stock</span>`;
+                    
+                    html += `
+                    <div class="record-item rs-card" data-search="${data.modelName.toLowerCase()} ${data.brand.toLowerCase()}">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="product-title">${data.modelName}</div>
+                            ${stockBadge}
+                        </div>
+                        <div class="data-row">
+                            <span>Brand: <strong>${data.brand}</strong></span>
+                            <span style="color:var(--ios-blue); font-weight:bold;">Rate: ₹${Number(data.rate).toLocaleString('en-IN')}</span>
+                        </div>
+                        <div class="action-buttons" style="margin-top:12px;">
+                            <button class="btn-edit" onclick="editRealStock('${data.id}', '${data.modelName}', '${data.brand}', ${data.rate}, ${data.qty})" style="flex:2;">✏️ Edit</button>
+                            <button class="btn-edit" style="background:#e8f5e9; color:var(--ios-green);" onclick="adjustQty('${data.id}', ${data.qty}, 1)">+ 1 Pcs</button>
+                            <button class="btn-destructive" style="background:#ffebee; color:var(--ios-red);" onclick="adjustQty('${data.id}', ${data.qty}, -1)">- 1 Pcs</button>
+                        </div>
+                    </div>`;
+                }
             });
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Savitri_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
+            
+            if(list) list.innerHTML = html || '<div class="loading-text" style="padding:15px;">No inventory found.</div>';
+            
+            // Update Dashboard Stock Number
+            if(document.getElementById('dashStock')) document.getElementById('dashStock').innerText = totalStockCount;
+        });
+
+        // The Smart Auto-Suggest & Auto-Fill Logic
+        window.autoFillStockDetails = function() {
+            let val = document.getElementById('rsModelName').value.trim();
+            let existingItem = globalRealStock.find(item => item.modelName.toLowerCase() === val.toLowerCase());
+            
+            const btn = document.getElementById('saveRealStockBtn');
+            if(existingItem) {
+                // Agar pehle se hai toh brand, rate auto fill ho jayega
+                document.getElementById('rsBrand').value = existingItem.brand;
+                document.getElementById('rsRate').value = existingItem.rate;
+                document.getElementById('realStockEditId').value = existingItem.id;
+                document.getElementById('rsQty').value = "1"; // Default add 1
+                btn.innerText = "Update Existing Stock Qty / Rate";
+                btn.style.backgroundColor = "var(--ios-orange)";
+            } else {
+                document.getElementById('realStockEditId').value = "";
+                btn.innerText = "Save New Stock Item";
+                btn.style.backgroundColor = "var(--ios-blue)";
+            }
+        };
+
+        // Save or Update Real Stock
+        document.getElementById('saveRealStockBtn')?.addEventListener('click', async () => {
+            let id = document.getElementById('realStockEditId').value;
+            let model = document.getElementById('rsModelName').value.trim();
+            let brand = document.getElementById('rsBrand').value.trim();
+            let rate = Number(document.getElementById('rsRate').value) || 0;
+            let inputQty = Number(document.getElementById('rsQty').value) || 0;
+
+            if(!model || !brand) { alert("Model Name aur Brand zaroori hain!"); return; }
+
+            const btn = document.getElementById('saveRealStockBtn');
+            btn.innerText = "Saving...";
+
+            if(id) {
+                // Update Existing Item
+                let existingItem = globalRealStock.find(item => item.id === id);
+                let newQty = (existingItem.qty || 0) + inputQty;
+                await updateDoc(doc(db, "real_inventory", id), {
+                    rate: rate,
+                    qty: newQty,
+                    brand: brand, // Incase brand spelling updated
+                    updatedAt: Date.now()
+                });
+                alert(`✅ Stock Updated! Total Quantity: ${newQty} Pcs`);
+            } else {
+                // Create New Item
+                await addDoc(collection(db, "real_inventory"), {
+                    modelName: model,
+                    brand: brand,
+                    rate: rate,
+                    qty: inputQty,
+                    timestamp: Date.now(),
+                    updatedAt: Date.now()
+                });
+                alert("✅ New Item added to Inventory!");
+            }
+
+            // Reset Box
+            document.getElementById('realStockEditId').value = "";
+            document.getElementById('rsModelName').value = "";
+            document.getElementById('rsBrand').value = "";
+            document.getElementById('rsRate').value = "";
+            document.getElementById('rsQty').value = "1";
+            btn.innerText = "Save / Update Stock";
+            btn.style.backgroundColor = "var(--ios-blue)";
+        });
+
+        // Edit Button Click (Manual Update)
+        window.editRealStock = function(id, model, brand, rate, qty) {
+            document.getElementById('realStockEditId').value = id;
+            document.getElementById('rsModelName').value = model;
+            document.getElementById('rsBrand').value = brand;
+            document.getElementById('rsRate').value = rate;
+            document.getElementById('rsQty').value = "0"; // Focus on updating price
+            
+            const btn = document.getElementById('saveRealStockBtn');
+            btn.innerText = "Update Price / Qty";
+            btn.style.backgroundColor = "var(--ios-orange)";
+            window.scrollTo(0, 0);
+        };
+
+        // Quick +1 / -1 Button Logic
+        window.adjustQty = async function(id, currentQty, change) {
+            let newQty = currentQty + change;
+            if(newQty < 0) newQty = 0;
+            await updateDoc(doc(db, "real_inventory", id), { qty: newQty, updatedAt: Date.now() });
+        };
+
+        // Search Filter for Real Stock
+        window.filterRealStock = function() {
+            let val = document.getElementById('rsSearchInput').value.toLowerCase();
+            document.querySelectorAll('.rs-card').forEach(el => { 
+                el.style.display = el.dataset.search.includes(val) ? '' : 'none'; 
+            });
+        };
 
         // ================= SALES / BOOKING (ADVANCED DYNAMIC AUTO-CALC) =================
         if(document.getElementById('custDeliveryDate')) document.getElementById('custDeliveryDate').valueAsDate = new Date();
 
-        // 1. Add More Item Row
         window.addSalesItemRow = function() {
             const wrapper = document.getElementById('itemsWrapper');
-            const row = document.createElement('div');
-            row.className = 'sales-item-row';
-            row.innerHTML = `
-                <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
+            const row = document.createElement('div'); row.className = 'sales-item-row';
+            row.innerHTML = `<input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
                 <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
                 <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
-                <button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>
-            `;
+                <button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>`;
             wrapper.appendChild(row);
         };
+        window.removeSalesItemRow = function(btn) { btn.parentElement.remove(); calculateCustBalance(); };
 
-        // 2. Remove Item Row
-        window.removeSalesItemRow = function(btn) {
-            btn.parentElement.remove();
-            calculateCustBalance();
-        };
-
-        // 3. Auto Calculate Total & Due
         window.calculateCustBalance = function() {
-            let totalBill = 0;
-            const qtys = document.querySelectorAll('.req-item-qty');
-            const prices = document.querySelectorAll('.req-item-price');
-            
-            // Loop through all items and multiply Qty x Price
-            for(let i = 0; i < qtys.length; i++) {
-                let q = Number(qtys[i].value) || 0;
-                let p = Number(prices[i].value) || 0;
-                totalBill += (q * p);
-            }
-            
-            // Update Total Bill Field
+            let totalBill = 0; const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
+            for(let i = 0; i < qtys.length; i++) { let q = Number(qtys[i].value) || 0; let p = Number(prices[i].value) || 0; totalBill += (q * p); }
             document.getElementById('custTotalBill').value = totalBill;
-            
-            // Calculate Due (Total - Advance)
             let advance = Number(document.getElementById('custAdvance').value) || 0;
-            let dueBalance = totalBill - advance;
-            
-            // Show Due on Screen
-            document.getElementById('custBalanceText').innerText = "₹" + dueBalance.toLocaleString('en-IN');
+            document.getElementById('custBalanceText').innerText = "₹" + (totalBill - advance).toLocaleString('en-IN');
         };
 
-        // 4. Save Booking (Gathering all dynamic items)
         document.getElementById('saveBookingBtn')?.addEventListener('click', async () => {
-            const n = document.getElementById('custName').value.trim(); 
-            const mb = document.getElementById('custMobile').value.trim();
-            const tb = document.getElementById('custTotalBill').value;
-            const adv = document.getElementById('custAdvance').value; 
-            const dDate = document.getElementById('custDeliveryDate').value;
+            const n = document.getElementById('custName').value.trim(); const mb = document.getElementById('custMobile').value.trim();
+            const tb = document.getElementById('custTotalBill').value; const adv = document.getElementById('custAdvance').value; const dDate = document.getElementById('custDeliveryDate').value;
+            let itemsString = ""; const names = document.querySelectorAll('.req-item-name'); const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
+            for(let i = 0; i < names.length; i++) { if(names[i].value.trim() !== '') { itemsString += `• ${qtys[i].value}x ${names[i].value.trim()} (₹${prices[i].value})\n`; } }
 
-            // Generate Item String from dynamic fields
-            let itemsString = "";
-            const names = document.querySelectorAll('.req-item-name');
-            const qtys = document.querySelectorAll('.req-item-qty');
-            const prices = document.querySelectorAll('.req-item-price');
-            
-            for(let i = 0; i < names.length; i++) {
-                let itemName = names[i].value.trim();
-                let itemQty = qtys[i].value;
-                let itemPrice = prices[i].value;
-                if(itemName !== '') {
-                    itemsString += `• ${itemQty}x ${itemName} (₹${itemPrice})\n`;
-                }
-            }
-
-            if (!n || itemsString === "" || !tb) { alert("⚠️ Customer Name aur kam se kam ek Item Details zaroori hain!"); return; }
-            
+            if (!n || itemsString === "" || !tb) { alert("⚠️ Customer Name aur kam se kam ek Item zaroori hai!"); return; }
             const btn = document.getElementById('saveBookingBtn'); btn.innerText = "Saving...";
             
-            await addDoc(collection(db, "sales_bookings"), { 
-                customerName: n, 
-                mobile: mb, 
-                items: itemsString.trim(), 
-                totalBill: Number(tb), 
-                advanceAmount: Number(adv || 0), 
-                deliveryDate: dDate, 
-                timestamp: Date.now() 
-            });
+            await addDoc(collection(db, "sales_bookings"), { customerName: n, mobile: mb, items: itemsString.trim(), totalBill: Number(tb), advanceAmount: Number(adv || 0), deliveryDate: dDate, timestamp: Date.now() });
             
-            alert("✅ Booking saved successfully!");
-            
-            // Reset Form completely
-            document.getElementById('custName').value = ''; 
-            document.getElementById('custMobile').value = ''; 
-            document.getElementById('custTotalBill').value = ''; 
-            document.getElementById('custAdvance').value = ''; 
-            document.getElementById('custBalanceText').innerText = "₹0";
-            
-            // Reset Dynamic Items back to 1 row
-            document.getElementById('itemsWrapper').innerHTML = `
-                <div class="sales-item-row">
-                    <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
-                    <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
-                    <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
-                </div>
-            `;
-            
+            alert("✅ Booking saved!");
+            document.getElementById('custName').value = ''; document.getElementById('custMobile').value = ''; document.getElementById('custTotalBill').value = ''; document.getElementById('custAdvance').value = ''; document.getElementById('custBalanceText').innerText = "₹0";
+            document.getElementById('itemsWrapper').innerHTML = `<div class="sales-item-row"><input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"></div>`;
             btn.innerText = "Save Booking";
         });
 
         onSnapshot(query(collection(db, "sales_bookings"), orderBy("timestamp", "desc")), (snap) => {
             const list = document.getElementById('bookingList'); const todayList = document.getElementById('todayDeliveryList');
             if(list) list.innerHTML = ''; if(todayList) todayList.innerHTML = '';
-            let tAdv = 0; let todayCount = 0;
-            let todayStr = new Date().toISOString().split('T')[0];
+            let tAdv = 0; let todayCount = 0; let todayStr = new Date().toISOString().split('T')[0];
 
             snap.forEach((docSnap) => {
                 const d = docSnap.data(); tAdv += (d.advanceAmount || 0); let bal = (d.totalBill||0) - (d.advanceAmount||0);
-                
                 let html = `<div class="record-item">
                     <div style="display:flex; justify-content:space-between;"><div class="product-title">👤 ${d.customerName}</div><div style="font-weight:700; color:var(--ios-orange);">Adv: ₹${d.advanceAmount.toLocaleString('en-IN')}</div></div>
                     <div style="font-size:13px; color:#444; margin:6px 0; white-space:pre-wrap; line-height:1.4;">${d.items}</div>
@@ -1022,9 +989,7 @@
                     <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size:12px; color:var(--ios-purple); font-weight:600;">🚚 Del: ${new Date(d.deliveryDate).toLocaleDateString('en-IN')}</span>
                         <button onclick="deleteBooking('${docSnap.id}')" style="background:var(--ios-green);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">✅ Complete</button>
-                    </div>
-                </div>`;
-                
+                    </div></div>`;
                 if(list) list.innerHTML += html;
                 if(d.deliveryDate === todayStr && todayList) { todayList.innerHTML += html; todayCount++; }
             });
@@ -1034,6 +999,7 @@
             if(document.getElementById('dashAdvance')) document.getElementById('dashAdvance').innerText = "₹" + tAdv.toLocaleString('en-IN');
         });
         window.deleteBooking = function(id) { if(confirm("✅ Is Customer ki Delivery/Payment complete ho gayi?")) deleteDoc(doc(db, "sales_bookings", id)); };
+
     </script>
 </body>
 </html>
