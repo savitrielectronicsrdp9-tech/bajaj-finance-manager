@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | ERP 2.3 (Unified Ledger)</title>
+    <title>Savitri Electronics | ERP 2.4 Pro</title>
     
     <style>
         /* CORE LOCKED DESIGN */
@@ -16,14 +16,14 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; padding-bottom: 75px; -webkit-font-smoothing: antialiased; }
 
-        /* Modals & Overlays */
-        .modal-overlay { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--ios-bg); flex-direction: column; overflow-y: auto; }
-        .sub-modal { display: none; position: fixed; z-index: 10005; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .sub-modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        #imageViewerModal { display: none; position: fixed; z-index: 10010; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; }
+        /* Zoom Image Viewer (Restored to perfectly working state) */
+        #imageViewerModal { display: none; position: fixed; z-index: 10010; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .close-btn { position: absolute; top: 30px; right: 20px; background: var(--ios-red); color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #fullSizeImage { max-width: 95%; max-height: 80%; border-radius: 8px; object-fit: contain; }
+
+        /* Edit Transaction Modal */
+        .sub-modal { display: none; position: fixed; z-index: 10005; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+        .sub-modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
 
         /* Badges & Tags */
         .tag-cash { color: #2e7d32; background: #e8f5e9; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
@@ -74,24 +74,10 @@
         .btn-primary:active { transform: scale(0.97); }
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-        /* Unified Ledger Specific Styles */
-        .unified-modal-header { padding: 15px; background: white; position: sticky; top: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index:10; }
-        .unified-summary-bar { display: flex; gap: 10px; padding: 15px; background: var(--ios-bg); }
-        .u-box { flex: 1; padding: 12px; border-radius: 10px; text-align: center; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .u-title { font-size: 11px; font-weight: 600; color: var(--ios-text-muted); margin-bottom: 4px; }
-        .u-val { font-size: 16px; font-weight: bold; }
-        .u-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--ios-border); background: white; }
-        .u-item-left { display: flex; flex-direction: column; gap: 4px; }
-        .u-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .u-btn-edit { background: #e5e5ea; color: var(--ios-blue); border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .u-btn-del { background: #ffebee; color: var(--ios-red); border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        
-        .clickable-dealer { cursor: pointer; transition: background 0.2s; }
-        .clickable-dealer:active { background: #e5e5ea !important; }
-
         .search-container { background: var(--ios-input-bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; display: flex; align-items: center; }
         .search-container input { border: none; background: transparent; width: 100%; font-size: 15px; outline: none; }
         
+        /* Cards for Purchase, Stock, Sales */
         .record-item { padding: 14px; border-bottom: 0.5px solid var(--ios-border); }
         .record-item:last-child { border-bottom: none; }
         .product-title { font-size: 16px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
@@ -103,41 +89,25 @@
         .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
         .ledger-value { font-size: 18px; font-weight: 700; }
 
+        /* Dynamic Sales Layout */
         .sales-item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
         .sales-item-row input { padding: 8px; border: 1px solid var(--ios-border); border-radius: 6px; font-size: 13px; outline: none; background: var(--ios-card); width: 100%; box-sizing: border-box; }
         .sales-item-name { flex: 2.2; } .sales-item-qty { flex: 0.8; } .sales-item-price { flex: 1.2; }
         .btn-remove-item { background: #ffebe9; color: var(--ios-red); border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-add-item { background: #e8f5e9; color: var(--ios-green); border: none; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; border: 1px dashed var(--ios-green); }
 
-        @media print { body * { visibility: hidden; } #unifiedLedgerModal, #unifiedLedgerModal * { visibility: visible; } #unifiedLedgerModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; display:block !important;} .btn-primary, .u-btn-edit, .u-btn-del, .close-btn { display: none !important; } }
+        /* Clean Statement List Layout */
+        .stmt-row { padding: 12px 14px; border-bottom: 1px solid #eee; background: white; }
+        .stmt-row:last-child { border-bottom: none; }
+        .stmt-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .stmt-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: gray; }
+        .stmt-btn { font-size: 12px; font-weight: bold; cursor: pointer; background: none; border: none; padding: 4px 8px; border-radius: 4px; }
+        .stmt-btn-edit { color: var(--ios-blue); background: #e5e5ea; }
+        .stmt-btn-del { color: var(--ios-red); background: #ffebee; margin-left: 5px;}
+
     </style>
 </head>
 <body>
-
-    <!-- 🌟 NEW: Unified Ledger Modal (Maha-Khata) -->
-    <div id="unifiedLedgerModal" class="modal-overlay">
-        <div class="unified-modal-header">
-            <button onclick="closeUnifiedLedger()" style="background:transparent; border:none; color:var(--ios-blue); font-size:16px; font-weight:600; cursor:pointer;">⬅ Back</button>
-            <h3 id="uDealerName" style="margin:0; font-size:16px; text-transform:uppercase;">Dealer Name</h3>
-            <button onclick="window.print()" style="background:transparent; border:none; color:var(--ios-blue); font-size:20px; cursor:pointer;">⬇️</button>
-        </div>
-        
-        <div class="unified-summary-bar">
-            <div class="u-box"><div class="u-title">Maal (In)</div><div class="u-val" id="uTotBill" style="color:var(--ios-green);">₹0</div></div>
-            <div class="u-box"><div class="u-title">Jama (Out)</div><div class="u-val" id="uTotPaid" style="color:var(--ios-blue);">₹0</div></div>
-            <div class="u-box" id="uBalBox" style="background:#ffebee;"><div class="u-title" id="uBalTitle">Due</div><div class="u-val" id="uTotBal" style="color:var(--ios-red);">₹0</div></div>
-        </div>
-
-        <div style="padding: 0 15px;">
-            <div class="search-container" style="margin-bottom: 5px; background: white; border: 1px solid var(--ios-border);">
-                <span>🔍 </span><input type="text" id="uSearch" placeholder="Search Amount, Bill No, Mode..." onkeyup="filterUnifiedList()">
-            </div>
-        </div>
-
-        <div id="unifiedListContainer" style="padding-bottom: 30px;">
-            <!-- Data dynamically loaded here -->
-        </div>
-    </div>
 
     <!-- 🌟 NEW: Edit Transaction Sub-Modal -->
     <div id="editTransactionModal" class="sub-modal">
@@ -153,12 +123,10 @@
             <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Date</label><div class="input-wrapper"><input type="date" id="eDate"></div></div>
             <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Amount</label><div class="input-wrapper"><input type="number" id="eAmt"></div></div>
             
-            <!-- Shows for Bill -->
             <div id="eBillGroup" style="display:none;">
                 <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Bill No.</label><div class="input-wrapper"><input type="text" id="eBillNo"></div></div>
             </div>
             
-            <!-- Shows for Payment -->
             <div id="ePayGroup" style="display:none;">
                 <div class="input-row" style="padding:8px 0;">
                     <label style="width:70px;">Mode</label>
@@ -170,7 +138,6 @@
                 </div>
                 <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Remarks</label><div class="input-wrapper"><input type="text" id="eRemarks"></div></div>
             </div>
-
             <button class="btn-primary" onclick="saveEditedTransaction()" style="margin-top:20px;">Save Changes</button>
         </div>
     </div>
@@ -244,9 +211,6 @@
                         <div style="display:flex; justify-content:space-between; font-size:15px; margin-top:8px; padding-top:8px; border-top:1px dashed #ccc;">
                             <span id="hBalanceTitle">Balance:</span> <strong id="hBalance" style="color:var(--ios-red);">₹0</strong>
                         </div>
-                        
-                        <!-- 🌟 NEW: View Unified Maha-Khata Button -->
-                        <button onclick="openUnifiedLedger(document.getElementById('homeDealerSelect').value)" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Maha-Khata (Edit/Del)</button>
                     </div>
                 </div>
 
@@ -309,12 +273,12 @@
                 <div class="card" id="purchaseList">
                     <div class="loading-text">Loading bills...</div>
                 </div>
-            </div><!-- 3. ACCOUNTS TAB (Dealer Khata) -->
+            </div><!-- 3. ACCOUNTS TAB (Dealer Khata - Bank Passbook Style) -->
             <div id="tab-accounts" class="tab-content">
                 <div class="section-title" style="margin-left: 12px;">Dealer Ledger (Khata)</div>
                 
                 <div class="card" style="margin-top: 8px; padding: 12px; background: white;">
-                    <select id="ledgerDealerSelect" style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid var(--ios-border); border-radius: 8px; outline: none;" onchange="loadDealerLedger()">
+                    <select id="ledgerDealerSelect" style="width: 100%; padding: 10px; font-size: 15px; border: 1px solid var(--ios-border); border-radius: 8px; outline: none;" onchange="loadDealerPassbook()">
                         <option value="" disabled selected>Select Dealer to view Khata...</option>
                     </select>
                 </div>
@@ -332,13 +296,10 @@
                             <div class="ledger-value" style="color: var(--ios-blue);" id="ledgerTotalPaid">₹0</div>
                         </div>
                     </div>
-                    <div class="ledger-box" id="ledgerBalanceBox" style="background: #ffebee; margin-bottom: 15px;">
+                    <div class="ledger-box" id="ledgerBalanceBox" style="background: #ffebee;">
                         <div class="ledger-title" id="ledgerBalanceTitle" style="font-size: 13px;">Net Balance</div>
                         <div class="ledger-value" id="ledgerBalanceValue" style="font-size: 24px; color: var(--ios-red);">₹0</div>
                     </div>
-
-                    <!-- 🌟 NEW: View Unified Maha-Khata Button -->
-                    <button onclick="openUnifiedLedger(document.getElementById('ledgerDealerSelect').value)" class="btn-primary" style="padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Maha-Khata (Edit/Del)</button>
                 </div>
 
                 <!-- Paisa Jama Karne Ka Form -->
@@ -370,18 +331,20 @@
                 <button class="btn-primary" id="savePaymentBtn" style="background-color: var(--ios-purple);">Save Payment</button>
 
                 <br><br>
+
+                <!-- 🌟 NEW: Unified Bank-Passbook Style Statement (No Popup) -->
                 <div class="section-header">
-                    <div class="section-title">Recent Payments</div>
+                    <div class="section-title" id="passbookTitle">Ledger Statement</div>
                     <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA Share</button>
                 </div>
 
                 <div class="search-container" style="margin: 10px 12px;">
                     <span>🔍 </span>
-                    <input type="text" id="paySearch" placeholder="Search history..." onkeyup="searchPayments()">
+                    <input type="text" id="paySearch" placeholder="Search Amount, Bill No, Mode..." onkeyup="filterPassbook()">
                 </div>
 
-                <div class="card" id="paymentList">
-                    <div class="record-item">Select dealer to view history...</div>
+                <div class="card" id="passbookList">
+                    <div class="record-item" style="color:gray;">Select dealer to view statement...</div>
                 </div>
             </div>
 
@@ -521,7 +484,7 @@
 
         </div> <!-- End of Tabs -->
 
-        <!-- Bottom Navigation Bar (Updated for 6 Icons) -->
+        <!-- Bottom Navigation Bar -->
         <div class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('tab-home', 'Shop Dashboard')"><span class="nav-icon">🏠</span><span>Home</span></div>
             <div class="nav-item" onclick="switchTab('tab-purchase', 'Maal Inward')"><span class="nav-icon">🚛</span><span>Purchase</span></div>
@@ -530,10 +493,10 @@
             <div class="nav-item" onclick="switchTab('tab-realstock', 'Real Stock')"><span class="nav-icon">📦</span><span>Stock</span></div>
             <div class="nav-item" onclick="switchTab('tab-sales', 'Bookings')"><span class="nav-icon">📝</span><span>Sales</span></div>
         </div>
-    </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
+                    </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, where, getDocs } 
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, setDoc, getDoc, where, orderBy } 
         from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -548,7 +511,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ================= UNIVERSAL IN-APP PHOTO VIEWER =================
+        // ================= 🔍 RESTORED: UNIVERSAL IN-APP PHOTO ZOOM =================
         window.viewImage = function(base64Str) {
             document.getElementById('fullSizeImage').src = base64Str;
             document.getElementById('imageViewerModal').style.display = 'flex';
@@ -573,44 +536,28 @@
         const pinRef = doc(db, "app_settings", "security");
         async function fetchPin() {
             const docSnap = await getDoc(pinRef);
-            if (docSnap.exists()) systemPin = docSnap.data().pin;
-            else await setDoc(pinRef, { pin: "1234" });
+            if (docSnap.exists()) systemPin = docSnap.data().pin; else await setDoc(pinRef, { pin: "1234" });
         }
         fetchPin();
-
         window.verifyPin = function() {
-            if(document.getElementById('pinInput').value === systemPin) {
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-            } else { alert("❌ Incorrect PIN."); document.getElementById('pinInput').value = ''; }
+            if(document.getElementById('pinInput').value === systemPin) { document.getElementById('lockScreen').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; } 
+            else { alert("❌ Incorrect PIN."); document.getElementById('pinInput').value = ''; }
         };
         window.changePin = async function() {
-            if(prompt("Enter Current PIN:") === systemPin) {
-                const newPin = prompt("Enter NEW 4-digit PIN:");
-                if(newPin && newPin.length >= 4) { await setDoc(pinRef, { pin: newPin }); systemPin = newPin; alert("✅ PIN Changed!"); } 
-                else alert("PIN must be at least 4 digits.");
-            } else alert("❌ Wrong PIN.");
+            if(prompt("Enter Current PIN:") === systemPin) { const newPin = prompt("Enter NEW 4-digit PIN:"); if(newPin && newPin.length >= 4) { await setDoc(pinRef, { pin: newPin }); systemPin = newPin; alert("✅ PIN Changed!"); } else alert("PIN must be at least 4 digits."); } 
+            else alert("❌ Wrong PIN.");
         };
 
         function setupImageUpload(inputId, previewId, callback) {
             document.getElementById(inputId)?.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
+                const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
                 reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        const compData = canvas.toDataURL('image/jpeg', 0.6); 
-                        document.getElementById(previewId).src = compData; document.getElementById(previewId).style.display = 'block';
-                        callback(compData);
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                    const img = new Image(); img.onload = function() {
+                        const canvas = document.createElement('canvas'); const MAX_WIDTH = 800; const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const compData = canvas.toDataURL('image/jpeg', 0.6); document.getElementById(previewId).src = compData; document.getElementById(previewId).style.display = 'block'; callback(compData);
+                    }; img.src = event.target.result;
+                }; reader.readAsDataURL(file);
             });
         }
         let billImgData = null; setupImageUpload('billPhoto', 'billPreview', data => billImgData = data);
@@ -619,189 +566,27 @@
         // ================= DEALER MANAGEMENT =================
         let dealersList = ["SAMSUNG DISTRIBUTOR", "LG AGENCY"];
         const dealerRef = doc(db, "app_settings", "dealers");
-        
         onSnapshot(dealerRef, (docSnap) => {
-            if (docSnap.exists() && docSnap.data().list) dealersList = docSnap.data().list;
-            else setDoc(dealerRef, { list: dealersList });
-            updateDealerSelects();
+            if (docSnap.exists() && docSnap.data().list) dealersList = docSnap.data().list; else setDoc(dealerRef, { list: dealersList }); updateDealerSelects();
         });
-
         function updateDealerSelects() {
             const selects = ['dealerSelect', 'ledgerDealerSelect', 'homeDealerSelect'];
             selects.forEach(id => {
                 const sel = document.getElementById(id);
                 if(sel) {
-                    const currentVal = sel.value;
-                    let defaultText = id === 'dealerSelect' ? 'Select Dealer...' : 'Select Dealer to view...';
+                    const currentVal = sel.value; let defaultText = id === 'dealerSelect' ? 'Select Dealer...' : 'Select Dealer to view Khata...';
                     sel.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
                     dealersList.sort().forEach(d => { sel.innerHTML += `<option value="${d}">${d}</option>`; });
                     if(currentVal && dealersList.includes(currentVal)) sel.value = currentVal;
                 }
             });
         }
+        window.addNewDealer = async function() { const newDealer = prompt("Naye Dealer ka naam:"); if (newDealer && newDealer.trim() !== "") { const cleanDealer = newDealer.trim().toUpperCase(); if(!dealersList.includes(cleanDealer)) { dealersList.push(cleanDealer); await setDoc(dealerRef, { list: dealersList }); document.getElementById("dealerSelect").value = cleanDealer; } } };
 
-        window.addNewDealer = async function() {
-            const newDealer = prompt("Naye Dealer ka naam:");
-            if (newDealer && newDealer.trim() !== "") {
-                const cleanDealer = newDealer.trim().toUpperCase();
-                if(!dealersList.includes(cleanDealer)) {
-                    dealersList.push(cleanDealer); await setDoc(dealerRef, { list: dealersList });
-                    document.getElementById("dealerSelect").value = cleanDealer;
-                }
-            }
-        };
+        // ================= 🚚 RESTORED: PURCHASE BILLS =================
+        if(document.getElementById('billDate')) document.getElementById('billDate').valueAsDate = new Date();
+        let globalTotalPurchases = 0; let globalTotalPayments = 0;
 
-        // ================= 🌟 NEW: UNIFIED LEDGER (MAHA-KHATA) MODULE =================
-        let currentUnifiedDealer = "";
-        let unifiedDataArray = [];
-
-        window.openUnifiedLedger = async function(dealer) {
-            if(!dealer) { alert("Please select a dealer first!"); return; }
-            currentUnifiedDealer = dealer;
-            document.getElementById('uDealerName').innerText = dealer;
-            document.getElementById('unifiedLedgerModal').style.display = 'flex';
-            document.getElementById('unifiedListContainer').innerHTML = '<div style="text-align:center; padding:20px; color:gray; font-weight:bold;">Loading Transactions...</div>';
-
-            const qBills = query(collection(db, "purchase_bills"), where("dealer", "==", dealer));
-            const qPays = query(collection(db, "dealer_payments"), where("dealer", "==", dealer));
-            
-            try {
-                const [snapBills, snapPays] = await Promise.all([getDocs(qBills), getDocs(qPays)]);
-                unifiedDataArray = [];
-                let tBill = 0, tPaid = 0;
-
-                snapBills.forEach(doc => {
-                    let d = doc.data(); tBill += Number(d.amount);
-                    unifiedDataArray.push({ id: doc.id, type: 'bill', dateStr: d.date, timestamp: d.timestamp, amount: Number(d.amount), billNo: d.billNo, searchStr: (d.date+" "+d.billNo+" maal in").toLowerCase() });
-                });
-
-                snapPays.forEach(doc => {
-                    let d = doc.data(); tPaid += Number(d.amount);
-                    unifiedDataArray.push({ id: doc.id, type: 'pay', dateStr: d.date, timestamp: d.timestamp, amount: Number(d.amount), mode: d.mode, remarks: d.remarks||'', searchStr: (d.date+" "+d.mode+" "+(d.remarks||'')+" jama out").toLowerCase() });
-                });
-
-                // Chronological Sorting (Oldest first for running balance generation)
-                unifiedDataArray.sort((a, b) => {
-                    let dA = new Date(a.dateStr).getTime(); let dB = new Date(b.dateStr).getTime();
-                    if(dA === dB) return a.timestamp - b.timestamp;
-                    return dA - dB;
-                });
-
-                // Top UI Update
-                document.getElementById('uTotBill').innerText = "₹" + tBill.toLocaleString('en-IN');
-                document.getElementById('uTotPaid').innerText = "₹" + tPaid.toLocaleString('en-IN');
-                let bal = tBill - tPaid;
-                let bb = document.getElementById('uBalBox'); let bt = document.getElementById('uBalTitle'); let bv = document.getElementById('uTotBal');
-                if(bal > 0) { bb.style.background = "#ffebee"; bt.innerText = "Due Balance"; bv.style.color = "var(--ios-red)"; bv.innerText = "₹" + bal.toLocaleString('en-IN'); } 
-                else if (bal < 0) { bb.style.background = "#e8f5e9"; bt.innerText = "Advance Paid"; bv.style.color = "var(--ios-green)"; bv.innerText = "₹" + Math.abs(bal).toLocaleString('en-IN'); } 
-                else { bb.style.background = "#f5f5f5"; bt.innerText = "Settled"; bv.style.color = "var(--ios-text-main)"; bv.innerText = "₹0"; }
-
-                renderUnifiedList();
-
-            } catch(e) { document.getElementById('unifiedListContainer').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Error Loading Data</div>'; }
-        };
-
-        function renderUnifiedList() {
-            let container = document.getElementById('unifiedListContainer');
-            container.innerHTML = '';
-            if(unifiedDataArray.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:20px; color:gray;">No transactions found.</div>';
-                return;
-            }
-
-            let runningBal = 0;
-            let html = '';
-            
-            // Loop chronologically to calculate running balance accurately
-            unifiedDataArray.forEach(item => {
-                let inAmt = item.type === 'bill' ? item.amount : 0;
-                let outAmt = item.type === 'pay' ? item.amount : 0;
-                runningBal += (inAmt - outAmt);
-
-                let icon = item.type === 'bill' ? '🟢' : '🔵';
-                let title = item.type === 'bill' ? 'Maal Inward' : 'Payment (Jama)';
-                let subTitle = item.type === 'bill' ? `Bill: <strong>${item.billNo}</strong>` : `Mode: <strong>${item.mode}</strong> <span style="font-size:10px;">${item.remarks ? '('+item.remarks+')' : ''}</span>`;
-                let amtStr = item.type === 'bill' ? `<span style="color:var(--ios-green);">+ ₹${inAmt.toLocaleString('en-IN')}</span>` : `<span style="color:var(--ios-blue);">- ₹${outAmt.toLocaleString('en-IN')}</span>`;
-                
-                let balStr = Math.abs(runningBal).toLocaleString('en-IN');
-                let balBadge = runningBal > 0 ? `<span style="color:var(--ios-red);">Bal: ₹${balStr} Dr</span>` : (runningBal < 0 ? `<span style="color:var(--ios-green);">Bal: ₹${balStr} Cr</span>` : `<span style="color:gray;">Settled</span>`);
-
-                // Create HTML block
-                let block = `
-                <div class="u-item u-search-item" data-search="${item.searchStr}">
-                    <div class="u-item-left">
-                        <span style="font-size:12px; color:var(--ios-text-muted); font-weight:600;">${new Date(item.dateStr).toLocaleDateString('en-IN')}</span>
-                        <span style="font-size:14px; font-weight:bold; color:var(--ios-text-main);">${icon} ${title}</span>
-                        <span style="font-size:12px; color:#555;">${subTitle}</span>
-                    </div>
-                    <div class="u-item-right">
-                        <span style="font-size:15px; font-weight:bold;">${amtStr}</span>
-                        <span style="font-size:11px; font-weight:600;">${balBadge}</span>
-                        <div style="display:flex; gap:6px; margin-top:4px;">
-                            <button class="u-btn-edit" onclick="openEditUnified('${item.id}', '${item.type}')">✏️ Edit</button>
-                            <button class="u-btn-del" onclick="deleteUnifiedTxn('${item.id}', '${item.type}')">🗑️ Del</button>
-                        </div>
-                    </div>
-                </div>`;
-                
-                // Prepend string to show latest transaction at the TOP
-                html = block + html; 
-            });
-            container.innerHTML = html;
-        }
-
-        window.filterUnifiedList = function() {
-            let val = document.getElementById('uSearch').value.toLowerCase();
-            document.querySelectorAll('.u-search-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? 'flex' : 'none'; });
-        };
-        window.closeUnifiedLedger = function() { document.getElementById('unifiedLedgerModal').style.display = 'none'; };
-
-        // --- ✏️ EDIT & 🗑️ DELETE TRANSACTION LOGIC ---
-        window.deleteUnifiedTxn = async function(id, type) {
-            if(!confirm("⚠️ Entry permanently delete ho jayegi. Are you sure?")) return;
-            let colName = type === 'bill' ? 'purchase_bills' : 'dealer_payments';
-            await deleteDoc(doc(db, colName, id));
-            openUnifiedLedger(currentUnifiedDealer); // Refresh instantly
-        };
-
-        window.openEditUnified = function(id, type) {
-            let item = unifiedDataArray.find(x => x.id === id);
-            if(!item) return;
-
-            document.getElementById('eId').value = item.id; document.getElementById('eType').value = item.type;
-            document.getElementById('eDate').value = item.dateStr; document.getElementById('eAmt').value = item.amount;
-            
-            if(type === 'bill') {
-                document.getElementById('editModalTitle').innerText = 'Edit Maal (Purchase)';
-                document.getElementById('eBillGroup').style.display = 'block'; document.getElementById('ePayGroup').style.display = 'none';
-                document.getElementById('eBillNo').value = item.billNo;
-            } else {
-                document.getElementById('editModalTitle').innerText = 'Edit Jama (Payment)';
-                document.getElementById('eBillGroup').style.display = 'none'; document.getElementById('ePayGroup').style.display = 'block';
-                document.getElementById('eMode').value = item.mode; document.getElementById('eRemarks').value = item.remarks;
-            }
-            document.getElementById('editTransactionModal').style.display = 'flex';
-        };
-
-        window.closeEditModal = function() { document.getElementById('editTransactionModal').style.display = 'none'; };
-
-        window.saveEditedTransaction = async function() {
-            let id = document.getElementById('eId').value; let type = document.getElementById('eType').value;
-            let d = document.getElementById('eDate').value; let a = Number(document.getElementById('eAmt').value);
-            if(!d || !a) { alert("Date aur Amount required hai!"); return; }
-
-            let updateObj = { date: d, amount: a };
-            if(type === 'bill') {
-                updateObj.billNo = document.getElementById('eBillNo').value.trim();
-                await updateDoc(doc(db, "purchase_bills", id), updateObj);
-            } else {
-                updateObj.mode = document.getElementById('eMode').value; updateObj.remarks = document.getElementById('eRemarks').value.trim();
-                await updateDoc(doc(db, "dealer_payments", id), updateObj);
-            }
-            closeEditModal(); openUnifiedLedger(currentUnifiedDealer); // Refresh instantly
-        };
-
-        // ================= PURCHASE BILLS CORE =================
         document.getElementById('savePurchaseBtn')?.addEventListener('click', async () => {
             const dealer = document.getElementById('dealerSelect').value; const date = document.getElementById('billDate').value;
             const billNo = document.getElementById('billNumber').value.trim().toUpperCase(); const amount = document.getElementById('billAmount').value;
@@ -810,87 +595,168 @@
             try {
                 await addDoc(collection(db, "purchase_bills"), { dealer, date, billNo, amount: Number(amount), photo: billImgData || "", timestamp: Date.now() });
                 alert("✅ Bill saved!");
-                document.getElementById('dealerSelect').value = ''; document.getElementById('billNumber').value = '';
-                document.getElementById('billAmount').value = ''; document.getElementById('billPhoto').value = '';
-                document.getElementById('billPreview').style.display = 'none'; billImgData = null;
+                document.getElementById('dealerSelect').value = ''; document.getElementById('billNumber').value = ''; document.getElementById('billAmount').value = ''; document.getElementById('billPhoto').value = ''; document.getElementById('billPreview').style.display = 'none'; billImgData = null;
             } catch (e) { alert("Error"); }
             btn.innerText = "Save Bill Details";
         });
 
-        onSnapshot(query(collection(db, "purchase_bills"), orderBy("timestamp", "desc")), (snap) => {
-            const list = document.getElementById('purchaseList'); if(list) list.innerHTML = ''; globalTotalPurchases = 0;
-            snap.forEach((docSnap) => {
-                const data = docSnap.data(); globalTotalPurchases += (data.amount || 0);
+        // HATA DIYA GAYA ORDERBY: Taaki purana data wapas aa jaye! JavaScript khud sort karega.
+        onSnapshot(query(collection(db, "purchase_bills")), (snap) => {
+            const list = document.getElementById('purchaseList'); globalTotalPurchases = 0;
+            let tempArray = [];
+            snap.forEach((docSnap) => { let data = docSnap.data(); data.id = docSnap.id; tempArray.push(data); });
+            
+            // JavaScript Sorting (Newest First)
+            tempArray.sort((a,b) => {
+                let dA = new Date(a.date).getTime(); let dB = new Date(b.date).getTime();
+                if(dA === dB) return (b.timestamp||0) - (a.timestamp||0);
+                return dB - dA;
+            });
+
+            if(list) list.innerHTML = '';
+            tempArray.forEach(data => {
+                globalTotalPurchases += (data.amount || 0);
                 if(list) {
                     let dStr = new Date(data.date).toLocaleDateString('en-IN');
-                    let pBtn = data.photo ? `<button onclick="viewImage('${data.photo}')" class="btn-edit" style="width:auto;">📸 Bill</button>` : '';
-                    // Clickable Card to open Unified Ledger
-                    list.innerHTML += `<div class="record-item p-item clickable-dealer" onclick="openUnifiedLedger('${data.dealer}')" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
+                    let pBtn = data.photo ? `<button onclick="viewImage('${data.photo}')" class="btn-edit" style="width:auto; padding:6px 12px;">📸 View Bill</button>` : '';
+                    list.innerHTML += `<div class="record-item p-item" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
                             <div style="display:flex; justify-content:space-between;"><div class="product-title">${data.dealer}</div><div style="font-weight:700; color:var(--ios-green);">₹${data.amount.toLocaleString('en-IN')}</div></div>
                             <div class="data-row"><span>Bill: <strong>${data.billNo}</strong></span><span>📅 ${dStr}</span></div>
-                            <div style="margin-top:8px; font-size:11px; color:var(--ios-purple); font-weight:bold;">👉 Tap to view Maha-Khata</div>
+                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">${pBtn}<button onclick="deleteBill('${data.id}')" class="btn-destructive" style="width:auto; padding:6px 12px;">🗑️ Delete</button></div>
                         </div>`;
                 }
             });
             if(document.getElementById('dashPurchase')) document.getElementById('dashPurchase').innerText = "₹" + globalTotalPurchases.toLocaleString('en-IN');
             updateMarketDue();
         });
+        
         window.searchPurchase = function() { let val = document.getElementById('pSearch').value.toLowerCase(); document.querySelectorAll('.p-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
+        window.deleteBill = function(id) { if(confirm("⚠️ Delete this bill?")) deleteDoc(doc(db, "purchase_bills", id)); };
 
-        // ================= BACKGROUND KHATA LISTENER (For Dashboard Sync) =================
-        let dealerTotalBill = 0; let dealerTotalPaid = 0; let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
-        window.loadDealerLedger = function() {
+
+        // ================= 🏦 NEW: CLEAN BANK-PASSBOOK LEDGER (NO POPUP) =================
+        if(document.getElementById('payDate')) document.getElementById('payDate').valueAsDate = new Date();
+        let pbUnsubBills = null; let pbUnsubPays = null;
+        let pbDealer = "";
+
+        window.loadDealerPassbook = function() {
             const dealer = document.getElementById('ledgerDealerSelect').value; if(!dealer) return;
+            pbDealer = dealer;
             document.getElementById('ledgerDashboard').style.display = 'block';
-            if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
+            document.getElementById('passbookTitle').innerText = dealer + " - Statement";
+            document.getElementById('btnShareLedger').style.display = 'inline-block';
+            
+            if(pbUnsubBills) pbUnsubBills(); if(pbUnsubPays) pbUnsubPays();
+            
+            let bData = []; let pData = [];
 
-            cLedgerUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
-                dealerTotalBill = 0; snap.forEach(doc => dealerTotalBill += (doc.data().amount || 0)); updateLedgerUI();
-            });
-            cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
-                dealerTotalPaid = 0; const list = document.getElementById('paymentList'); if(list) list.innerHTML = '';
-                let payDataArray = []; snap.forEach(docSnap => { let d = docSnap.data(); d.id = docSnap.id; payDataArray.push(d); });
-                payDataArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            function renderPassbook() {
+                let combined = [...bData, ...pData];
                 
-                if(payDataArray.length === 0) { if(list) list.innerHTML = '<div class="loading-text" style="color:gray;">No payment history for this dealer.</div>'; 
-                } else {
-                    payDataArray.forEach(data => {
-                        dealerTotalPaid += (data.amount || 0);
-                        if(list) {
-                            let dStr = new Date(data.date).toLocaleDateString('en-IN');
-                            let tagClass = data.mode==='Cash' ? 'tag-cash' : (data.mode==='Cheque' ? 'tag-cheque' : 'tag-online');
-                            list.innerHTML += `<div class="record-item pay-item clickable-dealer" onclick="openUnifiedLedger('${dealer}')" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; font-size:15px; color:var(--ios-blue);">₹${data.amount.toLocaleString('en-IN')}</span><span style="font-size:12px; color:gray;">📅 ${dStr}</span></div>
-                                    <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
-                                        <div><span class="${tagClass}">${data.mode}</span> <span style="font-size:13px; color:#555; margin-left:6px;">${data.remarks||''}</span></div>
-                                        <div style="font-size:11px; color:var(--ios-purple); font-weight:bold;">👉 Edit/Del</div>
-                                    </div>
-                                </div>`;
-                        }
-                    });
-                }
-                updateLedgerUI();
+                // Sort chronologically (Oldest First) to calculate accurate Running Balance
+                combined.sort((a,b) => {
+                    let dA = new Date(a.date).getTime(); let dB = new Date(b.date).getTime();
+                    if(dA === dB) return (a.timestamp||0) - (b.timestamp||0);
+                    return dA - dB;
+                });
+
+                let tB = 0, tP = 0, rBal = 0; let html = '';
+                combined.forEach(item => {
+                    let inA = item.type === 'bill' ? item.amount : 0; let outA = item.type === 'pay' ? item.amount : 0;
+                    tB += inA; tP += outA; rBal += (inA - outA);
+
+                    let dS = new Date(item.date).toLocaleDateString('en-IN');
+                    let title = item.type === 'bill' ? `Maal (Bill: ${item.billNo})` : `Paid (${item.mode})`;
+                    let amtH = item.type === 'bill' ? `<span style="color:var(--ios-green);">+ ₹${inA.toLocaleString('en-IN')}</span>` : `<span style="color:var(--ios-blue);">- ₹${outA.toLocaleString('en-IN')}</span>`;
+                    let bBadge = rBal > 0 ? `₹${Math.abs(rBal).toLocaleString()} Dr` : (rBal < 0 ? `₹${Math.abs(rBal).toLocaleString()} Cr` : `Settled`);
+
+                    let block = `<div class="stmt-row p-search-item" data-search="${(dS+" "+title+" "+(item.remarks||'')).toLowerCase()}">
+                        <div class="stmt-top">
+                            <span style="font-size:13px; font-weight:600; color:var(--ios-text-main);">${dS} | ${title}</span>
+                            <span style="font-weight:bold; font-size:15px;">${amtH}</span>
+                        </div>
+                        <div class="stmt-bottom">
+                            <span style="color:gray; font-size:11px;">${item.remarks ? '('+item.remarks+')' : ''}</span>
+                            <div style="display:flex; gap:5px; align-items:center;">
+                                <span style="margin-right:5px; font-weight:bold; font-size:11px; color:${rBal>0?'var(--ios-red)':'var(--ios-green)'}">Bal: ${bBadge}</span>
+                                <button class="stmt-btn stmt-btn-edit" onclick="openEditUnified('${item.id}', '${item.type}')">✏️</button>
+                                <button class="stmt-btn stmt-btn-del" onclick="deleteUnifiedTxn('${item.id}', '${item.type}')">🗑️</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    html = block + html; // Reverse so newest shows at top
+                });
+
+                // Update Top Dashboard
+                document.getElementById('ledgerTotalBill').innerText = "₹" + tB.toLocaleString('en-IN'); document.getElementById('ledgerTotalPaid').innerText = "₹" + tP.toLocaleString('en-IN');
+                let bal = tB - tP; let bb = document.getElementById('ledgerBalanceBox'); let bt = document.getElementById('ledgerBalanceTitle'); let bv = document.getElementById('ledgerBalanceValue');
+                if(bal > 0) { bb.style.background = "#ffebee"; bt.innerText = "Due Balance"; bv.style.color = "var(--ios-red)"; bv.innerText = "₹" + bal.toLocaleString('en-IN'); } 
+                else if (bal < 0) { bb.style.background = "#e8f5e9"; bt.innerText = "Advance Paid"; bv.style.color = "var(--ios-green)"; bv.innerText = "₹" + Math.abs(bal).toLocaleString('en-IN'); } 
+                else { bb.style.background = "#f5f5f5"; bt.innerText = "Account Settled"; bv.style.color = "var(--ios-text-main)"; bv.innerText = "₹0"; }
+                
+                document.getElementById('passbookList').innerHTML = html || '<div class="record-item" style="color:gray;">No transactions found.</div>';
+            }
+
+            pbUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
+                bData = []; snap.forEach(doc => { let d=doc.data(); bData.push({id:doc.id, type:'bill', date:d.date, amount:Number(d.amount), billNo:d.billNo, timestamp:d.timestamp, remarks:''}); }); renderPassbook();
+            });
+            pbUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
+                pData = []; snap.forEach(doc => { let d=doc.data(); pData.push({id:doc.id, type:'pay', date:d.date, amount:Number(d.amount), mode:d.mode, remarks:d.remarks, timestamp:d.timestamp}); }); renderPassbook();
             });
         };
 
-        function updateLedgerUI() {
-            document.getElementById('ledgerTotalBill').innerText = "₹" + dealerTotalBill.toLocaleString('en-IN');
-            document.getElementById('ledgerTotalPaid').innerText = "₹" + dealerTotalPaid.toLocaleString('en-IN');
-            let balance = dealerTotalBill - dealerTotalPaid;
-            let bb = document.getElementById('ledgerBalanceBox'); let bt = document.getElementById('ledgerBalanceTitle'); let bv = document.getElementById('ledgerBalanceValue');
-            if(balance > 0) { bb.style.background = "#ffebee"; bt.innerText = "Due Balance"; bv.style.color = "var(--ios-red)"; bv.innerText = "₹" + balance.toLocaleString('en-IN'); } 
-            else if (balance < 0) { bb.style.background = "#e8f5e9"; bt.innerText = "Advance Paid"; bv.style.color = "var(--ios-green)"; bv.innerText = "₹" + Math.abs(balance).toLocaleString('en-IN'); } 
-            else { bb.style.background = "#f5f5f5"; bt.innerText = "Account Settled"; bv.style.color = "var(--ios-text-main)"; bv.innerText = "₹0"; }
-        }
-
-        window.searchPayments = function() { let val = document.getElementById('paySearch').value.toLowerCase(); document.querySelectorAll('.pay-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
-
+        window.filterPassbook = function() { let val = document.getElementById('paySearch').value.toLowerCase(); document.querySelectorAll('.p-search-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? 'block' : 'none'; }); };
+        
         document.getElementById('savePaymentBtn')?.addEventListener('click', async () => {
             const dealer = document.getElementById('ledgerDealerSelect').value; const amount = document.getElementById('payAmount').value;
             if(!dealer || !amount) { alert("Dealer aur Amount bharein!"); return; }
             await addDoc(collection(db, "dealer_payments"), { dealer, date: document.getElementById('payDate').value, amount: Number(amount), mode: document.getElementById('payMode').value, remarks: document.getElementById('payRemarks').value, timestamp: Date.now() });
             document.getElementById('payAmount').value = ''; document.getElementById('payRemarks').value = ''; alert("✅ Payment Updated!");
         });
+
+        // ✏️ EDIT & 🗑️ DELETE (Connected to Inline Passbook)
+        window.deleteUnifiedTxn = async function(id, type) {
+            if(!confirm("⚠️ Entry permanently delete ho jayegi. Are you sure?")) return;
+            let colName = type === 'bill' ? 'purchase_bills' : 'dealer_payments';
+            await deleteDoc(doc(db, colName, id));
+        };
+        window.openEditUnified = async function(id, type) {
+            let colName = type === 'bill' ? 'purchase_bills' : 'dealer_payments';
+            const docSnap = await getDoc(doc(db, colName, id));
+            if(!docSnap.exists()) return; let item = docSnap.data();
+
+            document.getElementById('eId').value = id; document.getElementById('eType').value = type;
+            document.getElementById('eDate').value = item.date; document.getElementById('eAmt').value = item.amount;
+            
+            if(type === 'bill') {
+                document.getElementById('editModalTitle').innerText = 'Edit Maal (Purchase)';
+                document.getElementById('eBillGroup').style.display = 'block'; document.getElementById('ePayGroup').style.display = 'none';
+                document.getElementById('eBillNo').value = item.billNo;
+            } else {
+                document.getElementById('editModalTitle').innerText = 'Edit Jama (Payment)';
+                document.getElementById('eBillGroup').style.display = 'none'; document.getElementById('ePayGroup').style.display = 'block';
+                document.getElementById('eMode').value = item.mode; document.getElementById('eRemarks').value = item.remarks || '';
+            }
+            document.getElementById('editTransactionModal').style.display = 'flex';
+        };
+        window.closeEditModal = function() { document.getElementById('editTransactionModal').style.display = 'none'; };
+        window.saveEditedTransaction = async function() {
+            let id = document.getElementById('eId').value; let type = document.getElementById('eType').value;
+            let d = document.getElementById('eDate').value; let a = Number(document.getElementById('eAmt').value);
+            if(!d || !a) { alert("Date aur Amount required hai!"); return; }
+            let updateObj = { date: d, amount: a };
+            if(type === 'bill') {
+                updateObj.billNo = document.getElementById('eBillNo').value.trim(); await updateDoc(doc(db, "purchase_bills", id), updateObj);
+            } else {
+                updateObj.mode = document.getElementById('eMode').value; updateObj.remarks = document.getElementById('eRemarks').value.trim(); await updateDoc(doc(db, "dealer_payments", id), updateObj);
+            }
+            closeEditModal();
+        };
+        window.shareLedgerWhatsApp = function() {
+            let balText = document.getElementById('ledgerBalanceTitle').innerText; let amtText = document.getElementById('ledgerBalanceValue').innerText;
+            let msg = `*Savitri Electronics*\n_Ledger Statement_\n\n*Dealer:* ${pbDealer}\n*Total Maal:* ${document.getElementById('ledgerTotalBill').innerText}\n*Total Jama:* ${document.getElementById('ledgerTotalPaid').innerText}\n*${balText}:* ${amtText}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        };
 
         // Home Khata View
         let hUnsubBills = null; let hUnsubPays = null;
@@ -899,12 +765,8 @@
             document.getElementById('homeLedgerResult').style.display = 'block';
             if(hUnsubBills) hUnsubBills(); if(hUnsubPays) hUnsubPays();
             let htBill = 0; let htPaid = 0;
-            hUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
-                htBill = 0; snap.forEach(doc => htBill += (doc.data().amount || 0)); document.getElementById('hTotalBill').innerText = "₹" + htBill.toLocaleString('en-IN'); calcHBal();
-            });
-            hUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
-                htPaid = 0; snap.forEach(doc => htPaid += (doc.data().amount || 0)); document.getElementById('hTotalPaid').innerText = "₹" + htPaid.toLocaleString('en-IN'); calcHBal();
-            });
+            hUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => { htBill = 0; snap.forEach(doc => htBill += (doc.data().amount || 0)); document.getElementById('hTotalBill').innerText = "₹" + htBill.toLocaleString('en-IN'); calcHBal(); });
+            hUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => { htPaid = 0; snap.forEach(doc => htPaid += (doc.data().amount || 0)); document.getElementById('hTotalPaid').innerText = "₹" + htPaid.toLocaleString('en-IN'); calcHBal(); });
             function calcHBal() {
                 let b = htBill - htPaid; let bt = document.getElementById('hBalanceTitle'); let bv = document.getElementById('hBalance');
                 if(b>0){ bt.innerText="Balance (Due):"; bv.innerText="₹"+b.toLocaleString('en-IN'); bv.style.color="var(--ios-red)"; }
@@ -920,7 +782,7 @@
             else { dueEl.innerText = "₹0 (Clear)"; dueEl.style.color = "#2e7d32"; }
         }
 
-        // ================= FINANCE S/N (Locked Module) =================
+        // ================= FINANCE S/N (Locked Module - Sorted via JS for old data) =================
         let globalRecords = []; let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "SAMSUNG", "SONY", "HAVELLS"];
         const catRef = doc(db, "app_settings", "brands");
         onSnapshot(catRef, (snap) => { if (snap.exists() && snap.data().list) brandCategories = snap.data().list; else setDoc(catRef, { list: brandCategories }); renderCategories(); });
@@ -930,9 +792,7 @@
             brandCategories.sort().forEach(b => { sel.innerHTML += `<option value="${b}">${b}</option>`; });
             if(cVal && brandCategories.includes(cVal)) sel.value = cVal;
         }
-        window.addNewCategory = async function() {
-            const nb = prompt("Enter Brand name:"); if (nb && nb.trim()!=="") { const cnb = nb.trim().toUpperCase(); if(!brandCategories.includes(cnb)) { brandCategories.push(cnb); await setDoc(catRef, { list: brandCategories }); document.getElementById("categorySelect").value = cnb; } }
-        };
+        window.addNewCategory = async function() { const nb = prompt("Enter Brand name:"); if (nb && nb.trim()!=="") { const cnb = nb.trim().toUpperCase(); if(!brandCategories.includes(cnb)) { brandCategories.push(cnb); await setDoc(catRef, { list: brandCategories }); document.getElementById("categorySelect").value = cnb; } } };
         document.getElementById('saveBtn')?.addEventListener('click', async () => {
             const c = document.getElementById('categorySelect').value; const m = document.getElementById('modelNumber').value.trim().toUpperCase();
             const st = document.getElementById('starRating').value; const sr = document.getElementById('serialNumber').value.trim().toUpperCase(); const eId = document.getElementById('editId').value;
@@ -948,11 +808,13 @@
             const btn = document.getElementById('saveBtn'); btn.innerText = "Update Record"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
         };
         window.deleteRecord = function(id) { if (confirm("Mark as Used/Sold?")) deleteDoc(doc(db, "finance_records", id)); };
-        onSnapshot(query(collection(db, "finance_records"), orderBy("timestamp", "desc")), (snap) => {
+        
+        onSnapshot(query(collection(db, "finance_records")), (snap) => {
             const list = document.getElementById('recordsList'); if(document.getElementById('totalCount')) document.getElementById('totalCount').innerText = snap.size;
             if(!list) return; list.innerHTML = ''; globalRecords = [];
-            snap.forEach((docSnap) => {
-                const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data);
+            let tempA = []; snap.forEach((docSnap) => { let d = docSnap.data(); d.id = docSnap.id; tempA.push(d); globalRecords.push(d); });
+            tempA.sort((a,b) => (b.timestamp||0) - (a.timestamp||0)); // JS Sort
+            tempA.forEach((data) => {
                 let pBtn = data.photo ? `<button onclick="viewImage('${data.photo}')" class="btn-edit" style="background:#e8f5e9; color:var(--ios-green); margin-right:5px;">📸</button>` : '';
                 list.innerHTML += `<div class="record-item record-card" data-search="${data.category} ${data.model} ${data.serial}">
                     <div class="product-title">${data.category} - ${data.model} ${data.star ? `(${data.star})`:''}</div>
@@ -963,7 +825,7 @@
         });
         window.filterRecords = function() { let val = document.getElementById('searchInput').value.toUpperCase(); document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; }); }
 
-        // ================= NEW MODULE: REAL INVENTORY (STOCK) =================
+        // ================= REAL INVENTORY (STOCK) =================
         let globalRealStock = [];
         onSnapshot(query(collection(db, "real_inventory"), orderBy("modelName", "asc")), (snap) => {
             const list = document.getElementById('realStockList'); const dataList = document.getElementById('modelSuggestList');
@@ -989,89 +851,49 @@
         });
 
         window.autoFillStockDetails = function() {
-            let val = document.getElementById('rsModelName').value.trim();
-            let existingItem = globalRealStock.find(item => item.modelName.toLowerCase() === val.toLowerCase());
-            const btn = document.getElementById('saveRealStockBtn');
+            let val = document.getElementById('rsModelName').value.trim(); let existingItem = globalRealStock.find(item => item.modelName.toLowerCase() === val.toLowerCase()); const btn = document.getElementById('saveRealStockBtn');
             if(existingItem) {
-                document.getElementById('rsBrand').value = existingItem.brand; document.getElementById('rsRate').value = existingItem.rate;
-                document.getElementById('realStockEditId').value = existingItem.id; document.getElementById('rsQty').value = "1";
+                document.getElementById('rsBrand').value = existingItem.brand; document.getElementById('rsRate').value = existingItem.rate; document.getElementById('realStockEditId').value = existingItem.id; document.getElementById('rsQty').value = "1";
                 btn.innerText = "Update Existing Stock Qty / Rate"; btn.style.backgroundColor = "var(--ios-orange)";
-            } else {
-                document.getElementById('realStockEditId').value = ""; btn.innerText = "Save New Stock Item"; btn.style.backgroundColor = "var(--ios-blue)";
-            }
+            } else { document.getElementById('realStockEditId').value = ""; btn.innerText = "Save New Stock Item"; btn.style.backgroundColor = "var(--ios-blue)"; }
         };
-
         document.getElementById('saveRealStockBtn')?.addEventListener('click', async () => {
-            let id = document.getElementById('realStockEditId').value; let model = document.getElementById('rsModelName').value.trim();
-            let brand = document.getElementById('rsBrand').value.trim(); let rate = Number(document.getElementById('rsRate').value) || 0; let inputQty = Number(document.getElementById('rsQty').value) || 0;
-            if(!model || !brand) { alert("Model Name aur Brand zaroori hain!"); return; }
-            const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Saving...";
-
-            if(id) {
-                let existingItem = globalRealStock.find(item => item.id === id); let newQty = (existingItem.qty || 0) + inputQty;
-                await updateDoc(doc(db, "real_inventory", id), { rate: rate, qty: newQty, brand: brand, updatedAt: Date.now() }); alert(`✅ Stock Updated! Total Quantity: ${newQty} Pcs`);
-            } else {
-                await addDoc(collection(db, "real_inventory"), { modelName: model, brand: brand, rate: rate, qty: inputQty, timestamp: Date.now(), updatedAt: Date.now() }); alert("✅ New Item added to Inventory!");
-            }
-            document.getElementById('realStockEditId').value = ""; document.getElementById('rsModelName').value = ""; document.getElementById('rsBrand').value = ""; document.getElementById('rsRate').value = ""; document.getElementById('rsQty').value = "1";
-            btn.innerText = "Save / Update Stock"; btn.style.backgroundColor = "var(--ios-blue)";
+            let id = document.getElementById('realStockEditId').value; let model = document.getElementById('rsModelName').value.trim(); let brand = document.getElementById('rsBrand').value.trim(); let rate = Number(document.getElementById('rsRate').value) || 0; let inputQty = Number(document.getElementById('rsQty').value) || 0;
+            if(!model || !brand) { alert("Model Name aur Brand zaroori hain!"); return; } const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Saving...";
+            if(id) { let existingItem = globalRealStock.find(item => item.id === id); let newQty = (existingItem.qty || 0) + inputQty; await updateDoc(doc(db, "real_inventory", id), { rate: rate, qty: newQty, brand: brand, updatedAt: Date.now() }); alert(`✅ Stock Updated! Total Quantity: ${newQty} Pcs`);
+            } else { await addDoc(collection(db, "real_inventory"), { modelName: model, brand: brand, rate: rate, qty: inputQty, timestamp: Date.now(), updatedAt: Date.now() }); alert("✅ New Item added to Inventory!"); }
+            document.getElementById('realStockEditId').value = ""; document.getElementById('rsModelName').value = ""; document.getElementById('rsBrand').value = ""; document.getElementById('rsRate').value = ""; document.getElementById('rsQty').value = "1"; btn.innerText = "Save / Update Stock"; btn.style.backgroundColor = "var(--ios-blue)";
         });
-
-        window.editRealStock = function(id, model, brand, rate, qty) {
-            document.getElementById('realStockEditId').value = id; document.getElementById('rsModelName').value = model; document.getElementById('rsBrand').value = brand; document.getElementById('rsRate').value = rate; document.getElementById('rsQty').value = "0"; 
-            const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Update Price / Qty"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
-        };
+        window.editRealStock = function(id, model, brand, rate, qty) { document.getElementById('realStockEditId').value = id; document.getElementById('rsModelName').value = model; document.getElementById('rsBrand').value = brand; document.getElementById('rsRate').value = rate; document.getElementById('rsQty').value = "0"; const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Update Price / Qty"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0); };
         window.adjustQty = async function(id, currentQty, change) { let newQty = currentQty + change; if(newQty < 0) newQty = 0; await updateDoc(doc(db, "real_inventory", id), { qty: newQty, updatedAt: Date.now() }); };
         window.filterRealStock = function() { let val = document.getElementById('rsSearchInput').value.toLowerCase(); document.querySelectorAll('.rs-card').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
 
-        // ================= SALES / BOOKING (DYNAMIC) =================
+        // ================= SALES / BOOKING (DYNAMIC - Restored Sorting) =================
         if(document.getElementById('custDeliveryDate')) document.getElementById('custDeliveryDate').valueAsDate = new Date();
-        window.addSalesItemRow = function() {
-            const wrapper = document.getElementById('itemsWrapper'); const row = document.createElement('div'); row.className = 'sales-item-row';
-            row.innerHTML = `<input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"><button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>`;
-            wrapper.appendChild(row);
-        };
+        window.addSalesItemRow = function() { const wrapper = document.getElementById('itemsWrapper'); const row = document.createElement('div'); row.className = 'sales-item-row'; row.innerHTML = `<input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"><button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>`; wrapper.appendChild(row); };
         window.removeSalesItemRow = function(btn) { btn.parentElement.remove(); calculateCustBalance(); };
-
-        window.calculateCustBalance = function() {
-            let totalBill = 0; const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
-            for(let i = 0; i < qtys.length; i++) { let q = Number(qtys[i].value) || 0; let p = Number(prices[i].value) || 0; totalBill += (q * p); }
-            document.getElementById('custTotalBill').value = totalBill;
-            let advance = Number(document.getElementById('custAdvance').value) || 0; document.getElementById('custBalanceText').innerText = "₹" + (totalBill - advance).toLocaleString('en-IN');
-        };
-
+        window.calculateCustBalance = function() { let totalBill = 0; const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price'); for(let i = 0; i < qtys.length; i++) { let q = Number(qtys[i].value) || 0; let p = Number(prices[i].value) || 0; totalBill += (q * p); } document.getElementById('custTotalBill').value = totalBill; let advance = Number(document.getElementById('custAdvance').value) || 0; document.getElementById('custBalanceText').innerText = "₹" + (totalBill - advance).toLocaleString('en-IN'); };
         document.getElementById('saveBookingBtn')?.addEventListener('click', async () => {
             const n = document.getElementById('custName').value.trim(); const mb = document.getElementById('custMobile').value.trim(); const tb = document.getElementById('custTotalBill').value; const adv = document.getElementById('custAdvance').value; const dDate = document.getElementById('custDeliveryDate').value;
             let itemsString = ""; const names = document.querySelectorAll('.req-item-name'); const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
             for(let i = 0; i < names.length; i++) { if(names[i].value.trim() !== '') { itemsString += `• ${qtys[i].value}x ${names[i].value.trim()} (₹${prices[i].value})\n`; } }
-
             if (!n || itemsString === "" || !tb) { alert("⚠️ Customer Name aur kam se kam ek Item zaroori hai!"); return; }
             const btn = document.getElementById('saveBookingBtn'); btn.innerText = "Saving...";
-            
             await addDoc(collection(db, "sales_bookings"), { customerName: n, mobile: mb, items: itemsString.trim(), totalBill: Number(tb), advanceAmount: Number(adv || 0), deliveryDate: dDate, timestamp: Date.now() });
-            alert("✅ Booking saved!");
-            document.getElementById('custName').value = ''; document.getElementById('custMobile').value = ''; document.getElementById('custTotalBill').value = ''; document.getElementById('custAdvance').value = ''; document.getElementById('custBalanceText').innerText = "₹0";
-            document.getElementById('itemsWrapper').innerHTML = `<div class="sales-item-row"><input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"></div>`;
-            btn.innerText = "Save Booking";
+            alert("✅ Booking saved!"); document.getElementById('custName').value = ''; document.getElementById('custMobile').value = ''; document.getElementById('custTotalBill').value = ''; document.getElementById('custAdvance').value = ''; document.getElementById('custBalanceText').innerText = "₹0"; document.getElementById('itemsWrapper').innerHTML = `<div class="sales-item-row"><input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"></div>`; btn.innerText = "Save Booking";
         });
-
-        onSnapshot(query(collection(db, "sales_bookings"), orderBy("timestamp", "desc")), (snap) => {
+        
+        onSnapshot(query(collection(db, "sales_bookings")), (snap) => {
             const list = document.getElementById('bookingList'); const todayList = document.getElementById('todayDeliveryList');
             if(list) list.innerHTML = ''; if(todayList) todayList.innerHTML = '';
             let tAdv = 0; let todayCount = 0; let todayStr = new Date().toISOString().split('T')[0];
+            let tempA = []; snap.forEach(doc => { let d = doc.data(); d.id = doc.id; tempA.push(d); });
+            tempA.sort((a,b) => (b.timestamp||0) - (a.timestamp||0)); // JS Sort to prevent missing data
 
-            snap.forEach((docSnap) => {
-                const d = docSnap.data(); tAdv += (d.advanceAmount || 0); let bal = (d.totalBill||0) - (d.advanceAmount||0);
-                let html = `<div class="record-item">
-                    <div style="display:flex; justify-content:space-between;"><div class="product-title">👤 ${d.customerName}</div><div style="font-weight:700; color:var(--ios-orange);">Adv: ₹${d.advanceAmount.toLocaleString('en-IN')}</div></div>
-                    <div style="font-size:13px; color:#444; margin:6px 0; white-space:pre-wrap; line-height:1.4;">${d.items}</div>
-                    <div class="data-row"><span>Total Bill: ₹${(d.totalBill||0).toLocaleString('en-IN')}</span><span style="color:var(--ios-red); font-weight:bold;">Due: ₹${bal.toLocaleString('en-IN')}</span></div>
-                    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:12px; color:var(--ios-purple); font-weight:600;">🚚 Del: ${new Date(d.deliveryDate).toLocaleDateString('en-IN')}</span>
-                        <button onclick="deleteBooking('${docSnap.id}')" style="background:var(--ios-green);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">✅ Complete</button>
-                    </div></div>`;
-                if(list) list.innerHTML += html;
-                if(d.deliveryDate === todayStr && todayList) { todayList.innerHTML += html; todayCount++; }
+            tempA.forEach((d) => {
+                tAdv += (d.advanceAmount || 0); let bal = (d.totalBill||0) - (d.advanceAmount||0);
+                let html = `<div class="record-item"><div style="display:flex; justify-content:space-between;"><div class="product-title">👤 ${d.customerName}</div><div style="font-weight:700; color:var(--ios-orange);">Adv: ₹${d.advanceAmount.toLocaleString('en-IN')}</div></div><div style="font-size:13px; color:#444; margin:6px 0; white-space:pre-wrap; line-height:1.4;">${d.items}</div><div class="data-row"><span>Total Bill: ₹${(d.totalBill||0).toLocaleString('en-IN')}</span><span style="color:var(--ios-red); font-weight:bold;">Due: ₹${bal.toLocaleString('en-IN')}</span></div><div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:12px; color:var(--ios-purple); font-weight:600;">🚚 Del: ${new Date(d.deliveryDate).toLocaleDateString('en-IN')}</span><button onclick="deleteBooking('${d.id}')" style="background:var(--ios-green);border:none;color:white;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">✅ Complete</button></div></div>`;
+                if(list) list.innerHTML += html; if(d.deliveryDate === todayStr && todayList) { todayList.innerHTML += html; todayCount++; }
             });
             if(list && snap.empty) list.innerHTML = '<div class="loading-text">No pending bookings.</div>';
             if(todayList && todayCount === 0) todayList.innerHTML = '<div class="loading-text" style="padding:15px; font-size:12px;">No deliveries for today.</div>';
