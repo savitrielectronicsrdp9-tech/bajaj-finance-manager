@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | ERP 2.3 (Unified Ledger)</title>
+    <title>Savitri Electronics | ERP 2.2 (Stock Upgrade)</title>
     
     <style>
         /* CORE LOCKED DESIGN */
@@ -16,23 +16,14 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; padding-bottom: 75px; -webkit-font-smoothing: antialiased; }
 
-        /* Modals & Overlays */
-        .modal-overlay { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--ios-bg); flex-direction: column; overflow-y: auto; }
-        .sub-modal { display: none; position: fixed; z-index: 10005; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .sub-modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        #imageViewerModal { display: none; position: fixed; z-index: 10010; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; }
+        #imageViewerModal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .close-btn { position: absolute; top: 30px; right: 20px; background: var(--ios-red); color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #fullSizeImage { max-width: 95%; max-height: 80%; border-radius: 8px; object-fit: contain; }
 
-        /* Badges & Tags */
         .tag-cash { color: #2e7d32; background: #e8f5e9; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .tag-online { color: #1565c0; background: #e3f2fd; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .tag-cheque { color: #6a1b9a; background: #f3e5f5; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-        .stock-badge-green { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
-        .stock-badge-red { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
 
-        /* Lock Screen */
         #lockScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--ios-bg); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .lock-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 80%; max-width: 300px; }
         .lock-box h2 { margin-top: 0; color: var(--ios-blue); }
@@ -40,18 +31,17 @@
 
         #mainApp { display: none; }
 
-        /* Navigation */
-        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); position: sticky; top: 0; padding: 16px 20px; text-align: center; border-bottom: 0.5px solid var(--ios-border); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .navbar-title h2 { margin: 0; font-size: 17px; font-weight: 600; }
         .navbar-title p { margin: 2px 0 0; font-size: 12px; color: var(--ios-text-muted); }
         .btn-icon { background: none; border: none; color: var(--ios-blue); font-size: 20px; cursor: pointer; }
-        
+
+        /* Updated Bottom Nav to fit 6 icons cleanly */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 0.5px solid var(--ios-border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 100; overflow-x: auto;}
         .nav-item { display: flex; flex: 1; flex-direction: column; align-items: center; color: var(--ios-text-muted); text-decoration: none; font-size: 9.5px; font-weight: 600; cursor: pointer; min-width: 55px;}
         .nav-item.active { color: var(--ios-blue); }
         .nav-icon { font-size: 18px; margin-bottom: 3px; }
 
-        /* Container & Inputs */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -66,120 +56,74 @@
         .input-row label { width: 95px; font-size: 14px; font-weight: 500; }
         .input-wrapper { display: flex; flex: 1; align-items: center; }
         .input-wrapper input, .input-wrapper select, .input-wrapper textarea { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); width: 100%; font-family: inherit;}
+        
         .star-select { background: #e5e5ea !important; padding: 6px 4px !important; border-radius: 6px; font-size: 13px !important; font-weight: 600; color: var(--ios-blue) !important;}
         
-        /* Buttons */
         .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-        /* Unified Ledger Specific Styles */
-        .unified-modal-header { padding: 15px; background: white; position: sticky; top: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index:10; }
-        .unified-summary-bar { display: flex; gap: 10px; padding: 15px; background: var(--ios-bg); }
-        .u-box { flex: 1; padding: 12px; border-radius: 10px; text-align: center; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .u-title { font-size: 11px; font-weight: 600; color: var(--ios-text-muted); margin-bottom: 4px; }
-        .u-val { font-size: 16px; font-weight: bold; }
-        .u-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--ios-border); background: white; }
-        .u-item-left { display: flex; flex-direction: column; gap: 4px; }
-        .u-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .u-btn-edit { background: #e5e5ea; color: var(--ios-blue); border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .u-btn-del { background: #ffebee; color: var(--ios-red); border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; }
-        
-        .clickable-dealer { cursor: pointer; transition: background 0.2s; }
-        .clickable-dealer:active { background: #e5e5ea !important; }
-
         .search-container { background: var(--ios-input-bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; display: flex; align-items: center; }
         .search-container input { border: none; background: transparent; width: 100%; font-size: 15px; outline: none; }
-        
+
         .record-item { padding: 14px; border-bottom: 0.5px solid var(--ios-border); }
         .record-item:last-child { border-bottom: none; }
         .product-title { font-size: 16px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
+        .star-badge { color: var(--ios-orange); font-size: 14px; margin-left: 5px; }
         .data-row { display: flex; justify-content: space-between; font-size: 13px; margin-top: 4px; color: #333; }
         .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
         .btn-edit { flex: 1; background: #fff0e0; color: var(--ios-orange); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-destructive { flex: 1; background: #ffebe9; color: var(--ios-red); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        
         .ledger-box { padding: 12px; border-radius: 8px; text-align: center; flex: 1; }
         .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
         .ledger-value { font-size: 18px; font-weight: 700; }
 
         .sales-item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
         .sales-item-row input { padding: 8px; border: 1px solid var(--ios-border); border-radius: 6px; font-size: 13px; outline: none; background: var(--ios-card); width: 100%; box-sizing: border-box; }
-        .sales-item-name { flex: 2.2; } .sales-item-qty { flex: 0.8; } .sales-item-price { flex: 1.2; }
+        .sales-item-name { flex: 2.2; }
+        .sales-item-qty { flex: 0.8; }
+        .sales-item-price { flex: 1.2; }
         .btn-remove-item { background: #ffebe9; color: var(--ios-red); border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-add-item { background: #e8f5e9; color: var(--ios-green); border: none; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; border: 1px dashed var(--ios-green); }
 
-        @media print { body * { visibility: hidden; } #unifiedLedgerModal, #unifiedLedgerModal * { visibility: visible; } #unifiedLedgerModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; display:block !important;} .btn-primary, .u-btn-edit, .u-btn-del, .close-btn { display: none !important; } }
+        /* Badge for Stock */
+        .stock-badge-green { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
+        .stock-badge-red { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 12px;}
+
+        @media print {
+            body * { visibility: hidden; }
+            #fullStatementModal, #fullStatementModal * { visibility: visible; }
+            #fullStatementModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; z-index: 999999; display:block !important;}
+            .btn-primary, .btn-export, .close-btn, .bottom-nav { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 NEW: Unified Ledger Modal (Maha-Khata) -->
-    <div id="unifiedLedgerModal" class="modal-overlay">
-        <div class="unified-modal-header">
-            <button onclick="closeUnifiedLedger()" style="background:transparent; border:none; color:var(--ios-blue); font-size:16px; font-weight:600; cursor:pointer;">⬅ Back</button>
-            <h3 id="uDealerName" style="margin:0; font-size:16px; text-transform:uppercase;">Dealer Name</h3>
-            <button onclick="window.print()" style="background:transparent; border:none; color:var(--ios-blue); font-size:20px; cursor:pointer;">⬇️</button>
+    <!-- Full Statement Modal -->
+    <div id="fullStatementModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--ios-bg); z-index:9999; overflow-y:auto;">
+        <div style="padding:15px; background:white; position:sticky; top:0; box-shadow:0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; font-size:18px;">📜 Ledger Statement</h3>
+            <button class="close-btn" style="position:static; padding:8px 12px; margin:0;" onclick="closeStatementModal()">✖ CLOSE</button>
         </div>
-        
-        <div class="unified-summary-bar">
-            <div class="u-box"><div class="u-title">Maal (In)</div><div class="u-val" id="uTotBill" style="color:var(--ios-green);">₹0</div></div>
-            <div class="u-box"><div class="u-title">Jama (Out)</div><div class="u-val" id="uTotPaid" style="color:var(--ios-blue);">₹0</div></div>
-            <div class="u-box" id="uBalBox" style="background:#ffebee;"><div class="u-title" id="uBalTitle">Due</div><div class="u-val" id="uTotBal" style="color:var(--ios-red);">₹0</div></div>
+        <div style="padding:15px; background:white; min-height:80vh;" id="stmtPrintArea">
+            <div id="stmtContent"></div>
         </div>
-
-        <div style="padding: 0 15px;">
-            <div class="search-container" style="margin-bottom: 5px; background: white; border: 1px solid var(--ios-border);">
-                <span>🔍 </span><input type="text" id="uSearch" placeholder="Search Amount, Bill No, Mode..." onkeyup="filterUnifiedList()">
-            </div>
-        </div>
-
-        <div id="unifiedListContainer" style="padding-bottom: 30px;">
-            <!-- Data dynamically loaded here -->
+        <div style="padding:15px; display:flex; gap:10px; background:var(--ios-bg);">
+            <button onclick="downloadStatementExcel()" class="btn-export" style="flex:1; padding:12px; font-size:15px;">⬇ Excel</button>
+            <button onclick="printStatementPDF()" class="btn-primary" style="flex:1; padding:12px; font-size:15px;">🖨️ PDF</button>
         </div>
     </div>
 
-    <!-- 🌟 NEW: Edit Transaction Sub-Modal -->
-    <div id="editTransactionModal" class="sub-modal">
-        <div class="sub-modal-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
-                <h3 style="margin:0; font-size:16px;" id="editModalTitle">Edit Entry</h3>
-                <button onclick="closeEditModal()" style="background:none; border:none; color:var(--ios-red); font-weight:bold; font-size:16px;">✖</button>
-            </div>
-            
-            <input type="hidden" id="eId">
-            <input type="hidden" id="eType">
-            
-            <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Date</label><div class="input-wrapper"><input type="date" id="eDate"></div></div>
-            <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Amount</label><div class="input-wrapper"><input type="number" id="eAmt"></div></div>
-            
-            <!-- Shows for Bill -->
-            <div id="eBillGroup" style="display:none;">
-                <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Bill No.</label><div class="input-wrapper"><input type="text" id="eBillNo"></div></div>
-            </div>
-            
-            <!-- Shows for Payment -->
-            <div id="ePayGroup" style="display:none;">
-                <div class="input-row" style="padding:8px 0;">
-                    <label style="width:70px;">Mode</label>
-                    <div class="input-wrapper">
-                        <select id="eMode" style="width:100%; border:1px solid #ccc; border-radius:5px; padding:5px;">
-                            <option value="Cash">Cash</option><option value="NEFT">NEFT</option><option value="UPI">UPI</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="input-row" style="padding:8px 0;"><label style="width:70px;">Remarks</label><div class="input-wrapper"><input type="text" id="eRemarks"></div></div>
-            </div>
-
-            <button class="btn-primary" onclick="saveEditedTransaction()" style="margin-top:20px;">Save Changes</button>
-        </div>
-    </div>
-
-    <!-- Image Viewer & PIN Lock -->
+    <!-- Image Viewer -->
     <div id="imageViewerModal">
         <button class="close-btn" onclick="closeImageViewer()">✖ CLOSE</button>
         <img id="fullSizeImage" src="" alt="View">
     </div>
+
+    <!-- PIN Lock -->
     <div id="lockScreen">
         <div class="lock-box">
             <h2>🔒 Security Lock</h2>
@@ -187,7 +131,7 @@
             <input type="password" id="pinInput" placeholder="Enter PIN">
             <button class="btn-primary" onclick="verifyPin()">Unlock</button>
         </div>
-                                                              </div><!-- Main App Wrapper -->
+    </div><!-- Main App Wrapper -->
     <div id="mainApp">
         <!-- Top Navbar -->
         <div class="navbar">
@@ -245,8 +189,8 @@
                             <span id="hBalanceTitle">Balance:</span> <strong id="hBalance" style="color:var(--ios-red);">₹0</strong>
                         </div>
                         
-                        <!-- 🌟 NEW: View Unified Maha-Khata Button -->
-                        <button onclick="openUnifiedLedger(document.getElementById('homeDealerSelect').value)" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Maha-Khata (Edit/Del)</button>
+                        <!-- View Full Statement Button -->
+                        <button onclick="openFullStatement()" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Full Statement</button>
                     </div>
                 </div>
 
@@ -332,13 +276,10 @@
                             <div class="ledger-value" style="color: var(--ios-blue);" id="ledgerTotalPaid">₹0</div>
                         </div>
                     </div>
-                    <div class="ledger-box" id="ledgerBalanceBox" style="background: #ffebee; margin-bottom: 15px;">
+                    <div class="ledger-box" id="ledgerBalanceBox" style="background: #ffebee;">
                         <div class="ledger-title" id="ledgerBalanceTitle" style="font-size: 13px;">Net Balance</div>
                         <div class="ledger-value" id="ledgerBalanceValue" style="font-size: 24px; color: var(--ios-red);">₹0</div>
                     </div>
-
-                    <!-- 🌟 NEW: View Unified Maha-Khata Button -->
-                    <button onclick="openUnifiedLedger(document.getElementById('ledgerDealerSelect').value)" class="btn-primary" style="padding:10px; font-size:14px; background-color:var(--ios-purple);">📜 View Maha-Khata (Edit/Del)</button>
                 </div>
 
                 <!-- Paisa Jama Karne Ka Form -->
@@ -371,7 +312,7 @@
 
                 <br><br>
                 <div class="section-header">
-                    <div class="section-title">Recent Payments</div>
+                    <div class="section-title">Payment History</div>
                     <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA Share</button>
                 </div>
 
@@ -440,12 +381,14 @@
                 <div class="section-title" style="margin-left: 12px;">Real Inventory Entry</div>
                 <div class="card" style="margin-top: 8px;">
                     
+                    <!-- Datalist for Google-like Auto-suggest -->
                     <datalist id="modelSuggestList"></datalist>
                     <input type="hidden" id="realStockEditId" value="">
 
                     <div class="input-row">
                         <label>Model Name</label>
                         <div class="input-wrapper">
+                            <!-- Type karte hi dropdown list aayegi aur automatically details fill karegi -->
                             <input type="text" id="rsModelName" list="modelSuggestList" placeholder="Search or Type new..." oninput="autoFillStockDetails()" autocomplete="off">
                         </div>
                     </div>
@@ -471,6 +414,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Smart Button: Naya item h to save, purana h to Add Qty karega -->
                 <button class="btn-primary" id="saveRealStockBtn" style="background-color: var(--ios-blue);">Save / Update Stock</button>
 
                 <br><br>
@@ -495,6 +439,7 @@
                     <div class="input-row"><label>Customer</label><div class="input-wrapper"><input type="text" id="custName" placeholder="Name"></div></div>
                     <div class="input-row" style="border-bottom: none;"><label>Mobile</label><div class="input-wrapper"><input type="tel" id="custMobile" placeholder="10-digit" maxlength="10"></div></div>
                     
+                    <!-- Dynamic Items Section -->
                     <div style="background: #fcfcfc; padding: 12px 14px; border-top: 1px solid var(--ios-border); border-bottom: 1px solid var(--ios-border);">
                         <label style="font-size: 14px; font-weight: 500; margin-bottom:10px; display:block; color:var(--ios-blue);">Item Details</label>
                         <div id="itemsWrapper">
@@ -502,6 +447,7 @@
                                 <input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
                                 <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
                                 <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
+                                <!-- No delete button for first row -->
                             </div>
                         </div>
                         <button class="btn-add-item" onclick="addSalesItemRow()">+ Add More Item</button>
@@ -632,7 +578,7 @@
                 const sel = document.getElementById(id);
                 if(sel) {
                     const currentVal = sel.value;
-                    let defaultText = id === 'dealerSelect' ? 'Select Dealer...' : 'Select Dealer to view...';
+                    let defaultText = id === 'dealerSelect' ? 'Select Dealer...' : 'Select Dealer to view Khata...';
                     sel.innerHTML = `<option value="" disabled selected>${defaultText}</option>`;
                     dealersList.sort().forEach(d => { sel.innerHTML += `<option value="${d}">${d}</option>`; });
                     if(currentVal && dealersList.includes(currentVal)) sel.value = currentVal;
@@ -651,157 +597,10 @@
             }
         };
 
-        // ================= 🌟 NEW: UNIFIED LEDGER (MAHA-KHATA) MODULE =================
-        let currentUnifiedDealer = "";
-        let unifiedDataArray = [];
+        // ================= PURCHASE BILLS & DASHBOARD =================
+        if(document.getElementById('billDate')) document.getElementById('billDate').valueAsDate = new Date();
+        let globalTotalPurchases = 0; let globalTotalPayments = 0;
 
-        window.openUnifiedLedger = async function(dealer) {
-            if(!dealer) { alert("Please select a dealer first!"); return; }
-            currentUnifiedDealer = dealer;
-            document.getElementById('uDealerName').innerText = dealer;
-            document.getElementById('unifiedLedgerModal').style.display = 'flex';
-            document.getElementById('unifiedListContainer').innerHTML = '<div style="text-align:center; padding:20px; color:gray; font-weight:bold;">Loading Transactions...</div>';
-
-            const qBills = query(collection(db, "purchase_bills"), where("dealer", "==", dealer));
-            const qPays = query(collection(db, "dealer_payments"), where("dealer", "==", dealer));
-            
-            try {
-                const [snapBills, snapPays] = await Promise.all([getDocs(qBills), getDocs(qPays)]);
-                unifiedDataArray = [];
-                let tBill = 0, tPaid = 0;
-
-                snapBills.forEach(doc => {
-                    let d = doc.data(); tBill += Number(d.amount);
-                    unifiedDataArray.push({ id: doc.id, type: 'bill', dateStr: d.date, timestamp: d.timestamp, amount: Number(d.amount), billNo: d.billNo, searchStr: (d.date+" "+d.billNo+" maal in").toLowerCase() });
-                });
-
-                snapPays.forEach(doc => {
-                    let d = doc.data(); tPaid += Number(d.amount);
-                    unifiedDataArray.push({ id: doc.id, type: 'pay', dateStr: d.date, timestamp: d.timestamp, amount: Number(d.amount), mode: d.mode, remarks: d.remarks||'', searchStr: (d.date+" "+d.mode+" "+(d.remarks||'')+" jama out").toLowerCase() });
-                });
-
-                // Chronological Sorting (Oldest first for running balance generation)
-                unifiedDataArray.sort((a, b) => {
-                    let dA = new Date(a.dateStr).getTime(); let dB = new Date(b.dateStr).getTime();
-                    if(dA === dB) return a.timestamp - b.timestamp;
-                    return dA - dB;
-                });
-
-                // Top UI Update
-                document.getElementById('uTotBill').innerText = "₹" + tBill.toLocaleString('en-IN');
-                document.getElementById('uTotPaid').innerText = "₹" + tPaid.toLocaleString('en-IN');
-                let bal = tBill - tPaid;
-                let bb = document.getElementById('uBalBox'); let bt = document.getElementById('uBalTitle'); let bv = document.getElementById('uTotBal');
-                if(bal > 0) { bb.style.background = "#ffebee"; bt.innerText = "Due Balance"; bv.style.color = "var(--ios-red)"; bv.innerText = "₹" + bal.toLocaleString('en-IN'); } 
-                else if (bal < 0) { bb.style.background = "#e8f5e9"; bt.innerText = "Advance Paid"; bv.style.color = "var(--ios-green)"; bv.innerText = "₹" + Math.abs(bal).toLocaleString('en-IN'); } 
-                else { bb.style.background = "#f5f5f5"; bt.innerText = "Settled"; bv.style.color = "var(--ios-text-main)"; bv.innerText = "₹0"; }
-
-                renderUnifiedList();
-
-            } catch(e) { document.getElementById('unifiedListContainer').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Error Loading Data</div>'; }
-        };
-
-        function renderUnifiedList() {
-            let container = document.getElementById('unifiedListContainer');
-            container.innerHTML = '';
-            if(unifiedDataArray.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:20px; color:gray;">No transactions found.</div>';
-                return;
-            }
-
-            let runningBal = 0;
-            let html = '';
-            
-            // Loop chronologically to calculate running balance accurately
-            unifiedDataArray.forEach(item => {
-                let inAmt = item.type === 'bill' ? item.amount : 0;
-                let outAmt = item.type === 'pay' ? item.amount : 0;
-                runningBal += (inAmt - outAmt);
-
-                let icon = item.type === 'bill' ? '🟢' : '🔵';
-                let title = item.type === 'bill' ? 'Maal Inward' : 'Payment (Jama)';
-                let subTitle = item.type === 'bill' ? `Bill: <strong>${item.billNo}</strong>` : `Mode: <strong>${item.mode}</strong> <span style="font-size:10px;">${item.remarks ? '('+item.remarks+')' : ''}</span>`;
-                let amtStr = item.type === 'bill' ? `<span style="color:var(--ios-green);">+ ₹${inAmt.toLocaleString('en-IN')}</span>` : `<span style="color:var(--ios-blue);">- ₹${outAmt.toLocaleString('en-IN')}</span>`;
-                
-                let balStr = Math.abs(runningBal).toLocaleString('en-IN');
-                let balBadge = runningBal > 0 ? `<span style="color:var(--ios-red);">Bal: ₹${balStr} Dr</span>` : (runningBal < 0 ? `<span style="color:var(--ios-green);">Bal: ₹${balStr} Cr</span>` : `<span style="color:gray;">Settled</span>`);
-
-                // Create HTML block
-                let block = `
-                <div class="u-item u-search-item" data-search="${item.searchStr}">
-                    <div class="u-item-left">
-                        <span style="font-size:12px; color:var(--ios-text-muted); font-weight:600;">${new Date(item.dateStr).toLocaleDateString('en-IN')}</span>
-                        <span style="font-size:14px; font-weight:bold; color:var(--ios-text-main);">${icon} ${title}</span>
-                        <span style="font-size:12px; color:#555;">${subTitle}</span>
-                    </div>
-                    <div class="u-item-right">
-                        <span style="font-size:15px; font-weight:bold;">${amtStr}</span>
-                        <span style="font-size:11px; font-weight:600;">${balBadge}</span>
-                        <div style="display:flex; gap:6px; margin-top:4px;">
-                            <button class="u-btn-edit" onclick="openEditUnified('${item.id}', '${item.type}')">✏️ Edit</button>
-                            <button class="u-btn-del" onclick="deleteUnifiedTxn('${item.id}', '${item.type}')">🗑️ Del</button>
-                        </div>
-                    </div>
-                </div>`;
-                
-                // Prepend string to show latest transaction at the TOP
-                html = block + html; 
-            });
-            container.innerHTML = html;
-        }
-
-        window.filterUnifiedList = function() {
-            let val = document.getElementById('uSearch').value.toLowerCase();
-            document.querySelectorAll('.u-search-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? 'flex' : 'none'; });
-        };
-        window.closeUnifiedLedger = function() { document.getElementById('unifiedLedgerModal').style.display = 'none'; };
-
-        // --- ✏️ EDIT & 🗑️ DELETE TRANSACTION LOGIC ---
-        window.deleteUnifiedTxn = async function(id, type) {
-            if(!confirm("⚠️ Entry permanently delete ho jayegi. Are you sure?")) return;
-            let colName = type === 'bill' ? 'purchase_bills' : 'dealer_payments';
-            await deleteDoc(doc(db, colName, id));
-            openUnifiedLedger(currentUnifiedDealer); // Refresh instantly
-        };
-
-        window.openEditUnified = function(id, type) {
-            let item = unifiedDataArray.find(x => x.id === id);
-            if(!item) return;
-
-            document.getElementById('eId').value = item.id; document.getElementById('eType').value = item.type;
-            document.getElementById('eDate').value = item.dateStr; document.getElementById('eAmt').value = item.amount;
-            
-            if(type === 'bill') {
-                document.getElementById('editModalTitle').innerText = 'Edit Maal (Purchase)';
-                document.getElementById('eBillGroup').style.display = 'block'; document.getElementById('ePayGroup').style.display = 'none';
-                document.getElementById('eBillNo').value = item.billNo;
-            } else {
-                document.getElementById('editModalTitle').innerText = 'Edit Jama (Payment)';
-                document.getElementById('eBillGroup').style.display = 'none'; document.getElementById('ePayGroup').style.display = 'block';
-                document.getElementById('eMode').value = item.mode; document.getElementById('eRemarks').value = item.remarks;
-            }
-            document.getElementById('editTransactionModal').style.display = 'flex';
-        };
-
-        window.closeEditModal = function() { document.getElementById('editTransactionModal').style.display = 'none'; };
-
-        window.saveEditedTransaction = async function() {
-            let id = document.getElementById('eId').value; let type = document.getElementById('eType').value;
-            let d = document.getElementById('eDate').value; let a = Number(document.getElementById('eAmt').value);
-            if(!d || !a) { alert("Date aur Amount required hai!"); return; }
-
-            let updateObj = { date: d, amount: a };
-            if(type === 'bill') {
-                updateObj.billNo = document.getElementById('eBillNo').value.trim();
-                await updateDoc(doc(db, "purchase_bills", id), updateObj);
-            } else {
-                updateObj.mode = document.getElementById('eMode').value; updateObj.remarks = document.getElementById('eRemarks').value.trim();
-                await updateDoc(doc(db, "dealer_payments", id), updateObj);
-            }
-            closeEditModal(); openUnifiedLedger(currentUnifiedDealer); // Refresh instantly
-        };
-
-        // ================= PURCHASE BILLS CORE =================
         document.getElementById('savePurchaseBtn')?.addEventListener('click', async () => {
             const dealer = document.getElementById('dealerSelect').value; const date = document.getElementById('billDate').value;
             const billNo = document.getElementById('billNumber').value.trim().toUpperCase(); const amount = document.getElementById('billAmount').value;
@@ -824,24 +623,31 @@
                 if(list) {
                     let dStr = new Date(data.date).toLocaleDateString('en-IN');
                     let pBtn = data.photo ? `<button onclick="viewImage('${data.photo}')" class="btn-edit" style="width:auto;">📸 Bill</button>` : '';
-                    // Clickable Card to open Unified Ledger
-                    list.innerHTML += `<div class="record-item p-item clickable-dealer" onclick="openUnifiedLedger('${data.dealer}')" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
+                    list.innerHTML += `<div class="record-item p-item" data-search="${data.dealer.toLowerCase()} ${data.billNo.toLowerCase()} ${dStr}">
                             <div style="display:flex; justify-content:space-between;"><div class="product-title">${data.dealer}</div><div style="font-weight:700; color:var(--ios-green);">₹${data.amount.toLocaleString('en-IN')}</div></div>
                             <div class="data-row"><span>Bill: <strong>${data.billNo}</strong></span><span>📅 ${dStr}</span></div>
-                            <div style="margin-top:8px; font-size:11px; color:var(--ios-purple); font-weight:bold;">👉 Tap to view Maha-Khata</div>
+                            <div style="margin-top:10px;">${pBtn}<button onclick="deleteBill('${docSnap.id}')" class="btn-destructive" style="width:auto; float:right;">🗑️</button></div>
                         </div>`;
                 }
             });
             if(document.getElementById('dashPurchase')) document.getElementById('dashPurchase').innerText = "₹" + globalTotalPurchases.toLocaleString('en-IN');
             updateMarketDue();
         });
-        window.searchPurchase = function() { let val = document.getElementById('pSearch').value.toLowerCase(); document.querySelectorAll('.p-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
+        
+        window.searchPurchase = function() {
+            let val = document.getElementById('pSearch').value.toLowerCase();
+            document.querySelectorAll('.p-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; });
+        };
+        window.deleteBill = function(id) { if(confirm("⚠️ Delete this bill?")) deleteDoc(doc(db, "purchase_bills", id)); };
 
-        // ================= BACKGROUND KHATA LISTENER (For Dashboard Sync) =================
-        let dealerTotalBill = 0; let dealerTotalPaid = 0; let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
+        // ================= KHATA (ACCOUNTS) - Dealer Separation Fixed =================
+        if(document.getElementById('payDate')) document.getElementById('payDate').valueAsDate = new Date();
+        let dealerTotalBill = 0; let dealerTotalPaid = 0;
+        let cLedgerUnsubBills = null; let cLedgerUnsubPays = null;
+
         window.loadDealerLedger = function() {
             const dealer = document.getElementById('ledgerDealerSelect').value; if(!dealer) return;
-            document.getElementById('ledgerDashboard').style.display = 'block';
+            document.getElementById('ledgerDashboard').style.display = 'block'; document.getElementById('btnShareLedger').style.display = 'block';
             if(cLedgerUnsubBills) cLedgerUnsubBills(); if(cLedgerUnsubPays) cLedgerUnsubPays();
 
             cLedgerUnsubBills = onSnapshot(query(collection(db, "purchase_bills"), where("dealer", "==", dealer)), (snap) => {
@@ -849,9 +655,10 @@
             });
             cLedgerUnsubPays = onSnapshot(query(collection(db, "dealer_payments"), where("dealer", "==", dealer)), (snap) => {
                 dealerTotalPaid = 0; const list = document.getElementById('paymentList'); if(list) list.innerHTML = '';
-                let payDataArray = []; snap.forEach(docSnap => { let d = docSnap.data(); d.id = docSnap.id; payDataArray.push(d); });
+                let payDataArray = [];
+                snap.forEach(docSnap => { let d = docSnap.data(); d.id = docSnap.id; payDataArray.push(d); });
                 payDataArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                
+
                 if(payDataArray.length === 0) { if(list) list.innerHTML = '<div class="loading-text" style="color:gray;">No payment history for this dealer.</div>'; 
                 } else {
                     payDataArray.forEach(data => {
@@ -859,11 +666,11 @@
                         if(list) {
                             let dStr = new Date(data.date).toLocaleDateString('en-IN');
                             let tagClass = data.mode==='Cash' ? 'tag-cash' : (data.mode==='Cheque' ? 'tag-cheque' : 'tag-online');
-                            list.innerHTML += `<div class="record-item pay-item clickable-dealer" onclick="openUnifiedLedger('${dealer}')" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
+                            list.innerHTML += `<div class="record-item pay-item" data-search="${dStr} ${data.mode.toLowerCase()} ${(data.remarks||'').toLowerCase()}">
                                     <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700; font-size:15px; color:var(--ios-blue);">₹${data.amount.toLocaleString('en-IN')}</span><span style="font-size:12px; color:gray;">📅 ${dStr}</span></div>
                                     <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
                                         <div><span class="${tagClass}">${data.mode}</span> <span style="font-size:13px; color:#555; margin-left:6px;">${data.remarks||''}</span></div>
-                                        <div style="font-size:11px; color:var(--ios-purple); font-weight:bold;">👉 Edit/Del</div>
+                                        <button onclick="deletePayment('${data.id}')" style="background:none;border:none;color:var(--ios-red);font-size:15px;cursor:pointer;">🗑️</button>
                                     </div>
                                 </div>`;
                         }
@@ -883,14 +690,17 @@
             else { bb.style.background = "#f5f5f5"; bt.innerText = "Account Settled"; bv.style.color = "var(--ios-text-main)"; bv.innerText = "₹0"; }
         }
 
-        window.searchPayments = function() { let val = document.getElementById('paySearch').value.toLowerCase(); document.querySelectorAll('.pay-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
-
+        window.searchPayments = function() {
+            let val = document.getElementById('paySearch').value.toLowerCase();
+            document.querySelectorAll('.pay-item').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; });
+        };
         document.getElementById('savePaymentBtn')?.addEventListener('click', async () => {
             const dealer = document.getElementById('ledgerDealerSelect').value; const amount = document.getElementById('payAmount').value;
             if(!dealer || !amount) { alert("Dealer aur Amount bharein!"); return; }
             await addDoc(collection(db, "dealer_payments"), { dealer, date: document.getElementById('payDate').value, amount: Number(amount), mode: document.getElementById('payMode').value, remarks: document.getElementById('payRemarks').value, timestamp: Date.now() });
             document.getElementById('payAmount').value = ''; document.getElementById('payRemarks').value = ''; alert("✅ Payment Updated!");
         });
+        window.deletePayment = function(id) { if(confirm("Delete this payment?")) deleteDoc(doc(db, "dealer_payments", id)); };
 
         // Home Khata View
         let hUnsubBills = null; let hUnsubPays = null;
@@ -913,14 +723,17 @@
             }
         };
 
-        onSnapshot(query(collection(db, "dealer_payments")), (snap) => { globalTotalPayments = 0; snap.forEach(doc => globalTotalPayments += (doc.data().amount || 0)); updateMarketDue(); });
+        onSnapshot(query(collection(db, "dealer_payments")), (snap) => {
+            globalTotalPayments = 0; snap.forEach(doc => globalTotalPayments += (doc.data().amount || 0)); updateMarketDue();
+        });
         function updateMarketDue() {
-            let marketDue = globalTotalPurchases - globalTotalPayments; let dueEl = document.getElementById('dashMarketDue'); if(!dueEl) return;
+            let marketDue = globalTotalPurchases - globalTotalPayments; let dueEl = document.getElementById('dashMarketDue');
+            if(!dueEl) return;
             if(marketDue > 0) { dueEl.innerText = "₹" + marketDue.toLocaleString('en-IN'); dueEl.style.color = "#c62828"; } 
             else { dueEl.innerText = "₹0 (Clear)"; dueEl.style.color = "#2e7d32"; }
         }
 
-        // ================= FINANCE S/N (Locked Module) =================
+        // ================= FINANCE S/N (Old Stock Logic - Locked) =================
         let globalRecords = []; let brandCategories = ["LG", "WHIRLPOOL", "VOLTAS", "SAMSUNG", "SONY", "HAVELLS"];
         const catRef = doc(db, "app_settings", "brands");
         onSnapshot(catRef, (snap) => { if (snap.exists() && snap.data().list) brandCategories = snap.data().list; else setDoc(catRef, { list: brandCategories }); renderCategories(); });
@@ -931,25 +744,32 @@
             if(cVal && brandCategories.includes(cVal)) sel.value = cVal;
         }
         window.addNewCategory = async function() {
-            const nb = prompt("Enter Brand name:"); if (nb && nb.trim()!=="") { const cnb = nb.trim().toUpperCase(); if(!brandCategories.includes(cnb)) { brandCategories.push(cnb); await setDoc(catRef, { list: brandCategories }); document.getElementById("categorySelect").value = cnb; } }
+            const nb = prompt("Enter Brand name:"); if (nb && nb.trim()!=="") {
+                const cnb = nb.trim().toUpperCase(); if(!brandCategories.includes(cnb)) { brandCategories.push(cnb); await setDoc(catRef, { list: brandCategories }); document.getElementById("categorySelect").value = cnb; }
+            }
         };
+
         document.getElementById('saveBtn')?.addEventListener('click', async () => {
             const c = document.getElementById('categorySelect').value; const m = document.getElementById('modelNumber').value.trim().toUpperCase();
-            const st = document.getElementById('starRating').value; const sr = document.getElementById('serialNumber').value.trim().toUpperCase(); const eId = document.getElementById('editId').value;
+            const st = document.getElementById('starRating').value; const sr = document.getElementById('serialNumber').value.trim().toUpperCase();
+            const eId = document.getElementById('editId').value;
             if (!c || !m || !sr) { alert("Brand, Model & Serial are required!"); return; }
             if (globalRecords.find(i => i.serial === sr && i.id !== eId)) { alert(`ERROR: Serial '${sr}' already exists!`); return; }
             const dataObj = { category:c, model:m, star:st, serial:sr, photo: itemImgData || "" };
             if (eId) { await updateDoc(doc(db, "finance_records", eId), dataObj); document.getElementById('saveBtn').innerText="Save Record"; document.getElementById('saveBtn').style.backgroundColor="var(--ios-blue)"; document.getElementById('editId').value=''; } 
             else { dataObj.timestamp = Date.now(); addDoc(collection(db, "finance_records"), dataObj); }
-            document.getElementById('categorySelect').value=''; document.getElementById('modelNumber').value=''; document.getElementById('starRating').value=''; document.getElementById('serialNumber').value=''; document.getElementById('itemPhoto').value=''; document.getElementById('itemPreview').style.display='none'; itemImgData = null;
+            document.getElementById('categorySelect').value=''; document.getElementById('modelNumber').value=''; document.getElementById('starRating').value=''; document.getElementById('serialNumber').value='';
+            document.getElementById('itemPhoto').value=''; document.getElementById('itemPreview').style.display='none'; itemImgData = null;
         });
         window.editRecord = function(id, c, m, st, sr) {
             document.getElementById('categorySelect').value=c; document.getElementById('modelNumber').value=m; document.getElementById('starRating').value=st; document.getElementById('serialNumber').value=sr; document.getElementById('editId').value=id;
             const btn = document.getElementById('saveBtn'); btn.innerText = "Update Record"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
         };
         window.deleteRecord = function(id) { if (confirm("Mark as Used/Sold?")) deleteDoc(doc(db, "finance_records", id)); };
+
         onSnapshot(query(collection(db, "finance_records"), orderBy("timestamp", "desc")), (snap) => {
-            const list = document.getElementById('recordsList'); if(document.getElementById('totalCount')) document.getElementById('totalCount').innerText = snap.size;
+            const list = document.getElementById('recordsList'); 
+            if(document.getElementById('totalCount')) document.getElementById('totalCount').innerText = snap.size;
             if(!list) return; list.innerHTML = ''; globalRecords = [];
             snap.forEach((docSnap) => {
                 const data = docSnap.data(); data.id = docSnap.id; globalRecords.push(data);
@@ -961,74 +781,171 @@
                 </div>`;
             });
         });
-        window.filterRecords = function() { let val = document.getElementById('searchInput').value.toUpperCase(); document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; }); }
+        window.filterRecords = function() {
+            let val = document.getElementById('searchInput').value.toUpperCase();
+            document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; });
+        }
+
 
         // ================= NEW MODULE: REAL INVENTORY (STOCK) =================
         let globalRealStock = [];
+        
         onSnapshot(query(collection(db, "real_inventory"), orderBy("modelName", "asc")), (snap) => {
-            const list = document.getElementById('realStockList'); const dataList = document.getElementById('modelSuggestList');
-            if(list) list.innerHTML = ''; if(dataList) dataList.innerHTML = '';
-            globalRealStock = []; let html = ''; let totalStockCount = 0;
+            const list = document.getElementById('realStockList');
+            const dataList = document.getElementById('modelSuggestList');
+            if(list) list.innerHTML = '';
+            if(dataList) dataList.innerHTML = '';
+            globalRealStock = [];
+            
+            let html = '';
+            let totalStockCount = 0; // For Home Dashboard
+            
             snap.forEach((docSnap) => {
-                const data = docSnap.data(); data.id = docSnap.id; globalRealStock.push(data); totalStockCount += (data.qty || 0);
-                if(dataList) dataList.innerHTML += `<option value="${data.modelName}">`;
+                const data = docSnap.data();
+                data.id = docSnap.id;
+                globalRealStock.push(data);
+                totalStockCount += (data.qty || 0);
+                
+                // Populate Google-like DataList
+                if(dataList) {
+                    dataList.innerHTML += `<option value="${data.modelName}">`;
+                }
+
                 if(list) {
                     let stockBadge = data.qty > 0 ? `<span class="stock-badge-green">${data.qty} Pcs</span>` : `<span class="stock-badge-red">Out of Stock</span>`;
-                    html += `<div class="record-item rs-card" data-search="${data.modelName.toLowerCase()} ${data.brand.toLowerCase()}">
-                        <div style="display:flex; justify-content:space-between; align-items:center;"><div class="product-title">${data.modelName}</div>${stockBadge}</div>
-                        <div class="data-row"><span>Brand: <strong>${data.brand}</strong></span><span style="color:var(--ios-blue); font-weight:bold;">Rate: ₹${Number(data.rate).toLocaleString('en-IN')}</span></div>
+                    
+                    html += `
+                    <div class="record-item rs-card" data-search="${data.modelName.toLowerCase()} ${data.brand.toLowerCase()}">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="product-title">${data.modelName}</div>
+                            ${stockBadge}
+                        </div>
+                        <div class="data-row">
+                            <span>Brand: <strong>${data.brand}</strong></span>
+                            <span style="color:var(--ios-blue); font-weight:bold;">Rate: ₹${Number(data.rate).toLocaleString('en-IN')}</span>
+                        </div>
                         <div class="action-buttons" style="margin-top:12px;">
                             <button class="btn-edit" onclick="editRealStock('${data.id}', '${data.modelName}', '${data.brand}', ${data.rate}, ${data.qty})" style="flex:2;">✏️ Edit</button>
                             <button class="btn-edit" style="background:#e8f5e9; color:var(--ios-green);" onclick="adjustQty('${data.id}', ${data.qty}, 1)">+ 1 Pcs</button>
                             <button class="btn-destructive" style="background:#ffebee; color:var(--ios-red);" onclick="adjustQty('${data.id}', ${data.qty}, -1)">- 1 Pcs</button>
-                        </div></div>`;
+                        </div>
+                    </div>`;
                 }
             });
+            
             if(list) list.innerHTML = html || '<div class="loading-text" style="padding:15px;">No inventory found.</div>';
+            
+            // Update Dashboard Stock Number
             if(document.getElementById('dashStock')) document.getElementById('dashStock').innerText = totalStockCount;
         });
 
+        // The Smart Auto-Suggest & Auto-Fill Logic
         window.autoFillStockDetails = function() {
             let val = document.getElementById('rsModelName').value.trim();
             let existingItem = globalRealStock.find(item => item.modelName.toLowerCase() === val.toLowerCase());
+            
             const btn = document.getElementById('saveRealStockBtn');
             if(existingItem) {
-                document.getElementById('rsBrand').value = existingItem.brand; document.getElementById('rsRate').value = existingItem.rate;
-                document.getElementById('realStockEditId').value = existingItem.id; document.getElementById('rsQty').value = "1";
-                btn.innerText = "Update Existing Stock Qty / Rate"; btn.style.backgroundColor = "var(--ios-orange)";
+                // Agar pehle se hai toh brand, rate auto fill ho jayega
+                document.getElementById('rsBrand').value = existingItem.brand;
+                document.getElementById('rsRate').value = existingItem.rate;
+                document.getElementById('realStockEditId').value = existingItem.id;
+                document.getElementById('rsQty').value = "1"; // Default add 1
+                btn.innerText = "Update Existing Stock Qty / Rate";
+                btn.style.backgroundColor = "var(--ios-orange)";
             } else {
-                document.getElementById('realStockEditId').value = ""; btn.innerText = "Save New Stock Item"; btn.style.backgroundColor = "var(--ios-blue)";
+                document.getElementById('realStockEditId').value = "";
+                btn.innerText = "Save New Stock Item";
+                btn.style.backgroundColor = "var(--ios-blue)";
             }
         };
 
+        // Save or Update Real Stock
         document.getElementById('saveRealStockBtn')?.addEventListener('click', async () => {
-            let id = document.getElementById('realStockEditId').value; let model = document.getElementById('rsModelName').value.trim();
-            let brand = document.getElementById('rsBrand').value.trim(); let rate = Number(document.getElementById('rsRate').value) || 0; let inputQty = Number(document.getElementById('rsQty').value) || 0;
+            let id = document.getElementById('realStockEditId').value;
+            let model = document.getElementById('rsModelName').value.trim();
+            let brand = document.getElementById('rsBrand').value.trim();
+            let rate = Number(document.getElementById('rsRate').value) || 0;
+            let inputQty = Number(document.getElementById('rsQty').value) || 0;
+
             if(!model || !brand) { alert("Model Name aur Brand zaroori hain!"); return; }
-            const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Saving...";
+
+            const btn = document.getElementById('saveRealStockBtn');
+            btn.innerText = "Saving...";
 
             if(id) {
-                let existingItem = globalRealStock.find(item => item.id === id); let newQty = (existingItem.qty || 0) + inputQty;
-                await updateDoc(doc(db, "real_inventory", id), { rate: rate, qty: newQty, brand: brand, updatedAt: Date.now() }); alert(`✅ Stock Updated! Total Quantity: ${newQty} Pcs`);
+                // Update Existing Item
+                let existingItem = globalRealStock.find(item => item.id === id);
+                let newQty = (existingItem.qty || 0) + inputQty;
+                await updateDoc(doc(db, "real_inventory", id), {
+                    rate: rate,
+                    qty: newQty,
+                    brand: brand, // Incase brand spelling updated
+                    updatedAt: Date.now()
+                });
+                alert(`✅ Stock Updated! Total Quantity: ${newQty} Pcs`);
             } else {
-                await addDoc(collection(db, "real_inventory"), { modelName: model, brand: brand, rate: rate, qty: inputQty, timestamp: Date.now(), updatedAt: Date.now() }); alert("✅ New Item added to Inventory!");
+                // Create New Item
+                await addDoc(collection(db, "real_inventory"), {
+                    modelName: model,
+                    brand: brand,
+                    rate: rate,
+                    qty: inputQty,
+                    timestamp: Date.now(),
+                    updatedAt: Date.now()
+                });
+                alert("✅ New Item added to Inventory!");
             }
-            document.getElementById('realStockEditId').value = ""; document.getElementById('rsModelName').value = ""; document.getElementById('rsBrand').value = ""; document.getElementById('rsRate').value = ""; document.getElementById('rsQty').value = "1";
-            btn.innerText = "Save / Update Stock"; btn.style.backgroundColor = "var(--ios-blue)";
+
+            // Reset Box
+            document.getElementById('realStockEditId').value = "";
+            document.getElementById('rsModelName').value = "";
+            document.getElementById('rsBrand').value = "";
+            document.getElementById('rsRate').value = "";
+            document.getElementById('rsQty').value = "1";
+            btn.innerText = "Save / Update Stock";
+            btn.style.backgroundColor = "var(--ios-blue)";
         });
 
+        // Edit Button Click (Manual Update)
         window.editRealStock = function(id, model, brand, rate, qty) {
-            document.getElementById('realStockEditId').value = id; document.getElementById('rsModelName').value = model; document.getElementById('rsBrand').value = brand; document.getElementById('rsRate').value = rate; document.getElementById('rsQty').value = "0"; 
-            const btn = document.getElementById('saveRealStockBtn'); btn.innerText = "Update Price / Qty"; btn.style.backgroundColor = "var(--ios-orange)"; window.scrollTo(0, 0);
+            document.getElementById('realStockEditId').value = id;
+            document.getElementById('rsModelName').value = model;
+            document.getElementById('rsBrand').value = brand;
+            document.getElementById('rsRate').value = rate;
+            document.getElementById('rsQty').value = "0"; // Focus on updating price
+            
+            const btn = document.getElementById('saveRealStockBtn');
+            btn.innerText = "Update Price / Qty";
+            btn.style.backgroundColor = "var(--ios-orange)";
+            window.scrollTo(0, 0);
         };
-        window.adjustQty = async function(id, currentQty, change) { let newQty = currentQty + change; if(newQty < 0) newQty = 0; await updateDoc(doc(db, "real_inventory", id), { qty: newQty, updatedAt: Date.now() }); };
-        window.filterRealStock = function() { let val = document.getElementById('rsSearchInput').value.toLowerCase(); document.querySelectorAll('.rs-card').forEach(el => { el.style.display = el.dataset.search.includes(val) ? '' : 'none'; }); };
 
-        // ================= SALES / BOOKING (DYNAMIC) =================
+        // Quick +1 / -1 Button Logic
+        window.adjustQty = async function(id, currentQty, change) {
+            let newQty = currentQty + change;
+            if(newQty < 0) newQty = 0;
+            await updateDoc(doc(db, "real_inventory", id), { qty: newQty, updatedAt: Date.now() });
+        };
+
+        // Search Filter for Real Stock
+        window.filterRealStock = function() {
+            let val = document.getElementById('rsSearchInput').value.toLowerCase();
+            document.querySelectorAll('.rs-card').forEach(el => { 
+                el.style.display = el.dataset.search.includes(val) ? '' : 'none'; 
+            });
+        };
+
+        // ================= SALES / BOOKING (ADVANCED DYNAMIC AUTO-CALC) =================
         if(document.getElementById('custDeliveryDate')) document.getElementById('custDeliveryDate').valueAsDate = new Date();
+
         window.addSalesItemRow = function() {
-            const wrapper = document.getElementById('itemsWrapper'); const row = document.createElement('div'); row.className = 'sales-item-row';
-            row.innerHTML = `<input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"><button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>`;
+            const wrapper = document.getElementById('itemsWrapper');
+            const row = document.createElement('div'); row.className = 'sales-item-row';
+            row.innerHTML = `<input type="text" class="sales-item-name req-item-name" placeholder="Item Name">
+                <input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()">
+                <input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()">
+                <button class="btn-remove-item" onclick="removeSalesItemRow(this)" title="Remove Item">✖</button>`;
             wrapper.appendChild(row);
         };
         window.removeSalesItemRow = function(btn) { btn.parentElement.remove(); calculateCustBalance(); };
@@ -1037,11 +954,13 @@
             let totalBill = 0; const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
             for(let i = 0; i < qtys.length; i++) { let q = Number(qtys[i].value) || 0; let p = Number(prices[i].value) || 0; totalBill += (q * p); }
             document.getElementById('custTotalBill').value = totalBill;
-            let advance = Number(document.getElementById('custAdvance').value) || 0; document.getElementById('custBalanceText').innerText = "₹" + (totalBill - advance).toLocaleString('en-IN');
+            let advance = Number(document.getElementById('custAdvance').value) || 0;
+            document.getElementById('custBalanceText').innerText = "₹" + (totalBill - advance).toLocaleString('en-IN');
         };
 
         document.getElementById('saveBookingBtn')?.addEventListener('click', async () => {
-            const n = document.getElementById('custName').value.trim(); const mb = document.getElementById('custMobile').value.trim(); const tb = document.getElementById('custTotalBill').value; const adv = document.getElementById('custAdvance').value; const dDate = document.getElementById('custDeliveryDate').value;
+            const n = document.getElementById('custName').value.trim(); const mb = document.getElementById('custMobile').value.trim();
+            const tb = document.getElementById('custTotalBill').value; const adv = document.getElementById('custAdvance').value; const dDate = document.getElementById('custDeliveryDate').value;
             let itemsString = ""; const names = document.querySelectorAll('.req-item-name'); const qtys = document.querySelectorAll('.req-item-qty'); const prices = document.querySelectorAll('.req-item-price');
             for(let i = 0; i < names.length; i++) { if(names[i].value.trim() !== '') { itemsString += `• ${qtys[i].value}x ${names[i].value.trim()} (₹${prices[i].value})\n`; } }
 
@@ -1049,6 +968,7 @@
             const btn = document.getElementById('saveBookingBtn'); btn.innerText = "Saving...";
             
             await addDoc(collection(db, "sales_bookings"), { customerName: n, mobile: mb, items: itemsString.trim(), totalBill: Number(tb), advanceAmount: Number(adv || 0), deliveryDate: dDate, timestamp: Date.now() });
+            
             alert("✅ Booking saved!");
             document.getElementById('custName').value = ''; document.getElementById('custMobile').value = ''; document.getElementById('custTotalBill').value = ''; document.getElementById('custAdvance').value = ''; document.getElementById('custBalanceText').innerText = "₹0";
             document.getElementById('itemsWrapper').innerHTML = `<div class="sales-item-row"><input type="text" class="sales-item-name req-item-name" placeholder="Item Name"><input type="number" class="sales-item-qty req-item-qty" placeholder="Qty" value="1" oninput="calculateCustBalance()"><input type="number" class="sales-item-price req-item-price" placeholder="Price (₹)" oninput="calculateCustBalance()"></div>`;
@@ -1073,6 +993,7 @@
                 if(list) list.innerHTML += html;
                 if(d.deliveryDate === todayStr && todayList) { todayList.innerHTML += html; todayCount++; }
             });
+
             if(list && snap.empty) list.innerHTML = '<div class="loading-text">No pending bookings.</div>';
             if(todayList && todayCount === 0) todayList.innerHTML = '<div class="loading-text" style="padding:15px; font-size:12px;">No deliveries for today.</div>';
             if(document.getElementById('dashAdvance')) document.getElementById('dashAdvance').innerText = "₹" + tAdv.toLocaleString('en-IN');
