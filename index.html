@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Savitri Electronics | ERP 2.4 Pro</title>
+    <title>Savitri Electronics | ERP 2.5 Premium</title>
     
     <style>
         /* CORE LOCKED DESIGN */
@@ -16,7 +16,7 @@
 
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; background-color: var(--ios-bg); color: var(--ios-text-main); margin: 0; padding: 0; padding-bottom: 75px; -webkit-font-smoothing: antialiased; }
 
-        /* Zoom Image Viewer (Restored to perfectly working state) */
+        /* Zoom Image Viewer */
         #imageViewerModal { display: none; position: fixed; z-index: 10010; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .close-btn { position: absolute; top: 30px; right: 20px; background: var(--ios-red); color: white; border: none; padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         #fullSizeImage { max-width: 95%; max-height: 80%; border-radius: 8px; object-fit: contain; }
@@ -68,27 +68,27 @@
         .input-wrapper input, .input-wrapper select, .input-wrapper textarea { flex: 1; border: none; background: transparent; font-size: 15px; outline: none; padding: 4px 0; color: var(--ios-text-main); width: 100%; font-family: inherit;}
         .star-select { background: #e5e5ea !important; padding: 6px 4px !important; border-radius: 6px; font-size: 13px !important; font-weight: 600; color: var(--ios-blue) !important;}
         
-        /* Buttons */
+        /* Action Buttons */
         .btn-add-cat { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; font-size: 18px; line-height: 1; cursor: pointer; margin-left: 10px; display: flex; justify-content: center; align-items: center; }
         .btn-primary { width: 100%; background-color: var(--ios-blue); color: white; border: none; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: 0.1s; }
         .btn-primary:active { transform: scale(0.97); }
         .btn-export { background: var(--ios-green); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
+        /* Report Action Bar Styles */
+        .report-actions-bar { display: flex; gap: 8px; margin: 10px 12px 15px 12px; }
+        .btn-report-action { flex: 1; border: none; padding: 10px 5px; font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; color: white; text-align: center; }
+        .btn-pdf { background-color: #5856D6; }
+        .btn-excel { background-color: #34C759; }
+        .btn-wa { background-color: #25D366; }
+        
+        /* Cards Layout */
         .search-container { background: var(--ios-input-bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; display: flex; align-items: center; }
         .search-container input { border: none; background: transparent; width: 100%; font-size: 15px; outline: none; }
-        
-        /* Cards for Purchase, Stock, Sales */
         .record-item { padding: 14px; border-bottom: 0.5px solid var(--ios-border); }
         .record-item:last-child { border-bottom: none; }
         .product-title { font-size: 16px; font-weight: 600; color: var(--ios-blue); margin-bottom: 4px; }
         .data-row { display: flex; justify-content: space-between; font-size: 13px; margin-top: 4px; color: #333; }
-        .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-edit { flex: 1; background: #fff0e0; color: var(--ios-orange); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .btn-destructive { flex: 1; background: #ffebe9; color: var(--ios-red); border: none; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .ledger-box { padding: 12px; border-radius: 8px; text-align: center; flex: 1; }
-        .ledger-title { font-size: 11px; color: var(--ios-text-muted); margin-bottom: 4px; font-weight: 500;}
-        .ledger-value { font-size: 18px; font-weight: 700; }
-
+        
         /* Dynamic Sales Layout */
         .sales-item-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
         .sales-item-row input { padding: 8px; border: 1px solid var(--ios-border); border-radius: 6px; font-size: 13px; outline: none; background: var(--ios-card); width: 100%; box-sizing: border-box; }
@@ -96,7 +96,7 @@
         .btn-remove-item { background: #ffebe9; color: var(--ios-red); border: none; border-radius: 6px; padding: 8px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .btn-add-item { background: #e8f5e9; color: var(--ios-green); border: none; border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; border: 1px dashed var(--ios-green); }
 
-        /* Clean Statement List Layout */
+        /* Clean Bank Passbook Layout */
         .stmt-row { padding: 12px 14px; border-bottom: 1px solid #eee; background: white; }
         .stmt-row:last-child { border-bottom: none; }
         .stmt-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -105,11 +105,22 @@
         .stmt-btn-edit { color: var(--ios-blue); background: #e5e5ea; }
         .stmt-btn-del { color: var(--ios-red); background: #ffebee; margin-left: 5px;}
 
+        /* 🖨️ ADVANCED PROFESSIONAL PRINT LAYOUT */
+        @media print {
+            body { background: white; color: black; padding: 0; margin: 0; }
+            #mainApp, .navbar, .bottom-nav, .card:not(#passbookCardParent), .search-container, .section-title, .input-row, #savePaymentBtn, .report-actions-bar, .stmt-btn {
+                display: none !important;
+            }
+            #tab-accounts { display: block !important; }
+            #passbookCardParent { box-shadow: none !important; border: none !important; background: white !important; overflow: visible !important; }
+            .stmt-row { border-bottom: 1px solid #000 !important; background: white !important; page-break-inside: avoid; }
+            #passbookList { display: block !important; }
+            .print-header-visible { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; padding-bottom: 10px; }
+        }
+        .print-header-visible { display: none; }
     </style>
 </head>
-<body>
-
-    <!-- 🌟 NEW: Edit Transaction Sub-Modal -->
+<body><!-- 🌟 NEW: Edit Transaction Sub-Modal -->
     <div id="editTransactionModal" class="sub-modal">
         <div class="sub-modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
@@ -147,6 +158,7 @@
         <button class="close-btn" onclick="closeImageViewer()">✖ CLOSE</button>
         <img id="fullSizeImage" src="" alt="View">
     </div>
+    
     <div id="lockScreen">
         <div class="lock-box">
             <h2>🔒 Security Lock</h2>
@@ -154,7 +166,9 @@
             <input type="password" id="pinInput" placeholder="Enter PIN">
             <button class="btn-primary" onclick="verifyPin()">Unlock</button>
         </div>
-    </div><!-- Main App Wrapper -->
+    </div>
+
+    <!-- Main App Wrapper -->
     <div id="mainApp">
         <!-- Top Navbar -->
         <div class="navbar">
@@ -211,6 +225,7 @@
                         <div style="display:flex; justify-content:space-between; font-size:15px; margin-top:8px; padding-top:8px; border-top:1px dashed #ccc;">
                             <span id="hBalanceTitle">Balance:</span> <strong id="hBalance" style="color:var(--ios-red);">₹0</strong>
                         </div>
+                        <button onclick="switchTab('tab-accounts', 'Dealer Khata'); document.getElementById('ledgerDealerSelect').value = document.getElementById('homeDealerSelect').value; loadDealerPassbook();" class="btn-primary" style="margin-top:15px; padding:10px; font-size:14px; background-color:var(--ios-purple);">📖 Go to Full Ledger Statement</button>
                     </div>
                 </div>
 
@@ -275,6 +290,15 @@
                 </div>
             </div><!-- 3. ACCOUNTS TAB (Dealer Khata - Bank Passbook Style) -->
             <div id="tab-accounts" class="tab-content">
+                
+                <!-- 🖨️ For Print & PDF Only -->
+                <div class="print-header-visible">
+                    <h2>Savitri Electronics</h2>
+                    <p>Ledger Statement</p>
+                    <h3 id="printDealerName"></h3>
+                    <p id="printDateString" style="font-size:12px; color:gray;"></p>
+                </div>
+
                 <div class="section-title" style="margin-left: 12px;">Dealer Ledger (Khata)</div>
                 
                 <div class="card" style="margin-top: 8px; padding: 12px; background: white;">
@@ -335,7 +359,13 @@
                 <!-- 🌟 NEW: Unified Bank-Passbook Style Statement (No Popup) -->
                 <div class="section-header">
                     <div class="section-title" id="passbookTitle">Ledger Statement</div>
-                    <button class="btn-export" id="btnShareLedger" style="display:none;" onclick="shareLedgerWhatsApp()">🟢 WA Share</button>
+                </div>
+
+                <!-- 📊 Report Action Bar (PDF, Excel, WhatsApp) -->
+                <div class="report-actions-bar" id="reportActionBar" style="display:none;">
+                    <button class="btn-report-action btn-pdf" onclick="window.print()">🖨️ Save PDF</button>
+                    <button class="btn-report-action btn-excel" onclick="exportLedgerExcel()">📊 Excel</button>
+                    <button class="btn-report-action btn-wa" onclick="shareLedgerWhatsApp()">🟢 Share</button>
                 </div>
 
                 <div class="search-container" style="margin: 10px 12px;">
@@ -343,8 +373,10 @@
                     <input type="text" id="paySearch" placeholder="Search Amount, Bill No, Mode..." onkeyup="filterPassbook()">
                 </div>
 
-                <div class="card" id="passbookList">
-                    <div class="record-item" style="color:gray;">Select dealer to view statement...</div>
+                <div class="card" id="passbookCardParent">
+                    <div id="passbookList">
+                        <div class="record-item" style="color:gray; padding:15px;">Select dealer to view statement...</div>
+                    </div>
                 </div>
             </div>
 
@@ -493,7 +525,7 @@
             <div class="nav-item" onclick="switchTab('tab-realstock', 'Real Stock')"><span class="nav-icon">📦</span><span>Stock</span></div>
             <div class="nav-item" onclick="switchTab('tab-sales', 'Bookings')"><span class="nav-icon">📝</span><span>Sales</span></div>
         </div>
-                    </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
+    </div><!-- MAIN APP JAVASCRIPT & FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, setDoc, getDoc, where, orderBy } 
@@ -638,13 +670,21 @@
         if(document.getElementById('payDate')) document.getElementById('payDate').valueAsDate = new Date();
         let pbUnsubBills = null; let pbUnsubPays = null;
         let pbDealer = "";
+        let globalPassbookData = []; // Store sorted data globally for Excel Export
 
         window.loadDealerPassbook = function() {
             const dealer = document.getElementById('ledgerDealerSelect').value; if(!dealer) return;
             pbDealer = dealer;
+            
+            // Set Print Headers
+            document.getElementById('printDealerName').innerText = dealer;
+            document.getElementById('printDateString').innerText = "Generated on: " + new Date().toLocaleString('en-IN');
+            
             document.getElementById('ledgerDashboard').style.display = 'block';
             document.getElementById('passbookTitle').innerText = dealer + " - Statement";
-            document.getElementById('btnShareLedger').style.display = 'inline-block';
+            
+            // Show action buttons
+            document.getElementById('reportActionBar').style.display = 'flex';
             
             if(pbUnsubBills) pbUnsubBills(); if(pbUnsubPays) pbUnsubPays();
             
@@ -659,6 +699,8 @@
                     if(dA === dB) return (a.timestamp||0) - (b.timestamp||0);
                     return dA - dB;
                 });
+                
+                globalPassbookData = combined; // Save for Excel
 
                 let tB = 0, tP = 0, rBal = 0; let html = '';
                 combined.forEach(item => {
@@ -752,9 +794,32 @@
             }
             closeEditModal();
         };
+
+        // 📊 EXCEL EXPORT LOGIC FOR LEDGER
+        window.exportLedgerExcel = function() {
+            if(!pbDealer || globalPassbookData.length === 0) { alert("No data to export!"); return; }
+            let csvContent = "data:text/csv;charset=utf-8,Date,Details,Maal In (₹),Jama Out (₹),Running Balance (₹)\n";
+            let rBal = 0;
+            
+            globalPassbookData.forEach(item => {
+                let inA = item.type === 'bill' ? item.amount : 0; let outA = item.type === 'pay' ? item.amount : 0;
+                rBal += (inA - outA);
+                let dS = new Date(item.date).toLocaleDateString('en-IN');
+                let details = item.type === 'bill' ? `Bill No: ${item.billNo}` : `Payment Mode: ${item.mode} ${item.remarks ? '('+item.remarks+')' : ''}`;
+                let bBadge = rBal > 0 ? `${Math.abs(rBal)} Dr` : (rBal < 0 ? `${Math.abs(rBal)} Cr` : `0`);
+                csvContent += `"${dS}","${details}","${inA}","${outA}","${bBadge}"\n`;
+            });
+
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Ledger_${pbDealer.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('en-IN')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        };
+
+        // 🟢 WHATSAPP LOGIC
         window.shareLedgerWhatsApp = function() {
             let balText = document.getElementById('ledgerBalanceTitle').innerText; let amtText = document.getElementById('ledgerBalanceValue').innerText;
-            let msg = `*Savitri Electronics*\n_Ledger Statement_\n\n*Dealer:* ${pbDealer}\n*Total Maal:* ${document.getElementById('ledgerTotalBill').innerText}\n*Total Jama:* ${document.getElementById('ledgerTotalPaid').innerText}\n*${balText}:* ${amtText}`;
+            let msg = `*Savitri Electronics*\n_Ledger Statement_\n\n*Dealer:* ${pbDealer}\n*Total Maal:* ${document.getElementById('ledgerTotalBill').innerText}\n*Total Jama:* ${document.getElementById('ledgerTotalPaid').innerText}\n*${balText}:* ${amtText}\n\n_Auto-generated by ERP_`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
@@ -823,7 +888,20 @@
                 </div>`;
             });
         });
-        window.filterRecords = function() { let val = document.getElementById('searchInput').value.toUpperCase(); document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; }); }
+        window.filterRecords = function() { let val = document.getElementById('searchInput').value.toUpperCase(); document.querySelectorAll('.record-card').forEach(el => { el.style.display = el.dataset.search.toUpperCase().includes(val) ? '' : 'none'; }); };
+        
+        // Stock Excel Export
+        window.exportStockExcel = function() {
+            if(globalRecords.length === 0) return;
+            let csvContent = "data:text/csv;charset=utf-8,Date,Brand,Model Name,Star Rating,Serial Number\n"; 
+            globalRecords.forEach(row => {
+                let dateStr = row.timestamp ? new Date(row.timestamp).toLocaleDateString('en-IN') : 'N/A';
+                csvContent += `"${dateStr}","${row.category || "N/A"}","${row.model || "N/A"}","${row.star || "N/A"}","${row.serial || "N/A"}"\n`;
+            });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Finance_Stock_${new Date().toLocaleDateString('en-IN')}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
 
         // ================= REAL INVENTORY (STOCK) =================
         let globalRealStock = [];
